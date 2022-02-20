@@ -7,12 +7,14 @@ class CustomTextFormField extends StatelessWidget {
     this.labelText,
     this.obscureText = false,
     this.hintText,
+    this.sufix,
     this.controller,
     this.suffixIcon,
   }) : super(key: key);
 
   final String? labelText;
   final bool obscureText;
+  final Widget? sufix;
   final String? hintText;
   final TextEditingController? controller;
   final Widget? suffixIcon;
@@ -27,6 +29,7 @@ class CustomTextFormField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
+            suffix: sufix,
             suffixIcon: suffixIcon,
             labelText: labelText,
             labelStyle: const TextStyle(
@@ -75,7 +78,8 @@ class CustomTextFormField extends StatelessWidget {
 getHeight(context) => MediaQuery.of(context).size.height;
 getWidth(context) => MediaQuery.of(context).size.width;
 
-showFutureDialog({required BuildContext context, required Future<dynamic> future}) {
+showFutureDialog(
+    {required BuildContext context, required Future<dynamic> future}) {
   print("I am in future dialog");
   showDialog(
       context: context,
@@ -83,7 +87,8 @@ showFutureDialog({required BuildContext context, required Future<dynamic> future
         return FutureBuilder(
             future: future,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.connectionState == ConnectionState.active ||
+                  snapshot.connectionState == ConnectionState.done) {
                 var response = snapshot.data as Response;
                 return AlertDialog(
                   title: Text(response.code),

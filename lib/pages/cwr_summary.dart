@@ -12,6 +12,7 @@ class CwrSummary extends StatefulWidget {
 }
 
 class _CwrSummaryState extends State<CwrSummary> {
+  String? _value;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,104 +23,389 @@ class _CwrSummaryState extends State<CwrSummary> {
           SizedBox(
             height: 60,
             child: Row(
-              // mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(session.country!.name.toUpperCase(), style: Theme.of(context).textTheme.headline6),
-                  ),
-                ),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child:
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    // style: ButtonStyle(shape: BoxShape.rectangle),
-                    onPressed: () {
-                      Get.to(() => QuotationView());
-                    },
-                    child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Icon(
-                          Icons.add,
-                          size: 16,
-                        )),
-                  ),
+                  child: Text(session.country!.name,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Icon(
-                          Icons.download,
-                          size: 16,
-                        )),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Icon(
-                          Icons.delete,
-                          size: 16,
-                        )),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Icon(
-                          Icons.refresh,
-                          size: 16,
-                        )),
-                  ),
+                // ),
+                Row(
+                  children: [
+                    Tooltip(
+                      message: "Add Quotation",
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          // style: ButtonStyle(shape: BoxShape.rectangle),
+                          onPressed: () {
+                            Get.to(() => QuotationView());
+                          },
+                          child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Icon(
+                                Icons.add,
+                                size: 20,
+                              )),
+                        ),
+                      ),
+                    ),
+                    Tooltip(
+                      message: "Export",
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Icon(
+                                Icons.download,
+                                size: 20,
+                              )),
+                        ),
+                      ),
+                    ),
+                    Tooltip(
+                      message: "Recycle Bin",
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Icon(
+                                Icons.delete,
+                                size: 20,
+                              )),
+                        ),
+                      ),
+                    ),
+                    Tooltip(
+                      message: "Refresh",
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Icon(
+                                Icons.refresh,
+                                size: 20,
+                              )),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          Card(
-            color: Color(0xFFE8F3FA),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Table(children: [
-                TableRow(
-                  children: [
-                    Expanded(
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 5,
+              color: Color(0xFFE8F3FA),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Table(children: [
+                  TableRow(
+                    children: [
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Search',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Card(
+                              color: Colors.white,
+                              elevation: 5,
+                              shadowColor: Colors.grey,
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  hintText: 'Search',
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                      Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: CustomTextFormField(),
-                    )),
-                    Expanded(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'From',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Card(
+                                color: Colors.white,
+                                elevation: 5,
+                                shadowColor: Colors.grey,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                    hintText: 'dd-mm-yyy',
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide.none),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: CustomTextFormField(),
-                    )),
-                    Expanded(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'To',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Card(
+                                color: Colors.white,
+                                elevation: 5,
+                                shadowColor: Colors.grey,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                    hintText: 'dd-mm-yyy',
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide.none),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: CustomTextFormField(),
-                    )),
-                    Expanded(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Overall Status',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
+                                  child: DropdownButtonHideUnderline(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: DropdownButton(
+                                          value: _value,
+                                          items: [
+                                            DropdownMenuItem(
+                                              child: Text("Pending"),
+                                              value: 'Pending',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Completed"),
+                                              value: 'Completed',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Canceled"),
+                                              value: 'Canceled',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("All Quotations"),
+                                              value: 'All Quotations',
+                                            )
+                                          ],
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _value = value;
+                                            });
+                                          },
+                                          hint: Text("Select item")),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: CustomTextFormField(),
-                    )),
-                    Expanded(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Approval Status',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
+                                  child: DropdownButtonHideUnderline(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: DropdownButton(
+                                          value: _value,
+                                          items: [
+                                            DropdownMenuItem(
+                                              child: Text("Approved"),
+                                              value: 'Approved',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Pending"),
+                                              value: 'Pending',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Rejected"),
+                                              value: 'Rejected',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Canceled"),
+                                              value: 'Canceled',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("All Quotations"),
+                                              value: 'All Quotations',
+                                            )
+                                          ],
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _value = value;
+                                            });
+                                          },
+                                          hint: Text("Select item")),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child: CustomTextFormField(),
-                    )),
-                  ],
-                )
-              ]),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Client',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
+                                  child: DropdownButtonHideUnderline(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: DropdownButton(
+                                          value: _value,
+                                          items: [
+                                            DropdownMenuItem(
+                                              child: Text("Pending"),
+                                              value: 'Pending',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Completed"),
+                                              value: 'Completed',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Canceled"),
+                                              value: 'Canceled',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("All Quotations"),
+                                              value: 'All Quotations',
+                                            )
+                                          ],
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _value = value;
+                                            });
+                                          },
+                                          hint: Text("Select item")),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ]),
+              ),
             ),
           ),
           SingleChildScrollView(

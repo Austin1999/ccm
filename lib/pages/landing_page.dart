@@ -32,6 +32,7 @@ class _LandingPageState extends State<LandingPage> {
             width: MediaQuery.of(context).size.width * 0.125,
             color: Colors.white,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 AspectRatio(
                     aspectRatio: 1,
@@ -40,10 +41,34 @@ class _LandingPageState extends State<LandingPage> {
                       fit: BoxFit.scaleDown,
                       height: 25,
                     )),
-                DrawerTile(icon: Icons.home, label: "Home", onTap: () => setindex(0)),
-                DrawerTile(icon: Icons.dashboard, label: "Dashboard", onTap: () => setindex(1)),
-                DrawerTile(icon: Icons.business, label: "Clients", onTap: () => setindex(2)),
-                DrawerTile(icon: Icons.business, label: "Contractors", onTap: () => setindex(3)),
+                DrawerTile(
+                    icon: Icons.home, label: "Home", onTap: () => setindex(0)),
+                DrawerTile(
+                    icon: Icons.dashboard,
+                    label: "Dashboard",
+                    onTap: () => setindex(1)),
+                DrawerTile(
+                    icon: Icons.account_circle,
+                    label: "My Profile",
+                    onTap: () => setindex(2)),
+                DrawerTile(
+                    icon: Icons.settings,
+                    label: "Administration",
+                    onTap: () => null),
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: DrawerTile(
+                      icon: Icons.person,
+                      label: "Client",
+                      onTap: () => setindex(2)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: DrawerTile(
+                      icon: Icons.workspaces_filled,
+                      label: "Contractor",
+                      onTap: () => setindex(3)),
+                ),
               ],
             ),
           ),
@@ -60,7 +85,10 @@ class _LandingPageState extends State<LandingPage> {
                       child: Text(
                         "In a world of gray, CCM provides clarity to all construction & facility projects.",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     Padding(
@@ -78,7 +106,14 @@ class _LandingPageState extends State<LandingPage> {
               Expanded(
                   child: PageView(
                 controller: pageController,
-                children: [CountriesList(), CwrSummary(), ClientView(), ContractorView()],
+                children: [
+                  CountriesList(),
+                  CwrSummary(),
+                  ClientView(),
+                  ContractorView(),
+                  // ClientView(),
+                  // ContractorView()
+                ],
               )),
             ],
           )),
@@ -112,15 +147,19 @@ class DrawerTile extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          height: 40,
+          height: 50,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Icon(icon),
+                child: Icon(icon, color: Colors.grey[700]),
               ),
-              Text("$label"),
+              Text(
+                "$label",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.grey[700]),
+              ),
             ],
           ),
         ),
