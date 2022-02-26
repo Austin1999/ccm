@@ -2,32 +2,39 @@ import 'dart:convert';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/services/firebase.dart';
 
-Contractor clientFromJson(String str) => Contractor.fromJson(json.decode(str));
+Contractor clientFromJson(String str) => Contractor.fromJson(json.decode(str),'');
 
 String clientToJson(Contractor data) => json.encode(data.toJson());
 
 class Contractor {
-  Contractor({
-    required this.name,
-    this.address,
-    this.country,
-    this.email,
-    this.phone,
-  });
+  Contractor(
+      {required this.name,
+      this.address,
+      this.country,
+      this.email,
+      this.phone,
+      this.contactPerson,
+      this.docid,
+      this.cwr});
 
   String name;
   String? address;
   String? country;
   String? email;
   String? phone;
+  String? cwr;
+  String? contactPerson;
+  String? docid;
 
-  factory Contractor.fromJson(Map<String, dynamic> json) => Contractor(
-        name: json["name"],
-        address: json["address"],
-        country: json["country"],
-        email: json["email"],
-        phone: json["phone"],
-      );
+  factory Contractor.fromJson(Map<String, dynamic> json, doc_id) => Contractor(
+      name: json["name"],
+      address: json["address"],
+      country: json["country"],
+      email: json["email"],
+      phone: json["phone"],
+      cwr: json["cwr"] ?? '',
+      docid: doc_id,
+      contactPerson: json["contactPerson"] ?? '');
 
   Map<String, dynamic> toJson() => {
         "name": name,
@@ -35,6 +42,8 @@ class Contractor {
         "country": country,
         "email": email,
         "phone": phone,
+        "cwr": cwr,
+        "contactPerson": contactPerson
       };
 
   Future<dynamic> add() async {

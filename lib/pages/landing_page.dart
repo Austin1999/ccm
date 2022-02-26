@@ -109,8 +109,8 @@ class _LandingPageState extends State<LandingPage> {
                 children: [
                   CountriesList(),
                   CwrSummary(),
-                  ClientView(),
-                  ContractorView(),
+                  ClientList(),
+                  ContractorList(),
                   // ClientView(),
                   // ContractorView()
                 ],
