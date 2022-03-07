@@ -24,6 +24,7 @@ CollectionReference<Map<String, dynamic>> users = firestore.collection('Users');
 // CollectionReference<Map<String, dynamic>> clients = firestore.collection('Clients');
 CollectionReference<Map<String, dynamic>> contractors = firestore.collection('Contractors');
 CollectionReference<Map<String, dynamic>> countries = firestore.collection('Countries');
+CollectionReference<Map<String, dynamic>> userscollection = firestore.collection('Users');
 CollectionReference<Map<String, dynamic>> clients(code) => countries.doc(code).collection("clients");
 DocumentReference<Map<String, dynamic>> counters = firestore.collection('globalData').doc('counters');
 

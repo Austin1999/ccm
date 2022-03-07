@@ -1,4 +1,9 @@
+import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/models/quotation.dart';
+import 'package:ccm/services/firebase.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class QuotationView extends StatefulWidget {
   const QuotationView({Key? key}) : super(key: key);
@@ -8,7 +13,56 @@ class QuotationView extends StatefulWidget {
 }
 
 class _QuotationViewState extends State<QuotationView> {
-  String? category;
+  // String? category;
+  TextEditingController clientQuotequotationNumber = TextEditingController();
+  TextEditingController clientQuoteclientName = TextEditingController();
+  TextEditingController clientQuoteAmount = TextEditingController();
+  TextEditingController clientQuoteclientApproval = TextEditingController();
+  TextEditingController clientQuotedateIssued = TextEditingController();
+  TextEditingController clientQuoteDesciption = TextEditingController();
+  TextEditingController clientQuoteApprovalStatus =
+      TextEditingController(text: 'Approved');
+  TextEditingController clientQuoteCCMTicketNumber = TextEditingController();
+  TextEditingController clientQuoteJobCompletionDate = TextEditingController();
+  TextEditingController clientQuoteOverallStatus =
+      TextEditingController(text: 'Pending');
+  TextEditingController clientInvoiceNo = TextEditingController();
+  TextEditingController clientInvoiceAmount = TextEditingController();
+  TextEditingController clientInvoiceIssueDate = TextEditingController();
+  TextEditingController contractorQuotationPONumber = TextEditingController();
+  TextEditingController contractorQuotationContractorName =
+      TextEditingController();
+  TextEditingController contractorQuotationPOAmount = TextEditingController();
+  TextEditingController contractorQuotationPOIssueDate =
+      TextEditingController();
+  TextEditingController contractorQuotationNo = TextEditingController();
+  TextEditingController contractorQuotationAmount = TextEditingController();
+  TextEditingController contractorQuotationWorkCommence =
+      TextEditingController();
+  TextEditingController contractorQuotationWorkComplete =
+      TextEditingController();
+  TextEditingController contractorInvoiceNo = TextEditingController();
+  TextEditingController contractorInvoiceAmount = TextEditingController();
+  TextEditingController contractorInvoiceRecievedDate = TextEditingController();
+  TextEditingController contractorInvoiceTaxInvoiceNo = TextEditingController();
+  TextEditingController contractorInvoicePaidAmount = TextEditingController();
+  TextEditingController contractorInvoiceLastPaidDate = TextEditingController();
+  TextEditingController comment = TextEditingController();
+  TextEditingController clientInvoiceLastRecieveDate = TextEditingController();
+  Future<DateTime> _selectDate(
+      BuildContext context, DateTime selectedDate) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2000, 8),
+        lastDate: DateTime.now());
+    if (picked != null && picked != selectedDate) return picked;
+    return picked!;
+  }
+
+  List<ClientInvoice> clientinvoices = [];
+  List<ContractorInvoice> contractorInvoice = [];
+  List<ContractorPurchaseOrder> contractorPO = [];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -113,141 +167,29 @@ class _QuotationViewState extends State<QuotationView> {
                         ),
                         Row(
                           children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Quotation Number',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: quotationno,
-                                        decoration: InputDecoration(
-                                          hintText: 'Quotation No',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'Quotation Number',
+                              hinttext: 'Quotation No',
+                              controller: clientQuotequotationNumber,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Client Name',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: clientname,
-                                        decoration: InputDecoration(
-                                          hintText: 'Client Name',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'Client Name',
+                              hinttext: 'Client Name',
+                              controller: clientQuoteclientName,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Quote Amount',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: quoteamount,
-                                        decoration: InputDecoration(
-                                          hintText: 'Quote Amount',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'Quote Amount',
+                              hinttext: 'Quote Amount',
+                              controller: clientQuoteAmount,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Client Approval',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: contactPerson,
-                                        decoration: InputDecoration(
-                                          hintText: 'Client PO',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'Client Approval',
+                              hinttext: 'Client Approval',
+                              controller: clientQuoteclientApproval,
                             ),
                           ],
                         ),
@@ -278,7 +220,19 @@ class _QuotationViewState extends State<QuotationView> {
                                       elevation: 5,
                                       shadowColor: Colors.grey,
                                       child: TextFormField(
-                                        // controller: quotationno,
+                                        controller: clientQuotedateIssued,
+                                        onTap: () {
+                                          _selectDate(
+                                            context,
+                                            DateTime.now(),
+                                          ).then((value) {
+                                            setState(() {
+                                              clientQuotedateIssued.text = value
+                                                  .toString()
+                                                  .substring(0, 10);
+                                            });
+                                          });
+                                        },
                                         decoration: InputDecoration(
                                           hintText: 'dd-mm-yyyy',
                                           border: OutlineInputBorder(
@@ -290,39 +244,11 @@ class _QuotationViewState extends State<QuotationView> {
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Description',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: clientname,
-                                        decoration: InputDecoration(
-                                          hintText: 'Description',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'Description',
+                              hinttext: 'Description',
+                              controller: clientQuoteDesciption,
                             ),
                             Expanded(
                               child: Padding(
@@ -352,7 +278,8 @@ class _QuotationViewState extends State<QuotationView> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: DropdownButton(
-                                                value: category,
+                                                value: clientQuoteApprovalStatus
+                                                    .text,
                                                 items: [
                                                   DropdownMenuItem(
                                                     child: Text("Approved"),
@@ -373,7 +300,8 @@ class _QuotationViewState extends State<QuotationView> {
                                                 ],
                                                 onChanged: (String? value) {
                                                   setState(() {
-                                                    category = value;
+                                                    clientQuoteApprovalStatus
+                                                        .text = value!;
                                                   });
                                                 },
                                                 hint: Text("Select item")),
@@ -452,73 +380,28 @@ class _QuotationViewState extends State<QuotationView> {
                         ),
                         Row(
                           children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'CCM Ticket Number',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: quotationno,
-                                        decoration: InputDecoration(
-                                          hintText: 'Ticket Number',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'CCM Ticket Number',
+                              hinttext: 'CCM Ticket Number',
+                              controller: clientQuoteCCMTicketNumber,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Job Completion Date',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: TextFormField(
-                                        // controller: clientname,
-                                        decoration: InputDecoration(
-                                          hintText: 'dd-mm-yyyy',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            CardInputField(
+                              readonly: false,
+                              text: 'Job Completion Date',
+                              hinttext: 'dd-mm-yyyy',
+                              onTap: () {
+                                _selectDate(
+                                  context,
+                                  DateTime.now(),
+                                ).then((value) {
+                                  setState(() {
+                                    clientQuoteJobCompletionDate.text =
+                                        value.toString().substring(0, 10);
+                                  });
+                                });
+                              },
+                              controller: clientQuoteJobCompletionDate,
                             ),
                             Spacer(),
                             Expanded(
@@ -549,7 +432,8 @@ class _QuotationViewState extends State<QuotationView> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: DropdownButton(
-                                                value: category,
+                                                value: clientQuoteOverallStatus
+                                                    .text,
                                                 items: [
                                                   DropdownMenuItem(
                                                     child: Text("Pending"),
@@ -566,7 +450,8 @@ class _QuotationViewState extends State<QuotationView> {
                                                 ],
                                                 onChanged: (String? value) {
                                                   setState(() {
-                                                    category = value;
+                                                    clientQuoteOverallStatus
+                                                        .text = value!;
                                                   });
                                                 },
                                                 hint: Text("Select item")),
@@ -612,146 +497,51 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Client Invoice No',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quotationno,
-                                          decoration: InputDecoration(
-                                            hintText: 'Invoice No',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Client Invoice No',
+                                hinttext: 'Invoice No',
+                                controller: clientInvoiceNo,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Client Invoice Amount',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: clientname,
-                                          decoration: InputDecoration(
-                                            hintText: 'Client Invoice Amount',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Client Invoice Amount',
+                                hinttext: 'Client Invoice Amount',
+                                controller: clientInvoiceAmount,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Invoice Issue Date',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quoteamount,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Invoice Issue Date',
+                                hinttext: 'dd-mm-yyyy',
+                                controller: clientInvoiceIssueDate,
+                                onTap: () {
+                                  _selectDate(
+                                    context,
+                                    DateTime.now(),
+                                  ).then((value) {
+                                    setState(() {
+                                      clientInvoiceIssueDate.text =
+                                          value.toString().substring(0, 10);
+                                    });
+                                  });
+                                },
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Last Recived Date',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.grey[200],
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          // controller: contactPerson,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Last Recieved Date',
+                                hinttext: 'dd-mm-yyyy',
+                                onTap: () {
+                                  _selectDate(
+                                    context,
+                                    DateTime.now(),
+                                  ).then((value) {
+                                    setState(() {
+                                      clientInvoiceLastRecieveDate.text =
+                                          value.toString().substring(0, 10);
+                                    });
+                                  });
+                                },
+                                controller: clientInvoiceLastRecieveDate,
                               ),
                             ],
                           ),
@@ -783,7 +573,7 @@ class _QuotationViewState extends State<QuotationView> {
                                         shadowColor: Colors.grey,
                                         child: TextFormField(
                                           readOnly: true,
-                                          // controller: quotationno,
+                                          controller: clientInvoiceIssueDate,
                                           decoration: InputDecoration(
                                             hintText: 'dd-mm-yyyy',
                                             border: OutlineInputBorder(
@@ -802,7 +592,24 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          clientinvoices.add(
+                                            ClientInvoice(
+                                              number: clientInvoiceNo.text,
+                                              receivedDate: DateTime.parse(
+                                                  clientInvoiceLastRecieveDate
+                                                      .text),
+                                              recievedamount: 0.00,
+                                              amount: double.parse(
+                                                  clientInvoiceAmount.text),
+                                              issueDate: DateTime.parse(
+                                                  clientInvoiceIssueDate.text),
+                                            ),
+                                          );
+                                          Get.rawSnackbar(
+                                              message: 'Quotation Added',
+                                              snackPosition: SnackPosition.TOP);
+                                        },
                                         child: Text('Add'),
                                       ),
                                     )),
@@ -826,7 +633,151 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Dialog(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Client Invoice List',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 20.0),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 15.0,
+                                                      ),
+                                                      Divider(),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(12.0),
+                                                        child: ElevatedButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          child: Text('Back'),
+                                                        ),
+                                                      ),
+                                                      DataTable(
+                                                          columns: [
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Invoice No',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Invoice Amount',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Issued Date',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Last Recieved Date',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Recieved Amount',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Delete',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          rows: clientinvoices
+                                                              .map<DataRow>(
+                                                                (e) => DataRow(
+                                                                  cells: [
+                                                                    DataCell(
+                                                                      Text(e
+                                                                          .number),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e
+                                                                          .amount
+                                                                          .toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e
+                                                                          .issueDate
+                                                                          .toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e
+                                                                          .receivedDate
+                                                                          .toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e
+                                                                          .recievedamount
+                                                                          .toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Icon(
+                                                                        Icons
+                                                                            .delete,
+                                                                        color: Colors
+                                                                            .red,
+                                                                      ),
+                                                                      onTap: () =>
+                                                                          clientinvoices
+                                                                              .remove(e),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                              .toList()),
+                                                    ],
+                                                  ),
+                                                );
+                                              });
+                                        },
                                         child: Text('List Invoice'),
                                       ),
                                     )),
@@ -873,146 +824,40 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'PO Number',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quotationno,
-                                          decoration: InputDecoration(
-                                            hintText: 'PO Number',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'PO Number',
+                                hinttext: 'PO Number',
+                                controller: contractorQuotationPONumber,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Contractor Name',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: clientname,
-                                          decoration: InputDecoration(
-                                            hintText: 'Contractor Name',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Contractor Name',
+                                hinttext: 'Contractor Name',
+                                controller: contractorQuotationContractorName,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'PO Amount',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quoteamount,
-                                          decoration: InputDecoration(
-                                            hintText: 'PO Amount',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'PO Amount',
+                                hinttext: 'PO Amount',
+                                controller: contractorQuotationPOAmount,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'PO Issued Date',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.grey[200],
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          // controller: contactPerson,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'PO Issued Date',
+                                onTap: () {
+                                  _selectDate(
+                                    context,
+                                    DateTime.now(),
+                                  ).then((value) {
+                                    setState(() {
+                                      contractorQuotationPOIssueDate.text =
+                                          value.toString().substring(0, 10);
+                                    });
+                                  });
+                                },
+                                hinttext: 'dd-mm-yyyy',
+                                controller: contractorQuotationPOIssueDate,
                               ),
                             ],
                           ),
@@ -1021,146 +866,51 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Quotation No',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quotationno,
-                                          decoration: InputDecoration(
-                                            hintText: 'Quotation No',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Quotation No',
+                                hinttext: 'Quotation No',
+                                controller: contractorQuotationNo,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Quote Amount',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: clientname,
-                                          decoration: InputDecoration(
-                                            hintText: 'Quote Amount',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Quote Amount',
+                                hinttext: 'Quote Amount',
+                                controller: contractorQuotationAmount,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Work Commence',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.white,
-                                        child: TextFormField(
-                                          // controller: quoteamount,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Work Commence',
+                                hinttext: 'dd-mm-yyyy',
+                                onTap: () {
+                                  _selectDate(
+                                    context,
+                                    DateTime.now(),
+                                  ).then((value) {
+                                    setState(() {
+                                      contractorQuotationWorkCommence.text =
+                                          value.toString().substring(0, 10);
+                                    });
+                                  });
+                                },
+                                controller: contractorQuotationWorkCommence,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Work Complete',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          // controller: contactPerson,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Work Complete',
+                                hinttext: 'dd-mm-yyyy',
+                                onTap: () {
+                                  _selectDate(
+                                    context,
+                                    DateTime.now(),
+                                  ).then((value) {
+                                    setState(() {
+                                      contractorQuotationWorkComplete.text =
+                                          value.toString().substring(0, 10);
+                                    });
+                                  });
+                                },
+                                controller: contractorQuotationWorkComplete,
                               ),
                             ],
                           ),
@@ -1176,7 +926,31 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          contractorPO.add(ContractorPurchaseOrder(
+                                              name: contractorQuotationContractorName
+                                                  .text,
+                                              poNumber: contractorQuotationPONumber
+                                                  .text,
+                                              quotationAmount: double.parse(
+                                                  contractorQuotationAmount
+                                                      .text),
+                                              quotationNumber:
+                                                  contractorQuotationNo.text,
+                                              issueDate: DateTime.parse(
+                                                  contractorQuotationPOIssueDate
+                                                      .text),
+                                              poAmount: double.parse(
+                                                  contractorQuotationPOAmount
+                                                      .text),
+                                              workCommenceDate: DateTime.parse(
+                                                  contractorQuotationWorkCommence.text),
+                                              workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
+                                              invoices: contractorInvoice));
+                                          Get.rawSnackbar(
+                                              message: 'Quotation Added',
+                                              snackPosition: SnackPosition.TOP);
+                                        },
                                         child: Text('Add'),
                                       ),
                                     )),
@@ -1200,7 +974,193 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Dialog(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Contractor PO List',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 20.0),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 15.0,
+                                                      ),
+                                                      Divider(),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(12.0),
+                                                        child: ElevatedButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          child: Text('Back'),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(12.0),
+                                                        child: Card(
+                                                          elevation: 5.0,
+                                                          child: DataTable(
+                                                              columnSpacing:
+                                                                  52.0,
+                                                              columns: [
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Contractor Name',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Po Number',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Po Amount',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Po Issued Date',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Quotation No',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Quotation Amount',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Work Commence',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Work Complete',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Delete',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                              rows: contractorPO
+                                                                  .map<DataRow>(
+                                                                    (e) =>
+                                                                        DataRow(
+                                                                      cells: [
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .name),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .poNumber
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .poAmount
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .issueDate
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .quotationNumber
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .quotationAmount
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .workCommenceDate
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .workCompleteDate
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Icon(
+                                                                            Icons.delete,
+                                                                            color:
+                                                                                Colors.red,
+                                                                          ),
+                                                                          onTap: () =>
+                                                                              contractorPO.remove(e),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  )
+                                                                  .toList()),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              });
+                                        },
                                         child: Text('List Contractors'),
                                       ),
                                     )),
@@ -1235,146 +1195,39 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Contractor Invoice No',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quotationno,
-                                          decoration: InputDecoration(
-                                            hintText: 'Contractor Invoice No',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Contractor Invoice No',
+                                hinttext: 'Contractor Invoice No',
+                                controller: contractorInvoiceNo,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Contractor Invoice Amount',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: clientname,
-                                          decoration: InputDecoration(
-                                            hintText: 'Amount',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Contractor Invoice Amount',
+                                hinttext: 'Contractor Invoice Amount',
+                                controller: contractorInvoiceAmount,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Invoice Received Date',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          // controller: quoteamount,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Tax Invoice No',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.grey[200],
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          // controller: contactPerson,
-                                          decoration: InputDecoration(
-                                            hintText: 'Tax Invoice No',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                  readonly: false,
+                                  text: 'Invoice Recieved Date',
+                                  hinttext: 'dd-mm-yyyy',
+                                  controller: contractorInvoiceRecievedDate,
+                                  onTap: () {
+                                    _selectDate(
+                                      context,
+                                      DateTime.now(),
+                                    ).then((value) {
+                                      setState(() {
+                                        contractorInvoiceRecievedDate.text =
+                                            value.toString().substring(0, 10);
+                                      });
+                                    });
+                                  }),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Tax Invoice No',
+                                hinttext: 'Tax Invoice No',
+                                controller: contractorInvoiceTaxInvoiceNo,
                               ),
                             ],
                           ),
@@ -1383,78 +1236,28 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Paid Amount',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          // controller: quotationno,
-                                          decoration: InputDecoration(
-                                            hintText: 'Paid Amount',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              CardInputField(
+                                readonly: false,
+                                text: 'Paid Amount',
+                                hinttext: 'Paid Amount',
+                                controller: contractorInvoicePaidAmount,
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Last Paid Date',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          // controller: contactPerson,
-                                          decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              CardInputField(
+                                  readonly: false,
+                                  text: 'Last Paid Date',
+                                  hinttext: 'dd-mm-yyyy',
+                                  controller: contractorInvoiceLastPaidDate,
+                                  onTap: () {
+                                    _selectDate(
+                                      context,
+                                      DateTime.now(),
+                                    ).then((value) {
+                                      setState(() {
+                                        contractorInvoiceLastPaidDate.text =
+                                            value.toString().substring(0, 10);
+                                      });
+                                    });
+                                  }),
                             ],
                           ),
                           Row(
@@ -1466,7 +1269,31 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          contractorInvoice.add(
+                                            ContractorInvoice(
+                                              // payments: [],
+                                              number: contractorInvoiceNo.text,
+                                              receivedDate: DateTime.parse(
+                                                  contractorInvoiceRecievedDate
+                                                      .text),
+                                              amount: double.parse(
+                                                  contractorInvoiceAmount.text),
+                                              paidDate: DateTime.parse(
+                                                  contractorInvoiceLastPaidDate
+                                                      .text),
+                                              taxNumber:
+                                                  contractorInvoiceTaxInvoiceNo
+                                                      .text,
+                                              paidamount: double.parse(
+                                                  contractorInvoicePaidAmount
+                                                      .text),
+                                            ),
+                                          );
+                                          Get.rawSnackbar(
+                                              message: 'Invoice Added',
+                                              snackPosition: SnackPosition.TOP);
+                                        },
                                         child: Text('Add'),
                                       ),
                                     )),
@@ -1490,7 +1317,154 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Dialog(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Contractor Invoice List',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 20.0),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 15.0,
+                                                      ),
+                                                      Divider(),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(12.0),
+                                                        child: ElevatedButton(
+                                                          onPressed: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          child: Text('Back'),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(12.0),
+                                                        child: Card(
+                                                          elevation: 5.0,
+                                                          child: DataTable(
+                                                              columnSpacing:
+                                                                  52.0,
+                                                              columns: [
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Invoice No',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Invoice Amount',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Invoice Received Date',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Last Paid Date',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Paid Amount',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                                DataColumn(
+                                                                  label: Text(
+                                                                    'Delete',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                              rows: contractorInvoice
+                                                                  .map<DataRow>(
+                                                                    (e) =>
+                                                                        DataRow(
+                                                                      cells: [
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .number),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .amount
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .receivedDate
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .paidDate
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Text(e
+                                                                              .paidamount
+                                                                              .toString()),
+                                                                        ),
+                                                                        DataCell(
+                                                                          Icon(
+                                                                            Icons.delete,
+                                                                            color:
+                                                                                Colors.red,
+                                                                          ),
+                                                                          onTap: () =>
+                                                                              contractorInvoice.remove(e),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  )
+                                                                  .toList()),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              });
+                                        },
                                         child: Text('List Invoice'),
                                       ),
                                     )),
@@ -1621,8 +1595,31 @@ class _QuotationViewState extends State<QuotationView> {
                   child: SizedBox(
                     height: 35,
                     child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Send'),
+                      onPressed: () async {
+                        Quotation quotationval = Quotation(
+                            qnumber: clientQuotequotationNumber.text,
+                            clientname: clientQuoteclientName.text,
+                            qamount: double.parse(clientQuoteAmount.text),
+                            clientApproval: clientQuoteclientApproval.text,
+                            dateIssued:
+                                DateTime.parse(clientQuotedateIssued.text),
+                            description: clientQuoteDesciption.text,
+                            approvalStatus: clientQuoteApprovalStatus.text,
+                            ccmTicketNumber: clientQuoteCCMTicketNumber.text,
+                            jobcompletionDate: DateTime.parse(
+                                clientQuoteJobCompletionDate.text),
+                            overallstatus: clientQuoteOverallStatus.text,
+                            clientInvoices: clientinvoices,
+                            contractorPurchaseOrders: contractorPO);
+                        print(quotationval.toJson());
+                        await countries
+                            .doc(session.country!.code)
+                            .collection('quotations')
+                            .add(
+                              quotationval.toJson(),
+                            );
+                      },
+                      child: Text('Submit'),
                     ),
                   )),
             ],
@@ -1633,105 +1630,54 @@ class _QuotationViewState extends State<QuotationView> {
   }
 }
 
-// CardInput(
-//   hinttext: 'Search',
-//   text: 'Search',
-// ),
-//   Padding(
-//     padding:
-//         const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-//     child: Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Text(
-//           'Overall Status',
-//           style: TextStyle(
-//             fontWeight: FontWeight.bold,
-//             fontSize: 17,
-//           ),
-//         ),
-//         SizedBox(
-//           height: 10,
-//         ),
-//         SizedBox(
-//           width: double.infinity,
-//           child: Card(
-//             color: Colors.white,
-//             elevation: 5,
-//             shadowColor: Colors.grey,
-//             child: DropdownButtonHideUnderline(
-//               child: Padding(
-//                 padding:
-//                     const EdgeInsets.symmetric(horizontal: 8.0),
-//                 child: DropdownButton(
-//                     value: category,
-//                     items: [
-//                       DropdownMenuItem(
-//                         child: Text("Pending"),
-//                         value: 'Pending',
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("Completed"),
-//                         value: 'Completed',
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("Canceled"),
-//                         value: 'Canceled',
-//                       ),
-//                       DropdownMenuItem(
-//                         child: Text("All Quotations"),
-//                         value: 'All Quotations',
-//                       )
-//                     ],
-//                     onChanged: (String? value) {
-//                       setState(() {
-//                         category = value;
-//                       });
-//                     },
-//                     hint: Text("Select item")),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   ),
-// ],
-// ),
-// ),
-class CardInput extends StatelessWidget {
-  CardInput({required this.text, required this.hinttext});
-  String text, hinttext;
+class CardInputField extends StatelessWidget {
+  const CardInputField(
+      {Key? key,
+      this.onTap,
+      required this.readonly,
+      required this.controller,
+      required this.hinttext,
+      required this.text})
+      : super(key: key);
+  final String text, hinttext;
+  final onTap;
+  final bool readonly;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Card(
-            color: Colors.white,
-            elevation: 5,
-            shadowColor: Colors.grey,
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: hinttext,
-                border: OutlineInputBorder(borderSide: BorderSide.none),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
               ),
             ),
-          ),
-        ],
+            SizedBox(
+              height: 10,
+            ),
+            Card(
+              color: Colors.white,
+              elevation: 5,
+              shadowColor: Colors.grey,
+              child: TextFormField(
+                onTap: onTap,
+                readOnly: readonly,
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: hinttext,
+                  border: OutlineInputBorder(borderSide: BorderSide.none),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

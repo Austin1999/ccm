@@ -7,9 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-class CountriesList extends StatelessWidget {
+class CountriesList extends StatefulWidget {
   CountriesList({Key? key}) : super(key: key);
 
+  @override
+  State<CountriesList> createState() => _CountriesListState();
+}
+
+class _CountriesListState extends State<CountriesList> {
+  TextEditingController searchcon = TextEditingController();
+  String search = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,142 +37,166 @@ class CountriesList extends StatelessWidget {
         backgroundColor: Color(0xFFFAFAFA),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Country List',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Card(
-                  shadowColor: Colors.grey[600],
-                  elevation: 5,
-                  color: Colors.lightBlue[50],
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                        stream: countries.snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.active &&
-                              snapshot.hasData) {
-                            List<Country> _tempCountries = [];
-                            _tempCountries = snapshot.data!.docs
-                                .map((e) => Country.fromJson(e.data()))
-                                .toList();
-                            session.countries = _tempCountries;
-                            session.country = session.countries.first;
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.55,
-                                    child: Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                              suffixIcon: Icon(Icons.search),
-                                              border: OutlineInputBorder(
-                                                  borderSide: BorderSide.none)),
-                                        )),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  GridView.count(
-                                    shrinkWrap: true,
-                                    crossAxisCount: 5,
-                                    childAspectRatio: 4,
-                                    children: _tempCountries
-                                        .map((e) => GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      content: Row(
-                                                        children: [
-                                                          CircularProgressIndicator(),
-                                                          SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          Text(
-                                                              'Please Wait, Loading...')
-                                                        ],
-                                                      ),
-                                                    );
-                                                  });
-                                              session.country = e;
-                                              Navigator.pop(context);
-                                              Get.to(() => CwrSummary());
-                                            },
-                                            child: CountryCard(
-                                                text: e.name,
-                                                code: e.code.toLowerCase())))
-                                        .toList(),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            //   return Center(
-                            //     child: CircularProgressIndicator(),
-                            //   );
-                            // }
-                            return Shimmer.fromColors(
-                              baseColor: Colors.grey[300]!,
-                              highlightColor: Colors.grey[100]!,
-                              // enabled: _enabled,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.55,
-                                      child: Card(
-                                          color: Colors.white,
-                                          elevation: 5,
-                                          child: TextFormField(
-                                            decoration: InputDecoration(
-                                                suffixIcon: Icon(Icons.search),
-                                                border: OutlineInputBorder(
-                                                    borderSide:
-                                                        BorderSide.none)),
-                                          )),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  GridView.builder(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Country List',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Card(
+                    shadowColor: Colors.grey[600],
+                    elevation: 5,
+                    color: Colors.lightBlue[50],
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              child: Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  child: TextFormField(
+                                    controller: searchcon,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        search = v;
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                        suffixIcon: Icon(Icons.search),
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide.none)),
+                                  )),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                stream: countries
+                                    .where('name',
+                                        isGreaterThanOrEqualTo:
+                                            search.toTitleCase())
+                                    .where('name',
+                                        isLessThan: search.toTitleCase() + 'z')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.active &&
+                                      snapshot.hasData) {
+                                    List<Country> _tempCountries = [];
+                                    _tempCountries = snapshot.data!.docs
+                                        .map(
+                                          (e) => Country.fromJson(
+                                            e.data(),
+                                          ),
+                                        )
+                                        .toList();
+                                    session.countries = _tempCountries;
+                                    session.country = session.countries.first;
+                                    return GridView.count(
+                                      shrinkWrap: true,
                                       crossAxisCount: 5,
                                       childAspectRatio: 4,
-                                    ),
-                                    itemCount: 35,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return CountryCard(text: "", code: "");
-                                    }, // crossAxisCount: 5,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        }),
+                                      children: _tempCountries
+                                          .map((e) => InkWell(
+                                              onTap: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        content: Row(
+                                                          children: [
+                                                            CircularProgressIndicator(),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Text(
+                                                                'Please Wait, Loading...')
+                                                          ],
+                                                        ),
+                                                      );
+                                                    });
+                                                session.country = e;
+                                                Navigator.pop(context);
+                                                Get.to(() => CwrSummary());
+                                              },
+                                              child: CountryCard(
+                                                  text: e.name,
+                                                  code: e.code.toLowerCase())))
+                                          .toList(),
+                                    );
+                                  } else {
+                                    //   return Center(
+                                    //     child: CircularProgressIndicator(),
+                                    //   );
+                                    // }
+                                    return Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      // enabled: _enabled,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.55,
+                                              child: Card(
+                                                  color: Colors.white,
+                                                  elevation: 5,
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                        suffixIcon:
+                                                            Icon(Icons.search),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                                borderSide:
+                                                                    BorderSide
+                                                                        .none)),
+                                                  )),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          GridView.builder(
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 5,
+                                              childAspectRatio: 4,
+                                            ),
+                                            itemCount: 35,
+                                            shrinkWrap: true,
+                                            itemBuilder: (context, index) {
+                                              return CountryCard(
+                                                  text: "", code: "");
+                                            }, // crossAxisCount: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                }),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }
@@ -232,11 +263,29 @@ class _AddCountryState extends State<AddCountry> {
           items: Country.countries
               .map((e) => DropdownMenuItem(
                   child: SizedBox(
-                      height: 60,
-                      width: 180,
-                      child: CountryCard(
-                          text: e.name.toUpperCase(),
-                          code: e.code.toLowerCase())),
+                      // height: 100,
+                      // width: 250,
+                      child: Column(
+                    children: [
+                      ListTile(
+                        leading: Image.asset(
+                          'icons/flags/png/${e.code}.png',
+                          width: 50,
+                          fit: BoxFit.contain,
+                          package: 'country_icons',
+                        ),
+                        title: Text(
+                          e.name.toLowerCase(),
+                        ),
+                      ),
+                      Divider()
+                    ],
+                  )
+                      // CountryCard(
+                      //     text: e.name.toUpperCase(),
+                      //     code: e.code.toLowerCase()
+                      //     )
+                      ),
                   value: e.code))
               .toList(),
         ),
@@ -255,4 +304,13 @@ class _AddCountryState extends State<AddCountry> {
       ],
     );
   }
+}
+
+extension StringCasingExtension on String {
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

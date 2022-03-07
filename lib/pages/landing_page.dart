@@ -1,5 +1,6 @@
 import 'package:ccm/pages/contractor_list.dart';
 import 'package:ccm/pages/countries_list.dart';
+import 'package:ccm/pages/userList.dart';
 import 'package:flutter/material.dart';
 
 import 'client_list.dart';
@@ -58,6 +59,13 @@ class _LandingPageState extends State<LandingPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   child: DrawerTile(
+                      icon: Icons.people,
+                      label: "Users",
+                      onTap: () => setindex(4)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: DrawerTile(
                       icon: Icons.person,
                       label: "Client",
                       onTap: () => setindex(2)),
@@ -111,7 +119,7 @@ class _LandingPageState extends State<LandingPage> {
                   CwrSummary(),
                   ClientList(),
                   ContractorList(),
-                  // ClientView(),
+                  UsersList()
                   // ContractorView()
                 ],
               )),
@@ -144,7 +152,7 @@ class DrawerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      child: GestureDetector(
+      child: InkWell(
         onTap: onTap,
         child: SizedBox(
           height: 50,

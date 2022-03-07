@@ -1,6 +1,7 @@
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/client.dart';
 import 'package:ccm/models/countries.dart';
+import 'package:ccm/models/usermodel.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
@@ -8,14 +9,14 @@ import 'package:shimmer/shimmer.dart';
 
 import 'countries_list.dart';
 
-class ClientList extends StatefulWidget {
-  const ClientList({Key? key}) : super(key: key);
+class UsersList extends StatefulWidget {
+  const UsersList({Key? key}) : super(key: key);
 
   @override
-  State<ClientList> createState() => _ClientListState();
+  State<UsersList> createState() => _UsersListState();
 }
 
-class _ClientListState extends State<ClientList> {
+class _UsersListState extends State<UsersList> {
   @override
   void initState() {
     super.initState();
@@ -27,17 +28,17 @@ class _ClientListState extends State<ClientList> {
       {required isEdit,
       nameval,
       addressval,
-      cwrval,
+      fullnameval,
       emailval,
       phoneval,
-      contact,
+      roleval,
       doc_id}) {
+    String role = roleval;
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
-    TextEditingController cwr = TextEditingController(text: cwrval);
+    TextEditingController fullname = TextEditingController(text: fullnameval);
     TextEditingController email = TextEditingController(text: emailval);
     TextEditingController phone = TextEditingController(text: phoneval);
-    TextEditingController contactPerson = TextEditingController(text: contact);
     showDialog(
         context: context,
         builder: (context) {
@@ -64,7 +65,7 @@ class _ClientListState extends State<ClientList> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Contractor Name',
+                                'User Name',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 17,
@@ -128,7 +129,7 @@ class _ClientListState extends State<ClientList> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'CWR Country',
+                                'Full Name',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 17,
@@ -142,9 +143,9 @@ class _ClientListState extends State<ClientList> {
                                 elevation: 5,
                                 shadowColor: Colors.grey,
                                 child: TextFormField(
-                                  controller: cwr,
+                                  controller: fullname,
                                   decoration: InputDecoration(
-                                    hintText: 'CWR Country',
+                                    hintText: 'Full Name',
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide.none),
                                   ),
@@ -232,7 +233,7 @@ class _ClientListState extends State<ClientList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Contact Person',
+                              'Role',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 17,
@@ -245,12 +246,37 @@ class _ClientListState extends State<ClientList> {
                               color: Colors.white,
                               elevation: 5,
                               shadowColor: Colors.grey,
-                              child: TextFormField(
-                                controller: contactPerson,
-                                decoration: InputDecoration(
-                                  hintText: 'Contact Person',
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none),
+                              child: DropdownButtonHideUnderline(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: DropdownButton(
+                                      value: role,
+                                      items: [
+                                        DropdownMenuItem(
+                                          child: Text(
+                                            "Role",
+                                            style: TextStyle(
+                                              color: Colors.grey[300],
+                                            ),
+                                          ),
+                                          value: 'N/A',
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text("Admin"),
+                                          value: 'Admin',
+                                        ),
+                                        DropdownMenuItem(
+                                          child: Text("User"),
+                                          value: 'User',
+                                        ),
+                                      ],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          role = value!;
+                                        });
+                                      },
+                                      hint: Text("Select item")),
                                 ),
                               ),
                             ),
@@ -314,50 +340,41 @@ class _ClientListState extends State<ClientList> {
                                   });
 
                               isEdit
-                                  ? countries
-                                      .doc(session.country!.code)
-                                      .collection('clients')
-                                      .doc(doc_id)
-                                      .update(
+                                  ? userscollection.doc(doc_id).update(
                                       {
-                                        'name': name.text,
-                                        'address': address.text,
-                                        'contactPerson': contactPerson.text,
-                                        'country': session.country!.code,
-                                        'email': email.text,
-                                        'phone': phone.text,
-                                        'cwr': cwr.text,
+                                        "name": name.text,
+                                        "address": address.text,
+                                        "email": email.text,
+                                        "phone": phone.text,
+                                        "role": role,
+                                        "fullname": fullname.text
                                       },
                                     ).then((value) {
                                       name.clear();
                                       address.clear();
-                                      cwr.clear();
+                                      fullname.clear();
                                       email.clear();
                                       phone.clear();
-                                      contactPerson.clear();
+                                      role = '';
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     })
-                                  : await countries
-                                      .doc(session.country!.code)
-                                      .collection('clients')
-                                      .add(
+                                  : await userscollection.add(
                                       {
-                                        'name': name.text,
-                                        'cwr': cwr.text,
-                                        'address': address.text,
-                                        'contactPerson': contactPerson.text,
-                                        'country': session.country!.code,
-                                        'email': email.text,
-                                        'phone': phone.text,
+                                        "name": name.text,
+                                        "address": address.text,
+                                        "email": email.text,
+                                        "phone": phone.text,
+                                        "role": role,
+                                        "fullname": fullname.text
                                       },
                                     ).then((value) {
                                       name.clear();
                                       address.clear();
-                                      cwr.clear();
+                                      fullname.clear();
                                       email.clear();
                                       phone.clear();
-                                      contactPerson.clear();
+                                      role = '';
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     });
@@ -384,12 +401,12 @@ class _ClientListState extends State<ClientList> {
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: () {
-            addContractor(isEdit: false);
+            addContractor(isEdit: false, roleval: 'N/A');
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              "Add Client",
+              "Add User",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
@@ -402,7 +419,7 @@ class _ClientListState extends State<ClientList> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Client List',
+                  'Users List',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Padding(
@@ -418,50 +435,29 @@ class _ClientListState extends State<ClientList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.30,
-                                  child: Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          setState(() {
-                                            searchclient = value;
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: 'Enter Email',
-                                            suffixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none)),
-                                      )),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.30,
-                                  child: Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      child: TextFormField(
-                                        decoration: InputDecoration(
-                                            hintText: 'Enter Country',
-                                            suffixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none)),
-                                      )),
-                                ),
-                              ],
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.30,
+                              child: Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  child: TextFormField(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        searchclient = value;
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                        hintText: 'Search Email',
+                                        suffixIcon: Icon(Icons.search),
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide.none)),
+                                  )),
                             ),
                             SizedBox(
                               height: 20,
                             ),
                             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                                stream: countries
-                                    .doc(session.country!.code)
-                                    .collection('clients')
+                                stream: userscollection
                                     .where('email',
                                         isGreaterThanOrEqualTo:
                                             searchclient.toLowerCase(),
@@ -472,11 +468,11 @@ class _ClientListState extends State<ClientList> {
                                   if (snapshot.connectionState ==
                                           ConnectionState.active &&
                                       snapshot.hasData) {
-                                    List<Client> _clients = [];
+                                    List<UserModel> _clients = [];
 
                                     _clients = snapshot.data!.docs.map((e) {
                                       // docid = e.id;
-                                      return Client.fromJson(e.data(), e.id);
+                                      return UserModel.fromJson(e.data(), e.id);
                                     }).toList();
                                     // session = _tempCountries;
                                     session.country = session.countries.first;
@@ -514,21 +510,14 @@ class _ClientListState extends State<ClientList> {
                                           ),
                                           DataColumn(
                                             label: Text(
-                                              'Country',
+                                              'Role',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
-                                              'CWR Country',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Contact Person',
+                                              'FullName',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold),
                                             ),
@@ -565,23 +554,17 @@ class _ClientListState extends State<ClientList> {
                                                     Text(e.phone!),
                                                   ),
                                                   DataCell(
-                                                    Text(e.country!),
+                                                    Text(e.role!),
                                                   ),
                                                   DataCell(
-                                                    Text(e.cwr!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.contactPerson!),
+                                                    Text(e.fullname!),
                                                   ),
                                                   DataCell(
                                                       Icon(
                                                         Icons.delete,
                                                         color: Colors.red,
                                                       ), onTap: () {
-                                                    countries
-                                                        .doc(session
-                                                            .country!.code)
-                                                        .collection('clients')
+                                                    userscollection
                                                         .doc(e.docid)
                                                         .delete();
                                                   }),
@@ -597,9 +580,8 @@ class _ClientListState extends State<ClientList> {
                                                         addressval: e.address,
                                                         emailval: e.email,
                                                         phoneval: e.phone,
-                                                        cwrval: e.cwr,
-                                                        contact:
-                                                            e.contactPerson,
+                                                        roleval: e.role,
+                                                        fullnameval: e.fullname,
                                                         doc_id: e.docid);
                                                   }),
                                                 ],
@@ -676,204 +658,3 @@ class _ClientListState extends State<ClientList> {
         ));
   }
 }
-
-// class ClientView extends StatefulWidget {
-//   ClientView({Key? key, this.client}) : super(key: key);
-
-//   final Client? client;
-
-//   @override
-//   _ClientViewState createState() => _ClientViewState();
-// }
-
-// class _ClientViewState extends State<ClientView> {
-//   @override
-//   @override
-//   void initState() {
-//     super.initState();
-//     if (widget.client != null) {
-//       name.text = widget.client!.name;
-//       address.text = widget.client!.address ?? '';
-
-//       email.text = widget.client!.email ?? '';
-//       phone.text = widget.client!.phone ?? '';
-//       countryCode = widget.client!.country!;
-//     }
-//     countryCode = session.country != null
-//         ? session.country!.code
-//         : session.countries.first.code;
-//   }
-
-//   late String countryCode;
-
-//   final name = TextEditingController();
-//   final address = TextEditingController();
-
-//   final email = TextEditingController();
-//   final phone = TextEditingController();
-
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Color(0xFFFAFAFA),
-//       body: Padding(
-//         padding: const EdgeInsets.all(12.0),
-//         child: Card(
-//           elevation: 5,
-//           color: Color(0xFFE8F3FA),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Padding(
-//                 padding: const EdgeInsets.all(8.0),
-//                 child: Table(children: [
-//                   TableRow(
-//                     children: [
-//                       Expanded(
-//                           child: Padding(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 16.0, vertical: 8.0),
-//                         child: Card(
-//                           color: Colors.white,
-//                           elevation: 5,
-//                           shadowColor: Colors.grey,
-//                           child: TextFormField(
-//                             decoration: InputDecoration(
-//                               suffixIcon: Icon(Icons.search),
-//                               hintText: 'Enter Email',
-//                               border: OutlineInputBorder(
-//                                   borderSide: BorderSide.none),
-//                             ),
-//                           ),
-//                         ),
-//                       )),
-//                       Expanded(
-//                           child: Padding(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 16.0, vertical: 8.0),
-//                         child: Card(
-//                           color: Colors.white,
-//                           elevation: 5,
-//                           shadowColor: Colors.grey,
-//                           child: TextFormField(
-//                             decoration: InputDecoration(
-//                               hintText: 'Enter Country',
-//                               suffixIcon: Icon(Icons.search),
-//                               border: OutlineInputBorder(
-//                                   borderSide: BorderSide.none),
-//                             ),
-//                           ),
-//                         ),
-//                       )),
-//                       Align(
-//                         alignment: Alignment.centerRight,
-//                         child: Padding(
-//                           padding: const EdgeInsets.symmetric(
-//                               vertical: 16, horizontal: 64),
-//                           child: SizedBox(
-//                             height: 40,
-//                             child: ElevatedButton(
-//                                 onPressed: () {
-//                                   var client = Client(
-//                                       name: name.text,
-//                                       address: address.text,
-//                                       email: email.text,
-//                                       country: countryCode,
-//                                       phone: phone.text);
-//                                   // client.add().then((value){
-//                                   showFutureDialog(
-//                                       context: context, future: client.add());
-//                                   // });
-//                                 },
-//                                 child: Text("Add Client")),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ]),
-//               ),
-
-//               // Form(
-//               //     child: Card(
-//               //   color: Color(0xFFE8F3FA),
-//               //   child: SizedBox(
-//               //     height: double.maxFinite,
-//               //     child: Column(
-//               //       crossAxisAlignment: CrossAxisAlignment.start,
-//               //       children: [
-//               //         Padding(
-//               //           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 64),
-//               //           child: Text("Add Client", style: Theme.of(context).textTheme.headline6),
-//               //         ),
-//               //         Table(
-//               //           children: [
-//               //             TableRow(children: [
-//               //               Container(),
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: DropdownButtonFormField(
-//               //                   value: countryCode,
-//               //                   items: session.countries.map((e) => DropdownMenuItem(value: e.code, child: Text(e.name))).toList(),
-//               //                   onChanged: (String? code) {
-//               //                     setState(() {
-//               //                       countryCode = code ?? countryCode;
-//               //                     });
-//               //                   },
-//               //                 ),
-//               //               )
-//               //             ]),
-//               //             TableRow(children: [
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(controller: name, labelText: "Name", suffixIcon: Icon(Icons.person)),
-//               //               ),
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(controller: email, labelText: "Email", suffixIcon: Icon(Icons.email)),
-//               //               ),
-//               //             ]),
-//               //             TableRow(children: [
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(controller: address, labelText: "Address", suffixIcon: Icon(Icons.location_on)),
-//               //               ),
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(
-//               //                   suffixIcon: Icon(Icons.phone),
-//               //                   controller: phone,
-//               //                   labelText: "Phone",
-//               //                 ),
-//               //               ),
-//               //             ]),
-//               //           ],
-//               //         ),
-//               SizedBox(
-//                 height: 20.0,
-//               ),
-//               SingleChildScrollView(
-//                 scrollDirection: Axis.horizontal,
-//                 child: DataTable(
-//                     headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
-//                     columns: [
-//                       "Client Name",
-//                       "Address",
-//                       "Email ID",
-//                       "Phone No",
-//                       "Country",
-//                       "Contact Person",
-//                       "Delete",
-//                       "Edit",
-//                     ].map((e) => DataColumn(label: Text(e))).toList(),
-//                     rows: []),
-//               ),
-//             ],
-//           ),
-//           // ),
-//           // )),
-//         ),
-//       ),
-//     );
-//   }
-// }

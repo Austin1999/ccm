@@ -25,6 +25,9 @@ class _ContractorListState extends State<ContractorList> {
 
   late Country _selectedCountry;
 
+  String searchcountry = '';
+  String searchcontractor = '';
+
   addContractor(
       {required isEdit,
       nameval,
@@ -154,6 +157,9 @@ class _ContractorListState extends State<ContractorList> {
                               ),
                             ],
                           ),
+                        ),
+                        SizedBox(
+                          height: 15.0,
                         ),
                       ],
                     ),
@@ -346,6 +352,7 @@ class _ContractorListState extends State<ContractorList> {
                                         'country': session.country!.code,
                                         'email': email.text,
                                         'phone': phone.text,
+                                        'countryName': session.country!.name
                                       },
                                     ).then((value) {
                                       name.clear();
@@ -390,263 +397,287 @@ class _ContractorListState extends State<ContractorList> {
           ),
         ),
         backgroundColor: Color(0xFFFAFAFA),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Contractor List',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Card(
-                  shadowColor: Colors.grey[600],
-                  elevation: 5,
-                  color: Colors.lightBlue[50],
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                        stream: contractors
-                            .where('country', isEqualTo: session.country!.code)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.active &&
-                              snapshot.hasData) {
-                            List<Contractor> _contractors = [];
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Contractor List',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Card(
+                    shadowColor: Colors.grey[600],
+                    elevation: 5,
+                    color: Colors.lightBlue[50],
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.30,
+                                  child: Card(
+                                      color: Colors.white,
+                                      elevation: 5,
+                                      child: TextFormField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            searchcontractor = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: 'Enter Email',
+                                            suffixIcon: Icon(Icons.search),
+                                            border: OutlineInputBorder(
+                                                borderSide: BorderSide.none)),
+                                      )),
+                                ),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.30,
+                                  child: Card(
+                                      color: Colors.white,
+                                      elevation: 5,
+                                      child: TextFormField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            searchcountry = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: 'Enter Country',
+                                            suffixIcon: Icon(Icons.search),
+                                            border: OutlineInputBorder(
+                                                borderSide: BorderSide.none)),
+                                      )),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                stream: contractors
+                                    .where('email',
+                                        isGreaterThanOrEqualTo:
+                                            searchcontractor.toLowerCase(),
+                                        isLessThan:
+                                            searchcontractor.toLowerCase() +
+                                                'z')
+                                   
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.active &&
+                                      snapshot.hasData) {
+                                    List<Contractor> _contractors = [];
 
-                            _contractors = snapshot.data!.docs.map((e) {
-                              // docid = e.id;
-                              return Contractor.fromJson(e.data(), e.id);
-                            }).toList();
-                            // session = _tempCountries;
-                            session.country = session.countries.first;
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.30,
-                                        child: Card(
-                                            color: Colors.white,
-                                            elevation: 5,
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                  hintText: 'Enter Email',
-                                                  suffixIcon:
-                                                      Icon(Icons.search),
-                                                  border: OutlineInputBorder(
-                                                      borderSide:
-                                                          BorderSide.none)),
-                                            )),
-                                      ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.30,
-                                        child: Card(
-                                            color: Colors.white,
-                                            elevation: 5,
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                  hintText: 'Enter Country',
-                                                  suffixIcon:
-                                                      Icon(Icons.search),
-                                                  border: OutlineInputBorder(
-                                                      borderSide:
-                                                          BorderSide.none)),
-                                            )),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  DataTable(
-                                    columns: [
-                                      DataColumn(
-                                        label: Text(
-                                          'Contractor Name',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Address',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Email ID',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Phone No',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Country',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'CWR Country',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Contact Person',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Delete',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      DataColumn(
-                                        label: Text(
-                                          'Edit',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                    rows: _contractors
-                                        .map<DataRow>(
-                                          (e) => DataRow(
-                                            cells: [
-                                              DataCell(
-                                                Text(e.name),
-                                              ),
-                                              DataCell(
-                                                Text(e.address!),
-                                              ),
-                                              DataCell(
-                                                Text(e.email!),
-                                              ),
-                                              DataCell(
-                                                Text(e.phone!),
-                                              ),
-                                              DataCell(
-                                                Text(e.country!),
-                                              ),
-                                              DataCell(
-                                                Text(e.cwr!),
-                                              ),
-                                              DataCell(
-                                                Text(e.contactPerson!),
-                                              ),
-                                              DataCell(
-                                                  Icon(
-                                                    Icons.delete,
-                                                    color: Colors.red,
-                                                  ), onTap: () {
-                                                contractors
-                                                    .doc(e.docid)
-                                                    .delete();
-                                              }),
-                                              DataCell(
-                                                  Icon(
-                                                    Icons.edit,
-                                                    // color: Colors.,
-                                                  ), onTap: () {
-                                                print(e.docid);
-                                                addContractor(
-                                                    isEdit: true,
-                                                    nameval: e.name,
-                                                    addressval: e.address,
-                                                    emailval: e.email,
-                                                    phoneval: e.phone,
-                                                    cwrval: e.cwr,
-                                                    contact: e.contactPerson,
-                                                    doc_id: e.docid);
-                                              }),
-                                            ],
+                                    _contractors = snapshot.data!.docs.map((e) {
+                                      // docid = e.id;
+                                      return Contractor.fromJson(
+                                          e.data(), e.id);
+                                    }).toList();
+
+                                    // session = _tempCountries;
+                                    session.country = session.countries.first;
+                                    return SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: DataTable(
+                                        columns: [
+                                          DataColumn(
+                                            label: Text(
+                                              'Contractor Name',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
-                                        )
-                                        .toList(),
-                                  ),
-                                  
-                                ],
-                              ),
-                            );
-                          } else {
-                            //   return Center(
-                            //     child: CircularProgressIndicator(),
-                            //   );
-                            // }
-                            return Shimmer.fromColors(
-                              baseColor: Colors.grey[300]!,
-                              highlightColor: Colors.grey[100]!,
-                              // enabled: _enabled,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.55,
-                                      child: Card(
-                                          color: Colors.white,
-                                          elevation: 5,
-                                          child: TextFormField(
-                                            decoration: InputDecoration(
-                                                suffixIcon: Icon(Icons.search),
-                                                border: OutlineInputBorder(
-                                                    borderSide:
-                                                        BorderSide.none)),
-                                          )),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  GridView.builder(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 5,
-                                      childAspectRatio: 4,
-                                    ),
-                                    itemCount: 35,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return CountryCard(text: "", code: "");
-                                    }, // crossAxisCount: 5,
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        }),
+                                          DataColumn(
+                                            label: Text(
+                                              'Address',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Email ID',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Phone No',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Country',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'CWR Country',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Contact Person',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Edit',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                        rows: _contractors
+                                            .map<DataRow>(
+                                              (e) => DataRow(
+                                                cells: [
+                                                  DataCell(
+                                                    Text(e.name),
+                                                  ),
+                                                  DataCell(
+                                                    Text(e.address!),
+                                                  ),
+                                                  DataCell(
+                                                    Text(e.email!),
+                                                  ),
+                                                  DataCell(
+                                                    Text(e.phone!),
+                                                  ),
+                                                  DataCell(
+                                                    Text(e.country!),
+                                                  ),
+                                                  DataCell(
+                                                    Text(e.cwr!),
+                                                  ),
+                                                  DataCell(
+                                                    Text(e.contactPerson!),
+                                                  ),
+                                                  DataCell(
+                                                      Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red,
+                                                      ), onTap: () {
+                                                    contractors
+                                                        .doc(e.docid)
+                                                        .delete();
+                                                  }),
+                                                  DataCell(
+                                                      Icon(
+                                                        Icons.edit,
+                                                        // color: Colors.,
+                                                      ), onTap: () {
+                                                    print(e.docid);
+                                                    addContractor(
+                                                        isEdit: true,
+                                                        nameval: e.name,
+                                                        addressval: e.address,
+                                                        emailval: e.email,
+                                                        phoneval: e.phone,
+                                                        cwrval: e.cwr,
+                                                        contact:
+                                                            e.contactPerson,
+                                                        doc_id: e.docid);
+                                                  }),
+                                                ],
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    );
+                                  } else {
+                                    //   return Center(
+                                    //     child: CircularProgressIndicator(),
+                                    //   );
+                                    // }
+                                    return Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      // enabled: _enabled,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.55,
+                                              child: Card(
+                                                  color: Colors.white,
+                                                  elevation: 5,
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                        suffixIcon:
+                                                            Icon(Icons.search),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                                borderSide:
+                                                                    BorderSide
+                                                                        .none)),
+                                                  )),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          GridView.builder(
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 5,
+                                              childAspectRatio: 4,
+                                            ),
+                                            itemCount: 35,
+                                            shrinkWrap: true,
+                                            itemBuilder: (context, index) {
+                                              return CountryCard(
+                                                  text: "", code: "");
+                                            }, // crossAxisCount: 5,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                }),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }

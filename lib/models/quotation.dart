@@ -10,134 +10,150 @@ String quotationToJson(Quotation data) => json.encode(data.toJson());
 
 class Quotation {
   Quotation({
-    required this.number,
-    required this.amount,
-    required this.approvalStatus,
-    required this.date,
-    required this.client,
-    required this.clientId,
-    required this.country,
-    required this.parentQuoteId,
+    required this.qnumber,
+    required this.clientname,
+    required this.qamount,
+    required this.clientApproval,
+    required this.dateIssued,
     required this.description,
+    required this.approvalStatus,
     required this.ccmTicketNumber,
-    required this.jobStatus,
-    required this.clientPurchaseOrders,
+    required this.jobcompletionDate,
+    required this.overallstatus,
+    this.parentQuoteId,
+    required this.clientInvoices,
     required this.contractorPurchaseOrders,
   });
 
-  String number;
-  double amount;
-  int approvalStatus;
-  DateTime date;
-  String client;
-  String clientId;
-  String country;
-  String parentQuoteId;
+  String qnumber;
+  String clientname;
+  double qamount;
+  String clientApproval;
+  DateTime dateIssued;
   String description;
+  String approvalStatus;
   String ccmTicketNumber;
-  int jobStatus;
-  List<ClientPurchaseOrder> clientPurchaseOrders;
+  DateTime jobcompletionDate;
+  String overallstatus;
+  String? parentQuoteId;
+  List<ClientInvoice> clientInvoices;
   List<ContractorPurchaseOrder> contractorPurchaseOrders;
 
   factory Quotation.fromJson(Map<String, dynamic> json) => Quotation(
-        number: json["number"],
-        amount: json["amount"].toDouble(),
-        approvalStatus: json["approval_status"],
-        date: DateTime.parse(json["date"].toDate()),
-        client: json["client"],
-        clientId: json["client_id"],
-        country: json["country"],
-        parentQuoteId: json["parent_quote_id"],
-        description: json["description"],
-        ccmTicketNumber: json["ccm_ticket_number"],
-        jobStatus: json["job_status"],
-        clientPurchaseOrders: json["clientPurchaseOrders"] == null
+        qnumber: json["qnumber"] ?? '',
+        clientname: json["clientname"] ?? '',
+        qamount: json["qamount"] ?? 0.00,
+        clientApproval: json["clientApproval"] ?? '',
+        dateIssued: json["dateIssued"].toDate() ?? DateTime.now(),
+        description: json["description"] ?? '',
+        approvalStatus: json["approvalStatus"] ?? '',
+        ccmTicketNumber: json["ccmTicketNumber"] ?? '',
+        jobcompletionDate: json["jobcompletionDate"].toDate() ?? DateTime.now(),
+        overallstatus: json["overallstatus"] ?? '',
+        parentQuoteId: json["parentQuoteId"] ?? '',
+        clientInvoices: json["clientInvoices"] == null
             ? []
-            : List<ClientPurchaseOrder>.from(json["clientPurchaseOrders"].map((x) => ClientPurchaseOrder.fromJson(x))),
+            : List<ClientInvoice>.from(
+                json["clientPurchaseOrders"].map(
+                  (x) => ClientInvoice.fromJson(x),
+                ),
+              ),
         contractorPurchaseOrders: json["contractorPurchaseOrders"] == null
             ? []
-            : List<ContractorPurchaseOrder>.from(json["contractorPurchaseOrders"].map((x) => ContractorPurchaseOrder.fromJson(x))),
+            : List<ContractorPurchaseOrder>.from(
+                json["contractorPurchaseOrders"].map(
+                  (x) => ContractorPurchaseOrder.fromJson(x),
+                ),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
-        "number": number,
-        "amount": amount,
-        "approval_status": approvalStatus,
-        "date": date,
-        "client": client,
-        "client_id": clientId,
-        "country": country,
-        "parent_quote_id": parentQuoteId,
+        "Qnumber": qnumber,
+        "clientname": clientname,
+        "Qamount": qamount,
+        "clientApproval": clientApproval,
+        "dateIssued": dateIssued,
         "description": description,
-        "ccm_ticket_number": ccmTicketNumber,
-        "job_status": jobStatus,
-        "clientPurchaseOrders": List<dynamic>.from(clientPurchaseOrders.map((x) => x.toJson())),
-        "contractorPurchaseOrders": List<dynamic>.from(contractorPurchaseOrders.map((x) => x.toJson())),
+        "approvalStatus": approvalStatus,
+        "ccmTicketNumber": ccmTicketNumber,
+        "jobcompletionDate": jobcompletionDate,
+        "overallstatus": overallstatus,
+        "parentQuoteId": parentQuoteId ?? '',
+        "clientPurchaseOrders":
+            List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
+        "contractorPurchaseOrders":
+            List<dynamic>.from(contractorPurchaseOrders.map((x) => x.toJson())),
       };
 }
 
-class ClientPurchaseOrder {
-  ClientPurchaseOrder({
-    required this.id,
-    required this.number,
-    required this.date,
-    required this.amount,
-    required this.clientId,
-    required this.invoices,
-  });
+// class ClientPurchaseOrder {
+//   ClientPurchaseOrder({
+//     required this.id,
+//     required this.number,
+//     required this.date,
+//     required this.amount,
+//     required this.clientId,
+//     required this.invoices,
+//   });
 
-  String id;
-  String number;
-  DateTime date;
-  double amount;
-  String clientId;
-  List<Invoice> invoices;
+//   String id;
+//   String number;
+//   DateTime date;
+//   double amount;
+//   String clientId;
+//   List<ClientInvoice> invoices;
 
-  factory ClientPurchaseOrder.fromJson(Map<String, dynamic> json) => ClientPurchaseOrder(
-        id: json["id"],
-        number: json["number"],
-        date: DateTime.parse(json["date"].toDate()),
-        amount: json["amount"].toDouble(),
-        clientId: json["client_id"],
-        invoices: List<Invoice>.from(json["invoices"].map((x) => Invoice.fromJson(x))),
-      );
+//   factory ClientPurchaseOrder.fromJson(Map<String, dynamic> json) =>
+//       ClientPurchaseOrder(
+//         id: json["id"],
+//         number: json["number"],
+//         date: DateTime.parse(json["date"].toDate()),
+//         amount: json["amount"].toDouble(),
+//         clientId: json["client_id"],
+//         invoices: List<ClientInvoice>.from(
+//             json["invoices"].map((x) => ClientInvoice.fromJson(x))),
+//       );
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "number": number,
-        "date": date,
-        "amount": amount,
-        "client_id": clientId,
-        "invoices": List<dynamic>.from(invoices.map((x) => x.toJson())),
-      };
-}
+//   Map<String, dynamic> toJson() => {
+//         "id": id,
+//         "number": number,
+//         "date": date,
+//         "amount": amount,
+//         "client_id": clientId,
+//         "invoices": List<dynamic>.from(invoices.map((x) => x.toJson())),
+//       };
+// }
 
-class Invoice {
-  Invoice({
+class ContractorInvoice {
+  ContractorInvoice({
     required this.number,
     required this.receivedDate,
     required this.amount,
-    required this.received,
-    required this.payments,
-    required this.credits,
+    required this.paidDate,
+    // required this.payments,
+    required this.paidamount,
     required this.taxNumber,
   });
 
   String number;
   DateTime receivedDate;
   double amount;
-  double received;
-  List<Payment> payments;
-  List<Credit> credits;
+  DateTime paidDate;
+  // List<Payment> payments;
+  double paidamount;
   String? taxNumber;
 
-  factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
+  factory ContractorInvoice.fromJson(Map<String, dynamic> json) =>
+      ContractorInvoice(
         number: json["number"],
         receivedDate: json["received_date"].toDate(),
         amount: json["amount"].toDouble(),
-        received: json["received"].toDouble(),
-        payments: List<Payment>.from(json["payments"].map((x) => Payment.fromJson(x))),
-        credits: List<Credit>.from(json["credits"].map((x) => Credit.fromJson(x))),
+        paidamount: json["paidamount"].toDouble(),
+        paidDate: json["paidDate"].toDate(),
+        // payments: List<Payment>.from(
+        //     json["payments"].map((x) => Payment.fromJson(x))),
+        // credits:
+        //     List<Credit>.from(json["credits"].map((x) => Credit.fromJson(x))),
         taxNumber: json["tax_number"] == null ? null : json["tax_number"],
       );
 
@@ -145,105 +161,136 @@ class Invoice {
         "number": number,
         "received_date": receivedDate,
         "amount": amount,
-        "received": received,
-        "payments": List<dynamic>.from(payments.map((x) => x.toJson())),
-        "credits": List<dynamic>.from(credits.map((x) => x.toJson())),
+        "paidDate": paidDate,
+        "paidamount": paidamount,
+        // "payments": List<dynamic>.from(payments.map((x) => x.toJson())),
+        // "credits": List<dynamic>.from(credits.map((x) => x.toJson())),
         "tax_number": taxNumber,
       };
 }
 
-class Credit {
-  Credit({
-    required this.note,
+class ClientInvoice {
+  ClientInvoice({
+    required this.number,
+    required this.receivedDate,
     required this.amount,
-    required this.date,
+    required this.recievedamount,
+    required this.issueDate,
   });
 
-  String note;
+  String number;
+  DateTime receivedDate;
   double amount;
-  DateTime date;
+  double recievedamount;
+  DateTime issueDate;
 
-  factory Credit.fromJson(Map<String, dynamic> json) => Credit(
-        note: json["note"],
+  factory ClientInvoice.fromJson(Map<String, dynamic> json) => ClientInvoice(
+        number: json["number"],
+        receivedDate: json["received_date"].toDate(),
+        recievedamount: json["recieved_amount"],
         amount: json["amount"].toDouble(),
-        date: DateTime.parse(json["date"]),
+        issueDate: json["received_date"].toDate(),
       );
 
   Map<String, dynamic> toJson() => {
-        "note": note,
+        "number": number,
+        "received_date": receivedDate,
         "amount": amount,
-        "date": date,
+        "issueDate": issueDate,
+        "recieved_amount": recievedamount
       };
 }
 
-class Payment {
-  Payment({
-    required this.amount,
-    required this.date,
-  });
+// class Credit {
+//   Credit({
+//     required this.note,
+//     required this.amount,
+//     required this.date,
+//   });
 
-  double amount;
-  DateTime date;
+//   String note;
+//   double amount;
+//   DateTime date;
 
-  factory Payment.fromJson(Map<String, dynamic> json) => Payment(
-        amount: json["amount"].toDouble(),
-        date: json["date"].toDate(),
-      );
+//   factory Credit.fromJson(Map<String, dynamic> json) => Credit(
+//         note: json["note"],
+//         amount: json["amount"].toDouble(),
+//         date: DateTime.parse(json["date"]),
+//       );
 
-  Map<String, dynamic> toJson() => {
-        "amount": amount,
-        "date": date,
-      };
-}
+//   Map<String, dynamic> toJson() => {
+//         "note": note,
+//         "amount": amount,
+//         "date": date,
+//       };
+// }
+
+// class Payment {
+//   Payment({
+//     required this.amount,
+//     required this.date,
+//   });
+
+//   double amount;
+//   DateTime date;
+
+//   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
+//         amount: json["amount"].toDouble(),
+//         date: json["date"].toDate(),
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//         "amount": amount,
+//         "date": date,
+//       };
+// }
 
 class ContractorPurchaseOrder {
   ContractorPurchaseOrder({
-    required this.id,
-    required this.number,
-    required this.date,
-    this.quotationAmount,
-    this.quotationNumber,
-    required this.amount,
-    required this.clientId,
+    required this.poNumber,
+    required this.name,
+    required this.poAmount,
+    required this.issueDate,
+    required this.quotationAmount,
+    required this.quotationNumber,
     required this.workCommenceDate,
     required this.workCompleteDate,
     required this.invoices,
   });
-
-  String id;
-  String number;
+  String poNumber;
+  String name;
+  double poAmount;
+  DateTime issueDate;
   String? quotationNumber;
   double? quotationAmount;
-  DateTime date;
-  double amount;
-  String clientId;
+
   DateTime workCommenceDate;
   DateTime workCompleteDate;
-  List<Invoice> invoices;
+  List<ContractorInvoice> invoices;
 
-  factory ContractorPurchaseOrder.fromJson(Map<String, dynamic> json) => ContractorPurchaseOrder(
-        id: json["id"],
-        number: json["number"],
-        date: json["date"].toDate(),
-        amount: json["amount"].toDouble(),
+  factory ContractorPurchaseOrder.fromJson(Map<String, dynamic> json) =>
+      ContractorPurchaseOrder(
+        name: json["name"],
+        poNumber: json["poNumber"],
+        issueDate: json["issueDate"].toDate(),
+        poAmount: json["poAmount"].toDouble(),
         quotationNumber: json["quotationNumber"],
         quotationAmount: json["quotationAmount"].toDouble(),
-        clientId: json["client_id"],
-        workCommenceDate: DateTime.parse(json["work_commence_date"]),
-        workCompleteDate: DateTime.parse(json["work_complete_date"]),
-        invoices: List<Invoice>.from(json["invoices"].map((x) => Invoice.fromJson(x))),
+        workCommenceDate: json["workCommenceDate"].toDate(),
+        workCompleteDate: json["workCompleteDate"].toDate(),
+        invoices: List<ContractorInvoice>.from(
+            json["invoices"].map((x) => ContractorInvoice.fromJson(x),),),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "number": number,
-        "date": date,
-        "amount": amount,
+        "name": name,
+        "poNumber": poNumber,
+        "issueDate": issueDate,
+        "poAmount": poAmount,
         "quotationNumber": quotationNumber,
         "quotationAmount": quotationAmount,
-        "client_id": clientId,
-        "work_commence_date": workCommenceDate,
-        "work_complete_date": workCompleteDate,
+        "workCommenceDate": workCommenceDate,
+        "workCompleteDate": workCompleteDate,
         "invoices": List<dynamic>.from(invoices.map((x) => x.toJson())),
       };
 }
