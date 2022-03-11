@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/services/firebase.dart';
 
-Contractor clientFromJson(String str) => Contractor.fromJson(json.decode(str),'');
+Contractor clientFromJson(String str) =>
+    Contractor.fromJson(json.decode(str), '');
 
 String clientToJson(Contractor data) => json.encode(data.toJson());
 

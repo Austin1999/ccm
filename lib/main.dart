@@ -1,5 +1,6 @@
 import 'package:ccm/auth/auth_route.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/getControllers.dart';
+import 'package:ccm/controllers/getx_controllers.dart' as getxcon;
 import 'package:ccm/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,9 +14,12 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  Get.put(CountryController());
+  
+  Get.put(getxcon.AuthController());
+  Get.put(getxcon.SessionController());
   runApp(MyApp());
-  Get.put(AuthController());
-  Get.put(SessionController());
 }
 
 class MyApp extends StatelessWidget {

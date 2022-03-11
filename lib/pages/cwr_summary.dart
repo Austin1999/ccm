@@ -1,3 +1,4 @@
+import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quotation.dart';
 import 'package:ccm/pages/quotation_view.dart';
@@ -18,6 +19,13 @@ class CwrSummary extends StatefulWidget {
 
 class _CwrSummaryState extends State<CwrSummary> {
   String? _value;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Get.put(ClientController());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

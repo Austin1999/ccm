@@ -1,3 +1,4 @@
+import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/models/countries.dart';
 
 import 'package:ccm/services/auth.dart';
@@ -28,3 +29,5 @@ class SessionController extends GetxController {
 }
 
 SessionController session = SessionController.instance;
+ClientController clientController = ClientController.instance;
+CountryController countryController = CountryController.instance;

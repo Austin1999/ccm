@@ -17,6 +17,13 @@ class CountriesList extends StatefulWidget {
 class _CountriesListState extends State<CountriesList> {
   TextEditingController searchcon = TextEditingController();
   String search = '';
+  late String _selectedCountry;
+  @override
+  void initState() {
+    super.initState();
+    _selectedCountry = Country.countries.first.code;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,11 +32,46 @@ class _CountriesListState extends State<CountriesList> {
             showDialog(
                 context: context,
                 builder: (context) {
-                  return AlertDialog(
-                      title: SizedBox(
-                          height: MediaQuery.of(context).size.height / 4,
-                          width: MediaQuery.of(context).size.width / 4,
-                          child: AddCountry()));
+                  return StatefulBuilder(builder: (context, setState) {
+                    return AlertDialog(
+                      title: Text('Select Country'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DropdownButton<String>(
+                            items: Country.countries
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    child: Text(e.name),
+                                    value: e.code,
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (code) {
+                              setState(() {
+                                _selectedCountry = code ?? _selectedCountry;
+                              });
+                            },
+                            value: _selectedCountry,
+                          ),
+                          Positioned(
+                            child: ElevatedButton(
+                              child: Text(
+                                'Add Country',
+                              ),
+                              onPressed: () {
+                                Country.countries
+                                    .firstWhere((element) =>
+                                        element.code == _selectedCountry)
+                                    .add();
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  });
                 });
           },
           child: Text("Add Country"),
@@ -101,6 +143,7 @@ class _CountriesListState extends State<CountriesList> {
                                         .toList();
                                     session.countries = _tempCountries;
                                     session.country = session.countries.first;
+                                    print(session.country);
                                     return GridView.count(
                                       shrinkWrap: true,
                                       crossAxisCount: 5,
@@ -235,76 +278,78 @@ class CountryCard extends StatelessWidget {
   }
 }
 
-class AddCountry extends StatefulWidget {
-  AddCountry({Key? key}) : super(key: key);
+// class AddCountry extends StatefulWidget {
+//   AddCountry({Key? key}) : super(key: key);
 
-  @override
-  _AddCountryState createState() => _AddCountryState();
-}
+//   @override
+//   _AddCountryState createState() => _AddCountryState();
+// }
 
-class _AddCountryState extends State<AddCountry> {
-  late String _selectedCountry;
-  @override
-  void initState() {
-    super.initState();
-    _selectedCountry = Country.countries.first.code;
-  }
+// class _AddCountryState extends State<AddCountry> {
+//   late String _selectedCountry;
+//   @override
+//   void initState() {
+//     super.initState();
+//     _selectedCountry = Country.countries.first.code;
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        DropdownButtonFormField<String>(
-          onChanged: (code) {
-            _selectedCountry = code ?? _selectedCountry;
-          },
-          value: _selectedCountry,
-          items: Country.countries
-              .map((e) => DropdownMenuItem(
-                  child: SizedBox(
-                      // height: 100,
-                      // width: 250,
-                      child: Column(
-                    children: [
-                      ListTile(
-                        leading: Image.asset(
-                          'icons/flags/png/${e.code}.png',
-                          width: 50,
-                          fit: BoxFit.contain,
-                          package: 'country_icons',
-                        ),
-                        title: Text(
-                          e.name.toLowerCase(),
-                        ),
-                      ),
-                      Divider()
-                    ],
-                  )
-                      // CountryCard(
-                      //     text: e.name.toUpperCase(),
-                      //     code: e.code.toLowerCase()
-                      //     )
-                      ),
-                  value: e.code))
-              .toList(),
-        ),
-        Expanded(
-          child: Center(
-            child: ElevatedButton(
-                onPressed: () {
-                  Country.countries
-                      .firstWhere((element) => element.code == _selectedCountry)
-                      .add();
-                  Navigator.of(context).pop();
-                },
-                child: Text("Add County")),
-          ),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         DropdownButtonFormField<String>(
+//           onChanged: (code) {
+//             _selectedCountry = code ?? _selectedCountry;
+//           },
+//           value: _selectedCountry,
+//           items: Country.countries
+//               .map((e) => DropdownMenuItem(
+//                   // child: SizedBox(
+//                   //     // height: 100,
+//                   //     // width: 250,
+//                   //     child: Column(
+//                   //   children: [
+//                   //     ListTile(
+//                   //       // leading: Image.asset(
+//                   //       //   'icons/flags/png/${e.code}.png',
+//                   //       //   width: 50,
+//                   //       //   height: 50,
+//                   //       //   fit: BoxFit.contain,
+//                   //       //   package: 'country_icons',
+//                   //       // ),
+//                   // title:
+//                   child: Text(
+//                     e.name.toLowerCase(),
+//                     //     ),
+//                     //   ),
+//                     //   Divider()
+//                     // ],
+//                     // )
+//                     // CountryCard(
+//                     //     text: e.name.toUpperCase(),
+//                     //     code: e.code.toLowerCase()
+//                     //     )
+//                   ),
+//                   value: e.code))
+//               .toList(),
+//         ),
+//         Expanded(
+//           child: Center(
+//             child: ElevatedButton(
+//                 onPressed: () {
+//                   Country.countries
+//                       .firstWhere((element) => element.code == _selectedCountry)
+//                       .add();
+//                   Navigator.of(context).pop();
+//                 },
+//                 child: Text("Add County")),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 extension StringCasingExtension on String {
   String toCapitalized() =>

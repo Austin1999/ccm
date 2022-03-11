@@ -142,7 +142,7 @@ class _SignInState extends State<SignIn> {
                           onPressed: () {
                             authController.auth
                                 .signInWithEmailAndPassword(
-                                    username.text + '@ccm.com', password.text)
+                                    username.text, password.text)
                                 .then((value) {}, onError: (e) {
                               return showDialog(
                                   context: context,

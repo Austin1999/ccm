@@ -1,6 +1,10 @@
+import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quotation.dart';
 import 'package:ccm/services/firebase.dart';
+import 'package:cool_alert/cool_alert.dart';
+import 'package:country_picker/country_picker.dart';
+import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -13,9 +17,11 @@ class QuotationView extends StatefulWidget {
 }
 
 class _QuotationViewState extends State<QuotationView> {
-  // String? category;
+  String? category;
+  TextEditingController currency = TextEditingController();
   TextEditingController clientQuotequotationNumber = TextEditingController();
-  TextEditingController clientQuoteclientName = TextEditingController();
+  TextEditingController clientQuoteclientName =
+      TextEditingController(text: clientController.clientlist.value.first.name);
   TextEditingController clientQuoteAmount = TextEditingController();
   TextEditingController clientQuoteclientApproval = TextEditingController();
   TextEditingController clientQuotedateIssued = TextEditingController();
@@ -60,11 +66,25 @@ class _QuotationViewState extends State<QuotationView> {
     return picked!;
   }
 
+  List<String> categorylist = [
+    "FM Contract",
+    "Interior and General",
+    "Electrical",
+    "HVAC System",
+    "Plumping and Pest",
+    "Fire Protection",
+    "AV System",
+    "IT and Security",
+    "Carpentry Works",
+    "Furniture and Rugs",
+    "Additional Works"
+  ];
   List<ClientInvoice> clientinvoices = [];
   List<ContractorInvoice> contractorInvoice = [];
   List<ContractorPurchaseOrder> contractorPO = [];
   @override
   Widget build(BuildContext context) {
+    print(clientController.clientlist);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -102,7 +122,19 @@ class _QuotationViewState extends State<QuotationView> {
                       elevation: 5,
                       shadowColor: Colors.grey,
                       child: TextFormField(
-                        // controller: quotationno,
+                        controller: currency,
+                        readOnly: true,
+                        onTap: () {
+                          showCurrencyPicker(
+                            context: context,
+                            showFlag: true,
+                            showCurrencyName: true,
+                            showCurrencyCode: true,
+                            onSelect: (Currency cur) {
+                              currency.text = cur.code;
+                            },
+                          );
+                        },
                         decoration: InputDecoration(
                           hintText: 'INR',
                           border:
@@ -131,12 +163,23 @@ class _QuotationViewState extends State<QuotationView> {
                       color: Colors.white,
                       elevation: 5,
                       shadowColor: Colors.grey,
-                      child: TextFormField(
-                        // controller: quotationno,
-                        decoration: InputDecoration(
-                          hintText: 'Category',
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none),
+                      child: DropdownButtonHideUnderline(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: DropdownButton(
+                              value: category,
+                              items: categorylist
+                                  .map((e) => DropdownMenuItem(
+                                        child: Text(e),
+                                        value: e,
+                                      ))
+                                  .toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  category = value!;
+                                });
+                              },
+                              hint: Text("Select item")),
                         ),
                       ),
                     ),
@@ -173,12 +216,59 @@ class _QuotationViewState extends State<QuotationView> {
                               hinttext: 'Quotation No',
                               controller: clientQuotequotationNumber,
                             ),
-                            CardInputField(
-                              readonly: false,
-                              text: 'Client Name',
-                              hinttext: 'Client Name',
-                              controller: clientQuoteclientName,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Client Name",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Card(
+                                      color: Colors.white,
+                                      elevation: 5,
+                                      shadowColor: Colors.grey,
+                                      child: DropdownButtonHideUnderline(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: DropdownButton(
+                                              value: clientQuoteclientName.text,
+                                              items: clientController
+                                                  .clientlist.value
+                                                  .map((e) => DropdownMenuItem(
+                                                        child: Text(e.name),
+                                                        value: e.name,
+                                                      ))
+                                                  .toList(),
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  clientQuoteclientName.text =
+                                                      value!;
+                                                });
+                                              },
+                                              hint: Text("Client Name")),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                            // CardInputField(
+                            //   readonly: false,
+                            //   text: 'Client Name',
+                            //   hinttext: 'Client Name',
+                            //   controller: clientQuoteclientName,
+                            // ),
                             CardInputField(
                               readonly: false,
                               text: 'Quote Amount',
@@ -497,12 +587,103 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              CardInputField(
-                                readonly: false,
-                                text: 'Client Invoice No',
-                                hinttext: 'Invoice No',
-                                controller: clientInvoiceNo,
-                              ),
+                              clientinvoices.isEmpty
+                                  ? CardInputField(
+                                      readonly: false,
+                                      text: 'Client Invoice No',
+                                      hinttext: 'Invoice No',
+                                      controller: clientInvoiceNo,
+                                    )
+                                  : Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Client Invoice No',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 17,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              child: Card(
+                                                  color: Colors.white,
+                                                  elevation: 5,
+                                                  shadowColor: Colors.grey,
+                                                  child:
+                                                      DropdownButtonFormField(
+                                                    items: clientinvoices
+                                                        .map(
+                                                          (e) =>
+                                                              DropdownMenuItem(
+                                                            child:
+                                                                Text(e.number),
+                                                            value: e.number,
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                                    onChanged: (String? value) {
+                                                      setState(() {
+                                                        clientInvoiceNo.text =
+                                                            value!;
+                                                      });
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      hintText:
+                                                          "Client Invoice No",
+                                                      border:
+                                                          OutlineInputBorder(
+                                                              borderSide:
+                                                                  BorderSide
+                                                                      .none),
+                                                    ),
+                                                    value: clientInvoiceNo.text,
+                                                    hint: Text(
+                                                        "Client Invoice No"),
+                                                  )
+                                                  //     DropdownButtonHideUnderline(
+                                                  //   child: Padding(
+                                                  //     padding: const EdgeInsets
+                                                  //             .symmetric(
+                                                  //         horizontal: 8.0),
+                                                  //     child: DropdownButton(
+                                                  // value: clientInvoiceNo
+                                                  //     .text,
+                                                  // items: clientinvoices
+                                                  //     .map(
+                                                  //       (e) =>
+                                                  //           DropdownMenuItem(
+                                                  //         child: Text(
+                                                  //             e.number),
+                                                  //         value: e.number,
+                                                  //       ),
+                                                  //     )
+                                                  //     .toList(),
+                                                  //         onChanged:
+                                                  //             (String? value) {
+                                                  //           setState(() {
+                                                  //             clientInvoiceNo
+                                                  //                 .text = value!;
+                                                  //           });
+                                                  //         },
+                                                  // hint: Text(
+                                                  //     "Client Invoice No")),
+                                                  //   ),
+                                                  // ),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                               CardInputField(
                                 readonly: false,
                                 text: 'Client Invoice Amount',
@@ -593,22 +774,38 @@ class _QuotationViewState extends State<QuotationView> {
                                       height: 45.0,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          clientinvoices.add(
-                                            ClientInvoice(
-                                              number: clientInvoiceNo.text,
-                                              receivedDate: DateTime.parse(
-                                                  clientInvoiceLastRecieveDate
-                                                      .text),
-                                              recievedamount: 0.00,
-                                              amount: double.parse(
-                                                  clientInvoiceAmount.text),
-                                              issueDate: DateTime.parse(
-                                                  clientInvoiceIssueDate.text),
-                                            ),
-                                          );
-                                          Get.rawSnackbar(
-                                              message: 'Quotation Added',
-                                              snackPosition: SnackPosition.TOP);
+                                          setState(() {
+                                            clientinvoices.add(
+                                              ClientInvoice(
+                                                number: clientInvoiceNo.text,
+                                                receivedDate: DateTime.parse(
+                                                    clientInvoiceLastRecieveDate
+                                                        .text),
+                                                recievedamount: 0.00,
+                                                amount: double.parse(
+                                                    clientInvoiceAmount.text),
+                                                issueDate: DateTime.parse(
+                                                    clientInvoiceIssueDate
+                                                        .text),
+                                              ),
+                                            );
+                                          });
+                                          // clientInvoiceNo.clear();
+                                          clientInvoiceLastRecieveDate.clear();
+                                          clientInvoiceAmount.clear();
+                                          clientInvoiceIssueDate.clear();
+                                          CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.success,
+                                              text: 'Quotation Added');
+                                          // showDialog(
+                                          //     context: context,
+                                          //     builder: (context) {
+                                          //       return AlertDialog(
+                                          //         title:
+                                          //             Text('Quotation Added'),
+                                          //       );
+                                          //     });
                                         },
                                         child: Text('Add'),
                                       ),
