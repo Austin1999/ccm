@@ -1,6 +1,7 @@
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -140,10 +141,15 @@ class _SignInState extends State<SignIn> {
                           onPressed: () {}, child: Text("Forgot password")),
                       ElevatedButton(
                           onPressed: () {
+                            CoolAlert.show(
+                                context: context, type: CoolAlertType.loading);
                             authController.auth
                                 .signInWithEmailAndPassword(
                                     username.text, password.text)
-                                .then((value) {}, onError: (e) {
+                                .then((value) {
+                                  
+                                }, onError: (e) {
+                              Navigator.pop(context);
                               return showDialog(
                                   context: context,
                                   builder: (context) {

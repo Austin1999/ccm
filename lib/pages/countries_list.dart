@@ -3,6 +3,7 @@ import 'package:ccm/models/countries.dart';
 import 'package:ccm/pages/cwr_summary.dart';
 import 'package:ccm/pages/splashscreen.dart';
 import 'package:ccm/services/firebase.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -151,24 +152,24 @@ class _CountriesListState extends State<CountriesList> {
                                       children: _tempCountries
                                           .map((e) => InkWell(
                                               onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return AlertDialog(
-                                                        content: Row(
-                                                          children: [
-                                                            CircularProgressIndicator(),
-                                                            SizedBox(
-                                                              width: 10,
-                                                            ),
-                                                            Text(
-                                                                'Please Wait, Loading...')
-                                                          ],
-                                                        ),
-                                                      );
-                                                    });
+                                                // showDialog(
+                                                //     context: context,
+                                                //     builder: (context) {
+                                                //       return AlertDialog(
+                                                //         content: Row(
+                                                //           children: [
+                                                //             CircularProgressIndicator(),
+                                                //             SizedBox(
+                                                //               width: 10,
+                                                //             ),
+                                                //             Text(
+                                                //                 'Please Wait, Loading...')
+                                                //           ],
+                                                //         ),
+                                                //       );
+                                                //     });
                                                 session.country = e;
-                                                Navigator.pop(context);
+                                                // Navigator.pop(context);
                                                 Get.to(() => CwrSummary());
                                               },
                                               child: CountryCard(

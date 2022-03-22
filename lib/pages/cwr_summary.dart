@@ -4,6 +4,7 @@ import 'package:ccm/models/quotation.dart';
 import 'package:ccm/pages/quotation_view.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -17,13 +18,16 @@ class CwrSummary extends StatefulWidget {
   _CwrSummaryState createState() => _CwrSummaryState();
 }
 
-class _CwrSummaryState extends State<CwrSummary> {
+class _CwrSummaryState extends State<CwrSummary>
+    with SingleTickerProviderStateMixin {
   String? _value;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     Get.put(ClientController());
+    Get.put(QuotationController());
+    Get.put(ContractorController());
   }
 
   @override
@@ -58,7 +62,24 @@ class _CwrSummaryState extends State<CwrSummary> {
                           child: ElevatedButton(
                             // style: ButtonStyle(shape: BoxShape.rectangle),
                             onPressed: () {
-                              Get.to(() => QuotationView());
+                              Get.to(
+                                () => QuotationView(
+                                  // data: Quotation(
+                                  //     qnumber: '',
+                                  //     clientname: '',
+                                  //     qamount: 0.00,
+                                  //     clientApproval: '',
+                                  //     dateIssued: DateTime.now(),
+                                  //     description: '',
+                                  //     approvalStatus: '',
+                                  //     ccmTicketNumber: '',
+                                  //     jobcompletionDate: DateTime.now(),
+                                  //     overallstatus: '',
+                                  //     clientInvoices: [],
+                                  //     isTrash: false),
+                                  isEdit: false,
+                                ),
+                              );
                             },
                             child: AspectRatio(
                                 aspectRatio: 1,
@@ -89,7 +110,435 @@ class _CwrSummaryState extends State<CwrSummary> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Dialog(
+                                      child: StreamBuilder<
+                                              QuerySnapshot<
+                                                  Map<String, dynamic>>>(
+                                          stream: countries
+                                              .doc(session.country!.code)
+                                              .collection('quotations')
+                                              .where('isTrash', isEqualTo: true)
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                    ConnectionState.active &&
+                                                snapshot.hasData) {
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                      height: 50,
+                                                      width: double.infinity,
+                                                      color: Colors.blue,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          'Recycle Bin',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.w800,
+                                                            fontSize: 25,
+                                                          ),
+                                                        ),
+                                                      )),
+                                                  SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: DataTable(
+                                                      headingTextStyle:
+                                                          TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                      columns: [
+                                                        "INVOICE",
+                                                        "QUOTE NO",
+                                                        "DATE ISSUED",
+                                                        "CLIENT",
+                                                        "DESCRIPTION",
+                                                        "QUOTE AMT",
+                                                        "STATUS",
+                                                        "CLIENT PO",
+                                                        // "MARGIN %",
+                                                        "MARGIN AMT",
+                                                        "CCM TKT NO",
+                                                        "COMPLETION DATE",
+                                                        "RESTORE",
+                                                        "DELETE"
+                                                      ]
+                                                          .map((e) =>
+                                                              DataColumn(
+                                                                  label:
+                                                                      Text(e)))
+                                                          .toList(),
+                                                      rows: snapshot.data!.docs
+                                                          .map<DataRow>(
+                                                        (e) {
+                                                          print(e.data());
+                                                          Quotation data =
+                                                              Quotation
+                                                                  .fromJson(
+                                                                      e.data());
+                                                          return DataRow(
+                                                            cells: [
+                                                              DataCell(
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {},
+                                                                  icon: Icon(Icons
+                                                                      .notes_rounded),
+                                                                ),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .qnumber),
+                                                              ),
+                                                              DataCell(
+                                                                Text(
+                                                                  data.dateIssued
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10),
+                                                                ),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .clientname),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .description),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .qamount
+                                                                    .toString()),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .approvalStatus),
+                                                              ),
+                                                              DataCell(
+                                                                Text(''),
+                                                              ),
+                                                              DataCell(
+                                                                Text(''),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .ccmTicketNumber),
+                                                              ),
+                                                              DataCell(
+                                                                Text(data
+                                                                    .jobcompletionDate
+                                                                    .toString()
+                                                                    .substring(
+                                                                        0, 10)),
+                                                              ),
+                                                              DataCell(
+                                                                IconButton(
+                                                                  icon: Icon(Icons
+                                                                      .restore),
+                                                                  onPressed:
+                                                                      () {
+                                                                    countries
+                                                                        .doc(session
+                                                                            .country!
+                                                                            .code)
+                                                                        .collection(
+                                                                            'quotations')
+                                                                        .doc(e
+                                                                            .id)
+                                                                        .update(
+                                                                      {
+                                                                        "isTrash":
+                                                                            false
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ),
+                                                              DataCell(
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    CoolAlert
+                                                                        .show(
+                                                                      width: MediaQuery.of(context).size.width >
+                                                                              500
+                                                                          ? MediaQuery.of(context).size.width /
+                                                                              2
+                                                                          : MediaQuery.of(context).size.width *
+                                                                              0.85,
+                                                                      showCancelBtn:
+                                                                          true,
+                                                                      onCancelBtnTap:
+                                                                          () =>
+                                                                              Navigator.pop(context),
+                                                                      onConfirmBtnTap:
+                                                                          () {
+                                                                        // setState(() {
+                                                                        countries
+                                                                            .doc(session.country!.code)
+                                                                            .collection('quotations')
+                                                                            .doc(e.id)
+                                                                            .delete();
+                                                                        // });
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                      },
+                                                                      context:
+                                                                          context,
+                                                                      type: CoolAlertType
+                                                                          .confirm,
+                                                                    );
+                                                                  },
+                                                                  icon: Icon(Icons
+                                                                      .delete),
+                                                                  color: Colors
+                                                                      .red,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      ).toList(),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 20.0,
+                                                  ),
+                                                  Center(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(16.0),
+                                                          child: Text('Cancel'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            } else {
+                                              return Shimmer.fromColors(
+                                                baseColor: Colors.grey[300]!,
+                                                highlightColor:
+                                                    Colors.grey[100]!,
+                                                // enabled: _enabled,
+                                                child: SingleChildScrollView(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  child: DataTable(
+                                                    headingTextStyle: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    columns: [
+                                                      "EDIT",
+                                                      "INVOICE",
+                                                      "QUOTE NO",
+                                                      "DATE ISSUED",
+                                                      "CLIENT",
+                                                      "DESCRIPTION",
+                                                      "QUOTE AMT",
+                                                      "STATUS",
+                                                      "CLIENT PO",
+                                                      // "MARGIN %",
+                                                      "MARGIN AMT",
+                                                      "CCM TKT NO",
+                                                      "COMPLETION DATE",
+                                                      "DELETE"
+                                                    ]
+                                                        .map((e) => DataColumn(
+                                                                label: Text(
+                                                              e,
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            )))
+                                                        .toList(),
+                                                    rows: List.generate(
+                                                      20,
+                                                      (index) => DataRow(
+                                                        cells: [
+                                                          DataCell(
+                                                            Icon(
+                                                              Icons.edit,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Icon(
+                                                              Icons
+                                                                  .notes_rounded,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          DataCell(
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4.0),
+                                                              child: Container(
+                                                                width: 100,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }),
+                                    );
+                                  });
+                            },
                             child: AspectRatio(
                                 aspectRatio: 1,
                                 child: Icon(
@@ -99,21 +548,21 @@ class _CwrSummaryState extends State<CwrSummary> {
                           ),
                         ),
                       ),
-                      Tooltip(
-                        message: "Refresh",
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: AspectRatio(
-                                aspectRatio: 1,
-                                child: Icon(
-                                  Icons.refresh,
-                                  size: 20,
-                                )),
-                          ),
-                        ),
-                      ),
+                      // Tooltip(
+                      //   message: "Refresh",
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(16.0),
+                      //     child: ElevatedButton(
+                      //       onPressed: () {},
+                      //       child: AspectRatio(
+                      //           aspectRatio: 1,
+                      //           child: Icon(
+                      //             Icons.refresh,
+                      //             size: 20,
+                      //           )),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
@@ -426,6 +875,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                 stream: countries
                     .doc(session.country!.code)
                     .collection('quotations')
+                    .where('isTrash', isEqualTo: false)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.active &&
@@ -457,10 +907,27 @@ class _CwrSummaryState extends State<CwrSummary> {
                               return DataRow(
                                 cells: [
                                   DataCell(
-                                    Icon(Icons.edit),
+                                    IconButton(
+                                        onPressed: () {
+                                          Get.to(
+                                            () => QuotationView(
+                                              isEdit: true,
+                                              data: data,
+                                              id: e.id,
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Icons.edit)),
                                   ),
                                   DataCell(
-                                    Icon(Icons.notes_rounded),
+                                    IconButton(
+                                      onPressed: () {
+                                        listInvoice(data);
+                                      },
+                                      icon: Icon(
+                                        Icons.notes_rounded,
+                                      ),
+                                    ),
                                   ),
                                   DataCell(
                                     Text(data.qnumber),
@@ -499,8 +966,41 @@ class _CwrSummaryState extends State<CwrSummary> {
                                         .substring(0, 10)),
                                   ),
                                   DataCell(
-                                    Icon(
-                                      Icons.delete,
+                                    IconButton(
+                                      onPressed: () {
+                                        CoolAlert.show(
+                                          width: MediaQuery.of(context)
+                                                      .size
+                                                      .width >
+                                                  500
+                                              ? MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2
+                                              : MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.85,
+                                          showCancelBtn: true,
+                                          onCancelBtnTap: () =>
+                                              Navigator.pop(context),
+                                          onConfirmBtnTap: () {
+                                            // setState(() {
+                                            countries
+                                                .doc(session.country!.code)
+                                                .collection('quotations')
+                                                .doc(e.id)
+                                                .update(
+                                              {"isTrash": true},
+                                            );
+                                            // });
+                                            Navigator.pop(context);
+                                          },
+                                          context: context,
+                                          type: CoolAlertType.confirm,
+                                        );
+                                      },
+                                      icon: Icon(Icons.delete),
                                       color: Colors.red,
                                     ),
                                   ),
@@ -668,5 +1168,196 @@ class _CwrSummaryState extends State<CwrSummary> {
         ),
       ),
     );
+  }
+
+  listInvoice(Quotation quotation) {
+    TabController controller = TabController(length: 2, vsync: this);
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+              child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.85,
+            height: MediaQuery.of(context).size.width * 0.85,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 70,
+                  color: Colors.blue,
+                  child: TabBar(
+                    controller: controller,
+                    tabs: [
+                      Tab(text: "Client Invoice"),
+                      Tab(text: "Contrator Invoice")
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: TabBarView(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          elevation: 5.0,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              headingTextStyle:
+                                  TextStyle(fontWeight: FontWeight.bold),
+                              columns: [
+                                "INVOICE NO",
+                                "INVOICE AMOUNT",
+                                "ISSUED DATE",
+                                "RECIEVED DATE",
+                                "RECIEVED AMOUNT",
+                                "CREDIT NOTE AMOUNT",
+                                "CREDIT NOTE NO",
+                                "CREDIT RECIEVED DATE",
+                              ]
+                                  .map((e) => DataColumn(
+                                          label: Text(
+                                        e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      )))
+                                  .toList(),
+                              rows: quotation.clientInvoices
+                                  .map((e) => DataRow(cells: [
+                                        DataCell(
+                                          Text(e.number),
+                                        ),
+                                        DataCell(
+                                          Text(e.amount.toString()),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            e.issueDate.toString().substring(
+                                                  0,
+                                                  10,
+                                                ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            e.receivedDate.toString().substring(
+                                                  0,
+                                                  10,
+                                                ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            e.recievedamount.toString(),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(''),
+                                        ),
+                                        DataCell(
+                                          Text(''),
+                                        ),
+                                        DataCell(
+                                          Text(''),
+                                        ),
+                                      ]))
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          elevation: 5.0,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              headingTextStyle:
+                                  TextStyle(fontWeight: FontWeight.bold),
+                              columns: [
+                                "INVOICE NO",
+                                "INVOICE AMOUNT",
+                                "INVOICE RECIEVED DATE",
+                                "TAX NO",
+                                "PAID DATE",
+                                "PAID AMOUNT",
+                                "CREDIT NOTE AMOUNT",
+                                "CREDIT NOTE NO",
+                                "CREDIT RECIEVED DATE",
+                              ]
+                                  .map((e) => DataColumn(
+                                          label: Text(
+                                        e,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      )))
+                                  .toList(),
+                              rows: quotation
+                                  .contractorPurchaseOrders.first.invoices
+                                  .map((e) => DataRow(cells: [
+                                        DataCell(
+                                          Text(e.number),
+                                        ),
+                                        DataCell(
+                                          Text(e.amount.toString()),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            e.receivedDate.toString().substring(
+                                                  0,
+                                                  10,
+                                                ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(e.taxNumber!),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            e.paidDate.toString().substring(
+                                                  0,
+                                                  10,
+                                                ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            e.paidamount.toString(),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(''),
+                                        ),
+                                        DataCell(
+                                          Text(''),
+                                        ),
+                                        DataCell(
+                                          Text(''),
+                                        ),
+                                      ]))
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    controller: controller,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                ),
+              ],
+            ),
+          ));
+        });
   }
 }

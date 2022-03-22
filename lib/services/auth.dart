@@ -23,7 +23,8 @@ class Auth {
 
   @override
   @override
-  Future<User?> signInWithEmailAndPassword(String email, String password) async {
+  Future<User?> signInWithEmailAndPassword(
+      String email, String password) async {
     final userCredential = await _firebaseAuth.signInWithCredential(
       EmailAuthProvider.credential(email: email, password: password),
     );
@@ -31,7 +32,8 @@ class Auth {
   }
 
   @override
-  Future<User?> createUserWithEmailAndPassword(String email, String password) async {
+  Future<User?> createUserWithEmailAndPassword(
+      String email, String password) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -40,7 +42,10 @@ class Auth {
   }
 
   Future<String> resetPassword({required String email}) async {
-    return _firebaseAuth.sendPasswordResetEmail(email: email).then((value) => "Success").catchError((error) {
+    return _firebaseAuth
+        .sendPasswordResetEmail(email: email)
+        .then((value) => "Success")
+        .catchError((error) {
       return error.code.toString();
     });
   }

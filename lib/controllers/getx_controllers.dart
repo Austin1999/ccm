@@ -31,3 +31,5 @@ class SessionController extends GetxController {
 SessionController session = SessionController.instance;
 ClientController clientController = ClientController.instance;
 CountryController countryController = CountryController.instance;
+QuotationController quotationController = QuotationController.instance;
+ContractorController contractorController = ContractorController.instance;

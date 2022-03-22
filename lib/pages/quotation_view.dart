@@ -1,3 +1,4 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quotation.dart';
@@ -6,23 +7,31 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class QuotationView extends StatefulWidget {
-  const QuotationView({Key? key}) : super(key: key);
+  QuotationView({Key? key, this.data, required this.isEdit, this.id})
+      : super(key: key);
+  Quotation? data;
+  var id;
+  bool isEdit;
 
   @override
   _QuotationViewState createState() => _QuotationViewState();
 }
 
 class _QuotationViewState extends State<QuotationView> {
-  String? category;
   TextEditingController currency = TextEditingController();
   TextEditingController clientQuotequotationNumber = TextEditingController();
   TextEditingController clientQuoteclientName =
-      TextEditingController(text: clientController.clientlist.value.first.name);
+      TextEditingController(text: clientController.clientlist.first.name);
   TextEditingController clientQuoteAmount = TextEditingController();
+  GlobalKey<AutoCompleteTextFieldState<String>> clientkey = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<String>> contractorkey = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<String>> contractinvoiceorkey =
+      new GlobalKey();
   TextEditingController clientQuoteclientApproval = TextEditingController();
   TextEditingController clientQuotedateIssued = TextEditingController();
   TextEditingController clientQuoteDesciption = TextEditingController();
@@ -37,7 +46,8 @@ class _QuotationViewState extends State<QuotationView> {
   TextEditingController clientInvoiceIssueDate = TextEditingController();
   TextEditingController contractorQuotationPONumber = TextEditingController();
   TextEditingController contractorQuotationContractorName =
-      TextEditingController();
+      TextEditingController(
+          text: contractorController.contractorlist.first.name);
   TextEditingController contractorQuotationPOAmount = TextEditingController();
   TextEditingController contractorQuotationPOIssueDate =
       TextEditingController();
@@ -82,6 +92,93 @@ class _QuotationViewState extends State<QuotationView> {
   List<ClientInvoice> clientinvoices = [];
   List<ContractorInvoice> contractorInvoice = [];
   List<ContractorPurchaseOrder> contractorPO = [];
+  List<String> comments = [];
+  String? category = "FM Contract";
+  String parentQuote = quotationController.quotionlist.first.qnumber;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.isEdit ? getData() : null;
+  }
+
+  getData() {
+    ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
+    ContractorInvoice contractorInvoiceinit =
+        widget.data!.contractorPurchaseOrders.first.invoices.first;
+    ContractorPurchaseOrder contractorpo =
+        widget.data!.contractorPurchaseOrders.first;
+    contractorQuotationContractorName =
+        TextEditingController(text: contractorpo.name);
+    clientQuotequotationNumber =
+        TextEditingController(text: widget.data!.qnumber);
+    clientQuoteclientName =
+        TextEditingController(text: widget.data!.clientname);
+    clientQuoteAmount =
+        TextEditingController(text: widget.data!.qamount.toString());
+    clientQuoteclientApproval =
+        TextEditingController(text: widget.data!.clientApproval);
+    clientQuotedateIssued = TextEditingController(
+        text: widget.data!.dateIssued.toString().substring(0, 10));
+    clientQuoteDesciption =
+        TextEditingController(text: widget.data!.description);
+    clientQuoteApprovalStatus =
+        TextEditingController(text: widget.data!.approvalStatus);
+    clientQuoteCCMTicketNumber =
+        TextEditingController(text: widget.data!.ccmTicketNumber);
+    clientQuoteJobCompletionDate = TextEditingController(
+      text: widget.data!.jobcompletionDate.toString().substring(0, 10),
+    );
+    clientQuoteOverallStatus =
+        TextEditingController(text: widget.data!.overallstatus);
+    clientInvoiceNo = TextEditingController(text: clientInvoiceinit.number);
+    clientInvoiceAmount =
+        TextEditingController(text: clientInvoiceinit.amount.toString());
+    clientInvoiceIssueDate = TextEditingController(
+      text: clientInvoiceinit.issueDate.toString().substring(0, 10),
+    );
+    contractorQuotationPONumber =
+        TextEditingController(text: contractorpo.poNumber);
+    contractorQuotationPOAmount =
+        TextEditingController(text: contractorpo.poAmount.toString());
+    contractorQuotationPOIssueDate = TextEditingController(
+      text: contractorpo.issueDate.toString().substring(0, 10),
+    );
+    contractorQuotationNo =
+        TextEditingController(text: contractorpo.quotationNumber);
+    contractorQuotationAmount =
+        TextEditingController(text: contractorpo.quotationAmount.toString());
+    contractorQuotationWorkCommence = TextEditingController(
+      text: contractorpo.workCommenceDate.toString().substring(0, 10),
+    );
+    contractorQuotationWorkComplete = TextEditingController(
+      text: contractorpo.workCompleteDate.toString().substring(0, 10),
+    );
+    contractorInvoiceNo =
+        TextEditingController(text: contractorInvoiceinit.number);
+    contractorInvoiceAmount =
+        TextEditingController(text: contractorInvoiceinit.amount.toString());
+    contractorInvoiceRecievedDate = TextEditingController(
+      text: contractorInvoiceinit.receivedDate.toString().substring(0, 10),
+    );
+    contractorInvoiceTaxInvoiceNo =
+        TextEditingController(text: contractorInvoiceinit.taxNumber);
+    contractorInvoicePaidAmount = TextEditingController(
+        text: contractorInvoiceinit.paidamount.toString());
+    contractorInvoiceLastPaidDate = TextEditingController(
+      text: contractorInvoiceinit.paidDate.toString().substring(0, 10),
+    );
+    clientInvoiceLastRecieveDate = TextEditingController(
+      text: clientInvoiceinit.receivedDate.toString().substring(0, 10),
+    );
+    clientinvoices = widget.data!.clientInvoices;
+    contractorInvoice =
+        widget.data!.contractorPurchaseOrders.first.invoices;
+    contractorPO = widget.data!.contractorPurchaseOrders;
+    comments = widget.data!.comment!;
+  }
+
   @override
   Widget build(BuildContext context) {
     print(clientController.clientlist);
@@ -148,42 +245,76 @@ class _QuotationViewState extends State<QuotationView> {
                       color: Colors.white,
                       elevation: 5,
                       shadowColor: Colors.grey,
-                      child: TextFormField(
-                        // controller: quotationno,
-                        decoration: InputDecoration(
-                          hintText: 'Parent Quote',
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Card(
-                      color: Colors.white,
-                      elevation: 5,
-                      shadowColor: Colors.grey,
                       child: DropdownButtonHideUnderline(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: DropdownButton(
-                              value: category,
-                              items: categorylist
-                                  .map((e) => DropdownMenuItem(
-                                        child: Text(e),
-                                        value: e,
-                                      ))
-                                  .toList(),
+                          child: DropdownButton<String>(
+                              value: quotationController.quotionlist.isEmpty
+                                  ? "N/A"
+                                  : parentQuote,
+                              items: quotationController.quotionlist.isEmpty
+                                  ? [
+                                      DropdownMenuItem(
+                                        child: Text(
+                                          "N/A",
+                                        ),
+                                      )
+                                    ]
+                                  : quotationController.quotionlist
+                                      .where((Quotation val) =>
+                                          val.isTrash == false)
+                                      .toSet()
+                                      .map((e) => DropdownMenuItem(
+                                            child: Text(e.qnumber),
+                                            value: e.qnumber,
+                                          ))
+                                      .toList(),
                               onChanged: (String? value) {
                                 setState(() {
-                                  category = value!;
+                                  parentQuote = value!;
                                 });
                               },
-                              hint: Text("Select item")),
+                              hint: Text("Parent Quote")),
                         ),
                       ),
+
+                      //  TextFormField(
+                      //   // controller: quotationno,
+                      //   decoration: InputDecoration(
+                      //     hintText: 'Parent Quote',
+                      //     border:
+                      //         OutlineInputBorder(borderSide: BorderSide.none),
+                      //   ),
+                      // ),
                     ),
                   ),
+                  // Expanded(
+                  //   child: Card(
+                  //     color: Colors.white,
+                  //     elevation: 5,
+                  //     shadowColor: Colors.grey,
+                  //     child: DropdownButtonHideUnderline(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  //         child: DropdownButton(
+                  //             value: category,
+                  //             items: categorylist
+                  //                 .toSet()
+                  //                 .map((e) => DropdownMenuItem(
+                  //                       child: Text(e),
+                  //                       value: e,
+                  //                     ))
+                  //                 .toList(),
+                  //             onChanged: (String? value) {
+                  //               setState(() {
+                  //                 category = value!;
+                  //               });
+                  //             },
+                  //             hint: Text("Select item")),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               Padding(
@@ -240,15 +371,28 @@ class _QuotationViewState extends State<QuotationView> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
-                                          child: DropdownButton(
-                                              value: clientQuoteclientName.text,
+                                          child: DropdownButton<String>(
+                                              value: clientController
+                                                      .clientlist.isEmpty
+                                                  ? "N/A"
+                                                  : clientQuoteclientName.text,
                                               items: clientController
-                                                  .clientlist.value
-                                                  .map((e) => DropdownMenuItem(
-                                                        child: Text(e.name),
-                                                        value: e.name,
-                                                      ))
-                                                  .toList(),
+                                                      .clientlist.isEmpty
+                                                  ? [
+                                                      DropdownMenuItem(
+                                                        child: Text(
+                                                          "N/A",
+                                                        ),
+                                                      )
+                                                    ]
+                                                  : clientController.clientlist
+                                                      .toSet()
+                                                      .map((e) =>
+                                                          DropdownMenuItem(
+                                                            child: Text(e.name),
+                                                            value: e.name,
+                                                          ))
+                                                      .toList(),
                                               onChanged: (String? value) {
                                                 setState(() {
                                                   clientQuoteclientName.text =
@@ -619,36 +763,80 @@ class _QuotationViewState extends State<QuotationView> {
                                                   elevation: 5,
                                                   shadowColor: Colors.grey,
                                                   child:
-                                                      DropdownButtonFormField(
-                                                    items: clientinvoices
-                                                        .map(
-                                                          (e) =>
-                                                              DropdownMenuItem(
-                                                            child:
-                                                                Text(e.number),
-                                                            value: e.number,
-                                                          ),
-                                                        )
-                                                        .toList(),
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        clientInvoiceNo.text =
-                                                            value!;
-                                                      });
+                                                      SimpleAutoCompleteTextField(
+                                                    clearOnSubmit: false,
+                                                    textSubmitted: (data) {
+                                                      clientinvoices.isNotEmpty
+                                                          ? clientinvoices
+                                                              .forEach((v) {
+                                                              if (v.number ==
+                                                                  data) {
+                                                                setState(() {
+                                                                  clientInvoiceNo
+                                                                          .text =
+                                                                      v.number;
+                                                                  clientInvoiceAmount
+                                                                          .text =
+                                                                      v.amount
+                                                                          .toString();
+                                                                  clientInvoiceIssueDate.text = v
+                                                                      .issueDate
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10);
+                                                                  clientInvoiceLastRecieveDate.text = v
+                                                                      .receivedDate
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10);
+                                                                });
+                                                              }
+                                                            })
+                                                          : print('Null Value');
                                                     },
                                                     decoration: InputDecoration(
-                                                      hintText:
-                                                          "Client Invoice No",
-                                                      border:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide
-                                                                      .none),
-                                                    ),
-                                                    value: clientInvoiceNo.text,
-                                                    hint: Text(
-                                                        "Client Invoice No"),
+                                                        hintText: 'Invoice No'),
+                                                    controller: clientInvoiceNo,
+                                                    suggestions:
+                                                        clientinvoices.map((e) {
+                                                      print(clientinvoices);
+                                                      print(e.number);
+                                                      return e.number;
+                                                    }).toList(),
+                                                    key: clientkey,
                                                   )
+                                                  //     DropdownButtonFormField(
+                                                  //   items: clientinvoices
+                                                  //       .map(
+                                                  //         (e) =>
+                                                  //             DropdownMenuItem(
+                                                  //           child:
+                                                  //               Text(e.number),
+                                                  //           value: e.number,
+                                                  //         ),
+                                                  //       )
+                                                  //       .toList(),
+                                                  //   onChanged: (String? value) {
+                                                  //     setState(() {
+                                                  //       clientInvoiceNo.text =
+                                                  //           value!;
+                                                  //     });
+                                                  //   },
+                                                  //   decoration: InputDecoration(
+                                                  //     hintText:
+                                                  //         "Client Invoice No",
+                                                  //     border:
+                                                  //         OutlineInputBorder(
+                                                  //             borderSide:
+                                                  //                 BorderSide
+                                                  //                     .none),
+                                                  //   ),
+                                                  //   value: clientInvoiceNo.text,
+                                                  //   hint: Text(
+                                                  //       "Client Invoice No"),
+                                                  // )
                                                   //     DropdownButtonHideUnderline(
                                                   //   child: Padding(
                                                   //     padding: const EdgeInsets
@@ -790,7 +978,8 @@ class _QuotationViewState extends State<QuotationView> {
                                               ),
                                             );
                                           });
-                                          // clientInvoiceNo.clear();
+
+                                          clientInvoiceNo.clear();
                                           clientInvoiceLastRecieveDate.clear();
                                           clientInvoiceAmount.clear();
                                           clientInvoiceIssueDate.clear();
@@ -798,6 +987,14 @@ class _QuotationViewState extends State<QuotationView> {
                                               context: context,
                                               type: CoolAlertType.success,
                                               text: 'Quotation Added');
+                                          clientinvoices.isNotEmpty
+                                              ? clientkey.currentState!
+                                                  .updateSuggestions(
+                                                  clientinvoices
+                                                      .map((e) => e.number)
+                                                      .toList(),
+                                                )
+                                              : null;
                                           // showDialog(
                                           //     context: context,
                                           //     builder: (context) {
@@ -818,7 +1015,23 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                       
+                                            
+                                          var invoice = ClientInvoice(
+                                                number: clientInvoiceNo.text,
+                                                receivedDate: DateTime.parse(
+                                                    clientInvoiceLastRecieveDate
+                                                        .text),
+                                                recievedamount: 0.00,
+                                                amount: double.parse(
+                                                    clientInvoiceAmount.text),
+                                                issueDate: DateTime.parse(
+                                                    clientInvoiceIssueDate
+                                                        .text),
+                                              );
+                                          // clientinvoices.remove(value)
+                                        },
                                         child: Text('Edit'),
                                       ),
                                     )),
@@ -963,8 +1176,34 @@ class _QuotationViewState extends State<QuotationView> {
                                                                             .red,
                                                                       ),
                                                                       onTap: () =>
+                                                                          CoolAlert
+                                                                              .show(
+                                                                        width: MediaQuery.of(context).size.width > 500
+                                                                            ? MediaQuery.of(context).size.width /
+                                                                                2
+                                                                            : MediaQuery.of(context).size.width *
+                                                                                0.85,
+                                                                        showCancelBtn:
+                                                                            true,
+                                                                        onCancelBtnTap:
+                                                                            () =>
+                                                                                Navigator.pop(context),
+                                                                        onConfirmBtnTap:
+                                                                            () {
                                                                           clientinvoices
-                                                                              .remove(e),
+                                                                              .remove(e);
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                          setState(
+                                                                              () {});
+                                                                        },
+                                                                        context:
+                                                                            context,
+                                                                        type: CoolAlertType
+                                                                            .confirm,
+                                                                      ),
                                                                     ),
                                                                   ],
                                                                 ),
@@ -1021,18 +1260,182 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              CardInputField(
-                                readonly: false,
-                                text: 'PO Number',
-                                hinttext: 'PO Number',
-                                controller: contractorQuotationPONumber,
+                              contractorPO.isEmpty
+                                  ? CardInputField(
+                                      readonly: false,
+                                      text: 'PO Number',
+                                      hinttext: 'PO Number',
+                                      controller: contractorQuotationPONumber,
+                                    )
+                                  : Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'PO Number',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 17,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              child: Card(
+                                                color: Colors.white,
+                                                elevation: 5,
+                                                shadowColor: Colors.grey,
+                                                child:
+                                                    SimpleAutoCompleteTextField(
+                                                  clearOnSubmit: false,
+                                                  textSubmitted: (data) {
+                                                    contractorPO.isNotEmpty
+                                                        ? contractorPO
+                                                            .forEach((v) {
+                                                            if (v.poNumber ==
+                                                                data) {
+                                                              setState(() {
+                                                                contractorQuotationPONumber
+                                                                        .text =
+                                                                    v.poNumber;
+
+                                                                contractorQuotationPOAmount
+                                                                        .text =
+                                                                    v.poAmount
+                                                                        .toString();
+
+                                                                contractorQuotationContractorName
+                                                                        .text =
+                                                                    v.name;
+
+                                                                contractorQuotationPOIssueDate
+                                                                        .text =
+                                                                    v.issueDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+
+                                                                contractorQuotationNo
+                                                                        .text =
+                                                                    v.quotationNumber!;
+
+                                                                contractorQuotationAmount
+                                                                        .text =
+                                                                    v.quotationAmount
+                                                                        .toString();
+
+                                                                contractorQuotationWorkCommence
+                                                                        .text =
+                                                                    v.workCommenceDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+                                                                contractorQuotationWorkComplete
+                                                                        .text =
+                                                                    v.workCompleteDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+                                                              });
+                                                            }
+                                                          })
+                                                        : print('Null Value');
+                                                  },
+                                                  decoration: InputDecoration(
+                                                      hintText: 'PO No'),
+                                                  controller:
+                                                      contractorQuotationPONumber,
+                                                  suggestions:
+                                                      contractorPO.map((e) {
+                                                    return e.poNumber;
+                                                  }).toList(),
+                                                  key: contractorkey,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Contractor Name",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Card(
+                                        color: Colors.white,
+                                        elevation: 5,
+                                        shadowColor: Colors.grey,
+                                        child: DropdownButtonHideUnderline(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: DropdownButton<String>(
+                                                value: contractorController
+                                                        .contractorlist.isEmpty
+                                                    ? "N/A"
+                                                    : contractorQuotationContractorName
+                                                        .text,
+                                                items: contractorController
+                                                        .contractorlist.isEmpty
+                                                    ? [
+                                                        DropdownMenuItem(
+                                                          child: Text(
+                                                            "N/A",
+                                                          ),
+                                                        )
+                                                      ]
+                                                    : contractorController
+                                                        .contractorlist
+                                                        .toSet()
+                                                        .map((e) =>
+                                                            DropdownMenuItem(
+                                                              child:
+                                                                  Text(e.name),
+                                                              value: e.name,
+                                                            ))
+                                                        .toList(),
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    contractorQuotationContractorName
+                                                        .text = value!;
+                                                  });
+                                                },
+                                                hint: Text("Contractor Name")),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Contractor Name',
-                                hinttext: 'Contractor Name',
-                                controller: contractorQuotationContractorName,
-                              ),
+                              // CardInputField(
+                              //   readonly: false,
+                              //   text: 'Contractor Name',
+                              //   hinttext: 'Contractor Name',
+                              //   controller: contractorQuotationContractorName,
+                              // ),
                               CardInputField(
                                 readonly: false,
                                 text: 'PO Amount',
@@ -1124,29 +1527,74 @@ class _QuotationViewState extends State<QuotationView> {
                                       height: 45.0,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          contractorPO.add(ContractorPurchaseOrder(
-                                              name: contractorQuotationContractorName
-                                                  .text,
-                                              poNumber: contractorQuotationPONumber
-                                                  .text,
-                                              quotationAmount: double.parse(
-                                                  contractorQuotationAmount
-                                                      .text),
-                                              quotationNumber:
-                                                  contractorQuotationNo.text,
-                                              issueDate: DateTime.parse(
-                                                  contractorQuotationPOIssueDate
-                                                      .text),
-                                              poAmount: double.parse(
-                                                  contractorQuotationPOAmount
-                                                      .text),
-                                              workCommenceDate: DateTime.parse(
-                                                  contractorQuotationWorkCommence.text),
-                                              workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
-                                              invoices: contractorInvoice));
-                                          Get.rawSnackbar(
-                                              message: 'Quotation Added',
-                                              snackPosition: SnackPosition.TOP);
+                                          setState(() {
+                                            contractorPO.add(ContractorPurchaseOrder(
+                                                name: contractorQuotationContractorName
+                                                    .text,
+                                                poNumber: contractorQuotationPONumber
+                                                    .text,
+                                                quotationAmount: double.parse(
+                                                    contractorQuotationAmount
+                                                        .text),
+                                                quotationNumber:
+                                                    contractorQuotationNo.text,
+                                                issueDate: DateTime.parse(
+                                                    contractorQuotationPOIssueDate
+                                                        .text),
+                                                poAmount: double.parse(
+                                                    contractorQuotationPOAmount
+                                                        .text),
+                                                workCommenceDate: DateTime.parse(
+                                                    contractorQuotationWorkCommence.text),
+                                                workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
+                                                invoices: contractorInvoice));
+                                            // clientinvoices.forEach((element) {
+                                            //   if (element.number ==
+                                            //       clientInvoiceNo.text) {
+                                            //     element.contractorpo =
+                                            //         contractorPO;
+                                            //   }
+                                            // });
+
+                                            // contractorQuotationContractorName
+                                            //     .clear();
+                                            contractorQuotationPONumber.clear();
+                                            contractorQuotationAmount.clear();
+                                            contractorQuotationNo.clear();
+                                            contractorQuotationPOIssueDate
+                                                .clear();
+                                            contractorQuotationPOAmount.clear();
+                                            contractorQuotationWorkCommence
+                                                .clear();
+                                            contractorQuotationWorkComplete
+                                                .clear();
+                                                contractorPO.isNotEmpty
+                                              ? contractorkey.currentState!
+                                                  .updateSuggestions(
+                                                  contractorPO
+                                                      .map((e) => e.poNumber)
+                                                      .toList(),
+                                                )
+                                              : null;
+                                          });
+
+                                          CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.success,
+                                              text:
+                                                  'Contractor Quotation Added');
+                                                  
+                                          
+                                          // print(
+                                          //   clientinvoices.map(
+                                          //     (e) => e.contractorpo!
+                                          //         .map((e) => e.name),
+                                          //   ),
+                                          // );
+                                          // Get.rawSnackbar(
+                                          //     message:
+                                          //         'Contractor Quotation Added',
+                                          //     snackPosition: SnackPosition.TOP);
                                         },
                                         child: Text('Add'),
                                       ),
@@ -1345,7 +1793,26 @@ class _QuotationViewState extends State<QuotationView> {
                                                                                 Colors.red,
                                                                           ),
                                                                           onTap: () =>
-                                                                              contractorPO.remove(e),
+                                                                              CoolAlert.show(
+                                                                            width: MediaQuery.of(context).size.width > 500
+                                                                                ? MediaQuery.of(context).size.width / 2
+                                                                                : MediaQuery.of(context).size.width * 0.85,
+                                                                            showCancelBtn:
+                                                                                true,
+                                                                            onCancelBtnTap: () =>
+                                                                                Navigator.pop(context),
+                                                                            onConfirmBtnTap:
+                                                                                () {
+                                                                              contractorPO.remove(e);
+                                                                              Navigator.pop(context);
+                                                                              Navigator.pop(context);
+                                                                              setState(() {});
+                                                                            },
+                                                                            context:
+                                                                                context,
+                                                                            type:
+                                                                                CoolAlertType.confirm,
+                                                                          ),
                                                                         ),
                                                                       ],
                                                                     ),
@@ -1392,12 +1859,104 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              CardInputField(
-                                readonly: false,
-                                text: 'Contractor Invoice No',
-                                hinttext: 'Contractor Invoice No',
-                                controller: contractorInvoiceNo,
-                              ),
+                              contractorInvoice.isEmpty
+                                  ? CardInputField(
+                                      readonly: false,
+                                      text: 'Contractor Invoice No',
+                                      hinttext: 'Contractor Invoice No',
+                                      controller: contractorInvoiceNo,
+                                    )
+                                  : Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Contractor Invoice No',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 17,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            SizedBox(
+                                              width: double.infinity,
+                                              child: Card(
+                                                color: Colors.white,
+                                                elevation: 5,
+                                                shadowColor: Colors.grey,
+                                                child:
+                                                    SimpleAutoCompleteTextField(
+                                                  clearOnSubmit: false,
+                                                  textSubmitted: (data) {
+                                                    contractorInvoice.isNotEmpty
+                                                        ? contractorInvoice
+                                                            .forEach((v) {
+                                                            if (v.number ==
+                                                                data) {
+                                                              setState(() {
+                                                                contractorInvoiceNo
+                                                                        .text =
+                                                                    v.number;
+
+                                                                contractorInvoiceAmount
+                                                                        .text =
+                                                                    v.amount
+                                                                        .toString();
+
+                                                                contractorInvoiceRecievedDate
+                                                                        .text =
+                                                                    v.receivedDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+
+                                                                contractorInvoiceTaxInvoiceNo
+                                                                        .text =
+                                                                    v.taxNumber
+                                                                        .toString();
+
+                                                                contractorInvoicePaidAmount
+                                                                        .text =
+                                                                    v.paidamount
+                                                                        .toString()
+                                                                        .toString();
+
+                                                                contractorInvoiceLastPaidDate
+                                                                        .text =
+                                                                    v.paidDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+                                                              });
+                                                            }
+                                                          })
+                                                        : print('Null Value');
+                                                  },
+                                                  decoration: InputDecoration(
+                                                      hintText:
+                                                          'Contractor Invoice Number'),
+                                                  controller:
+                                                      contractorQuotationPONumber,
+                                                  suggestions: contractorInvoice
+                                                      .map((e) {
+                                                    return e.number;
+                                                  }).toList(),
+                                                  key: contractinvoiceorkey,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                               CardInputField(
                                 readonly: false,
                                 text: 'Contractor Invoice Amount',
@@ -1467,26 +2026,67 @@ class _QuotationViewState extends State<QuotationView> {
                                       height: 45.0,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          contractorInvoice.add(
-                                            ContractorInvoice(
-                                              // payments: [],
-                                              number: contractorInvoiceNo.text,
-                                              receivedDate: DateTime.parse(
-                                                  contractorInvoiceRecievedDate
-                                                      .text),
-                                              amount: double.parse(
-                                                  contractorInvoiceAmount.text),
-                                              paidDate: DateTime.parse(
-                                                  contractorInvoiceLastPaidDate
-                                                      .text),
-                                              taxNumber:
-                                                  contractorInvoiceTaxInvoiceNo
-                                                      .text,
-                                              paidamount: double.parse(
-                                                  contractorInvoicePaidAmount
-                                                      .text),
-                                            ),
-                                          );
+                                          setState(() {
+                                            contractorInvoice.add(
+                                              ContractorInvoice(
+                                                // payments: [],
+                                                number:
+                                                    contractorInvoiceNo.text,
+                                                receivedDate: DateTime.parse(
+                                                    contractorInvoiceRecievedDate
+                                                        .text),
+                                                amount: double.parse(
+                                                    contractorInvoiceAmount
+                                                        .text),
+                                                paidDate: DateTime.parse(
+                                                    contractorInvoiceLastPaidDate
+                                                        .text),
+                                                taxNumber:
+                                                    contractorInvoiceTaxInvoiceNo
+                                                        .text,
+                                                paidamount: double.parse(
+                                                    contractorInvoicePaidAmount
+                                                        .text),
+                                              ),
+                                            );
+                                            contractorPO.forEach((cpo) {
+                                              if (cpo.poNumber ==
+                                                  contractorQuotationPONumber
+                                                      .text) {
+                                                cpo.invoices =
+                                                    contractorInvoice;
+                                              }
+                                              contractorInvoice.isNotEmpty
+                                              ? contractinvoiceorkey
+                                                  .currentState!
+                                                  .updateSuggestions(
+                                                  contractorInvoice
+                                                      .map((e) => e.number)
+                                                      .toList(),
+                                                )
+                                              : null;
+                                            });
+                                            // clientinvoices.forEach((ci) {
+                                            //   if (ci.number ==
+                                            //       clientInvoiceNo.text) {
+                                            //     ci.contractorpo = contractorPO;
+                                            //   }
+                                            // });
+                                            contractorInvoiceNo.clear();
+                                            contractorInvoiceAmount.clear();
+                                            contractorInvoiceLastPaidDate
+                                                .clear();
+                                            contractorInvoiceTaxInvoiceNo
+                                                .clear();
+                                            contractorInvoicePaidAmount.clear();
+                                          });
+
+                                          CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.success,
+                                              text:
+                                                  'Contractor Quotation Added');
+                                          
                                           Get.rawSnackbar(
                                               message: 'Invoice Added',
                                               snackPosition: SnackPosition.TOP);
@@ -1649,7 +2249,26 @@ class _QuotationViewState extends State<QuotationView> {
                                                                                 Colors.red,
                                                                           ),
                                                                           onTap: () =>
-                                                                              contractorInvoice.remove(e),
+                                                                              CoolAlert.show(
+                                                                            width: MediaQuery.of(context).size.width > 500
+                                                                                ? MediaQuery.of(context).size.width / 2
+                                                                                : MediaQuery.of(context).size.width * 0.85,
+                                                                            showCancelBtn:
+                                                                                true,
+                                                                            onCancelBtnTap: () =>
+                                                                                Navigator.pop(context),
+                                                                            onConfirmBtnTap:
+                                                                                () {
+                                                                              contractorInvoice.remove(e);
+                                                                              Navigator.pop(context);
+                                                                              Navigator.pop(context);
+                                                                              setState(() {});
+                                                                            },
+                                                                            context:
+                                                                                context,
+                                                                            type:
+                                                                                CoolAlertType.confirm,
+                                                                          ),
                                                                         ),
                                                                       ],
                                                                     ),
@@ -1714,20 +2333,36 @@ class _QuotationViewState extends State<QuotationView> {
                                       SizedBox(
                                         height: 10,
                                       ),
-                                      Card(
-                                        color: Colors.grey[200],
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          maxLines: 10,
-                                          // controller: quotationno,
-                                          decoration: InputDecoration(
-                                            // hintText: 'Contractor Invoice No',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                          ),
-                                        ),
+                                      SizedBox(
+                                        height: 250,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.60,
+                                        child: Card(
+                                            color: Colors.grey[200],
+                                            elevation: 5,
+                                            shadowColor: Colors.grey,
+                                            child: SingleChildScrollView(
+                                              child: Column(
+                                                children: comments
+                                                    .map(
+                                                      (e) => ListTile(
+                                                        leading: Text(
+                                                          '->',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 22,
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                        title: Text(e),
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ),
+                                            )),
                                       ),
                                     ],
                                   ),
@@ -1756,7 +2391,7 @@ class _QuotationViewState extends State<QuotationView> {
                                         elevation: 5,
                                         shadowColor: Colors.grey,
                                         child: TextFormField(
-                                          // controller: clientname,
+                                          controller: comment,
                                           decoration: InputDecoration(
                                             hintText: 'Comment Something ....',
                                             border: OutlineInputBorder(
@@ -1764,21 +2399,27 @@ class _QuotationViewState extends State<QuotationView> {
                                           ),
                                         ),
                                       ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16.0, vertical: 8.0),
+                                          child: SizedBox(
+                                            height: 45.0,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  comments.add(comment.text);
+                                                });
+                                                comment.clear();
+                                              },
+                                              child: Text('Add'),
+                                            ),
+                                          )),
                                     ],
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Text('Send'),
-                                      ),
-                                    )),
                               ),
                             ],
                           ),
@@ -1793,28 +2434,65 @@ class _QuotationViewState extends State<QuotationView> {
                     height: 35,
                     child: ElevatedButton(
                       onPressed: () async {
+                        CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.loading,
+                            text: 'Loading');
                         Quotation quotationval = Quotation(
-                            qnumber: clientQuotequotationNumber.text,
-                            clientname: clientQuoteclientName.text,
-                            qamount: double.parse(clientQuoteAmount.text),
-                            clientApproval: clientQuoteclientApproval.text,
-                            dateIssued:
-                                DateTime.parse(clientQuotedateIssued.text),
-                            description: clientQuoteDesciption.text,
-                            approvalStatus: clientQuoteApprovalStatus.text,
-                            ccmTicketNumber: clientQuoteCCMTicketNumber.text,
-                            jobcompletionDate: DateTime.parse(
-                                clientQuoteJobCompletionDate.text),
-                            overallstatus: clientQuoteOverallStatus.text,
-                            clientInvoices: clientinvoices,
-                            contractorPurchaseOrders: contractorPO);
+                          isTrash: false,
+                          qnumber: clientQuotequotationNumber.text,
+                          clientname: clientQuoteclientName.text,
+                          qamount: double.parse(clientQuoteAmount.text),
+                          clientApproval: clientQuoteclientApproval.text,
+                          dateIssued:
+                              DateTime.parse(clientQuotedateIssued.text),
+                          description: clientQuoteDesciption.text,
+                          approvalStatus: clientQuoteApprovalStatus.text,
+                          ccmTicketNumber: clientQuoteCCMTicketNumber.text,
+                          jobcompletionDate:
+                              DateTime.parse(clientQuoteJobCompletionDate.text),
+                          overallstatus: clientQuoteOverallStatus.text,
+                          clientInvoices: clientinvoices,
+                          contractorPurchaseOrders: contractorPO
+                        );
                         print(quotationval.toJson());
-                        await countries
-                            .doc(session.country!.code)
-                            .collection('quotations')
-                            .add(
-                              quotationval.toJson(),
-                            );
+                        widget.isEdit
+                            ? await countries
+                                .doc(session.country!.code)
+                                .collection('quotations')
+                                .doc(widget.id)
+                                .update(
+                                  quotationval.toJson(),
+                                )
+                                .whenComplete(() {
+                                CoolAlert.show(
+                                    onConfirmBtnTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                    context: context,
+                                    type: CoolAlertType.success,
+                                    text: 'Quotation Updated');
+                                Navigator.pop(context);
+                              })
+                            : await countries
+                                .doc(session.country!.code)
+                                .collection('quotations')
+                                .add(
+                                  quotationval.toJson(),
+                                )
+                                .whenComplete(() {
+                                CoolAlert.show(
+                                    onConfirmBtnTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                    context: context,
+                                    type: CoolAlertType.success,
+                                    text: 'Quotation Added!');
+                              });
                       },
                       child: Text('Submit'),
                     ),
