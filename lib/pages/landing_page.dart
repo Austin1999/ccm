@@ -1,5 +1,6 @@
 import 'package:ccm/pages/contractor_list.dart';
 import 'package:ccm/pages/countries_list.dart';
+import 'package:ccm/pages/dashboard.dart';
 import 'package:ccm/pages/userList.dart';
 import 'package:flutter/material.dart';
 
@@ -116,7 +117,7 @@ class _LandingPageState extends State<LandingPage> {
                 controller: pageController,
                 children: [
                   CountriesList(),
-                  CwrSummary(),
+                  DashBoardPage(),
                   ClientList(),
                   ContractorList(),
                   UsersList()

@@ -173,8 +173,7 @@ class _QuotationViewState extends State<QuotationView> {
       text: clientInvoiceinit.receivedDate.toString().substring(0, 10),
     );
     clientinvoices = widget.data!.clientInvoices;
-    contractorInvoice =
-        widget.data!.contractorPurchaseOrders.first.invoices;
+    contractorInvoice = widget.data!.contractorPurchaseOrders.first.invoices;
     contractorPO = widget.data!.contractorPurchaseOrders;
     comments = widget.data!.comment!;
   }
@@ -1016,20 +1015,17 @@ class _QuotationViewState extends State<QuotationView> {
                                       height: 45.0,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                       
-                                            
                                           var invoice = ClientInvoice(
-                                                number: clientInvoiceNo.text,
-                                                receivedDate: DateTime.parse(
-                                                    clientInvoiceLastRecieveDate
-                                                        .text),
-                                                recievedamount: 0.00,
-                                                amount: double.parse(
-                                                    clientInvoiceAmount.text),
-                                                issueDate: DateTime.parse(
-                                                    clientInvoiceIssueDate
-                                                        .text),
-                                              );
+                                            number: clientInvoiceNo.text,
+                                            receivedDate: DateTime.parse(
+                                                clientInvoiceLastRecieveDate
+                                                    .text),
+                                            recievedamount: 0.00,
+                                            amount: double.parse(
+                                                clientInvoiceAmount.text),
+                                            issueDate: DateTime.parse(
+                                                clientInvoiceIssueDate.text),
+                                          );
                                           // clientinvoices.remove(value)
                                         },
                                         child: Text('Edit'),
@@ -1568,14 +1564,14 @@ class _QuotationViewState extends State<QuotationView> {
                                                 .clear();
                                             contractorQuotationWorkComplete
                                                 .clear();
-                                                contractorPO.isNotEmpty
-                                              ? contractorkey.currentState!
-                                                  .updateSuggestions(
-                                                  contractorPO
-                                                      .map((e) => e.poNumber)
-                                                      .toList(),
-                                                )
-                                              : null;
+                                            contractorPO.isNotEmpty
+                                                ? contractorkey.currentState!
+                                                    .updateSuggestions(
+                                                    contractorPO
+                                                        .map((e) => e.poNumber)
+                                                        .toList(),
+                                                  )
+                                                : null;
                                           });
 
                                           CoolAlert.show(
@@ -1583,8 +1579,7 @@ class _QuotationViewState extends State<QuotationView> {
                                               type: CoolAlertType.success,
                                               text:
                                                   'Contractor Quotation Added');
-                                                  
-                                          
+
                                           // print(
                                           //   clientinvoices.map(
                                           //     (e) => e.contractorpo!
@@ -2057,14 +2052,14 @@ class _QuotationViewState extends State<QuotationView> {
                                                     contractorInvoice;
                                               }
                                               contractorInvoice.isNotEmpty
-                                              ? contractinvoiceorkey
-                                                  .currentState!
-                                                  .updateSuggestions(
-                                                  contractorInvoice
-                                                      .map((e) => e.number)
-                                                      .toList(),
-                                                )
-                                              : null;
+                                                  ? contractinvoiceorkey
+                                                      .currentState!
+                                                      .updateSuggestions(
+                                                      contractorInvoice
+                                                          .map((e) => e.number)
+                                                          .toList(),
+                                                    )
+                                                  : null;
                                             });
                                             // clientinvoices.forEach((ci) {
                                             //   if (ci.number ==
@@ -2086,7 +2081,7 @@ class _QuotationViewState extends State<QuotationView> {
                                               type: CoolAlertType.success,
                                               text:
                                                   'Contractor Quotation Added');
-                                          
+
                                           Get.rawSnackbar(
                                               message: 'Invoice Added',
                                               snackPosition: SnackPosition.TOP);
@@ -2439,22 +2434,21 @@ class _QuotationViewState extends State<QuotationView> {
                             type: CoolAlertType.loading,
                             text: 'Loading');
                         Quotation quotationval = Quotation(
-                          isTrash: false,
-                          qnumber: clientQuotequotationNumber.text,
-                          clientname: clientQuoteclientName.text,
-                          qamount: double.parse(clientQuoteAmount.text),
-                          clientApproval: clientQuoteclientApproval.text,
-                          dateIssued:
-                              DateTime.parse(clientQuotedateIssued.text),
-                          description: clientQuoteDesciption.text,
-                          approvalStatus: clientQuoteApprovalStatus.text,
-                          ccmTicketNumber: clientQuoteCCMTicketNumber.text,
-                          jobcompletionDate:
-                              DateTime.parse(clientQuoteJobCompletionDate.text),
-                          overallstatus: clientQuoteOverallStatus.text,
-                          clientInvoices: clientinvoices,
-                          contractorPurchaseOrders: contractorPO
-                        );
+                            isTrash: false,
+                            qnumber: clientQuotequotationNumber.text,
+                            clientname: clientQuoteclientName.text,
+                            qamount: double.parse(clientQuoteAmount.text),
+                            clientApproval: clientQuoteclientApproval.text,
+                            dateIssued:
+                                DateTime.parse(clientQuotedateIssued.text),
+                            description: clientQuoteDesciption.text,
+                            approvalStatus: clientQuoteApprovalStatus.text,
+                            ccmTicketNumber: clientQuoteCCMTicketNumber.text,
+                            jobcompletionDate: DateTime.parse(
+                                clientQuoteJobCompletionDate.text),
+                            overallstatus: clientQuoteOverallStatus.text,
+                            clientInvoices: clientinvoices,
+                            contractorPurchaseOrders: contractorPO);
                         print(quotationval.toJson());
                         widget.isEdit
                             ? await countries
@@ -2465,16 +2459,32 @@ class _QuotationViewState extends State<QuotationView> {
                                   quotationval.toJson(),
                                 )
                                 .whenComplete(() {
-                                CoolAlert.show(
-                                    onConfirmBtnTap: () {
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                    },
-                                    context: context,
-                                    type: CoolAlertType.success,
-                                    text: 'Quotation Updated');
-                                Navigator.pop(context);
+                                var condocid;
+                                contractorController.contractorlist
+                                    .forEach((v) {
+                                  if (v.name ==
+                                      contractorQuotationContractorName.text) {
+                                    condocid = v.docid;
+                                    print(condocid);
+                                  }
+                                });
+                                contractors.doc(condocid).update(
+                                  {
+                                    "payable": int.parse(
+                                        contractorQuotationPOAmount.text),
+                                  },
+                                ).then((value) {
+                                  CoolAlert.show(
+                                      onConfirmBtnTap: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      context: context,
+                                      type: CoolAlertType.success,
+                                      text: 'Quotation Updated');
+                                  Navigator.pop(context);
+                                });
                               })
                             : await countries
                                 .doc(session.country!.code)

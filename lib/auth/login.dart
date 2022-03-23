@@ -147,8 +147,8 @@ class _SignInState extends State<SignIn> {
                                 .signInWithEmailAndPassword(
                                     username.text, password.text)
                                 .then((value) {
-                                  
-                                }, onError: (e) {
+                              Navigator.pop(context);
+                            }, onError: (e) {
                               Navigator.pop(context);
                               return showDialog(
                                   context: context,
