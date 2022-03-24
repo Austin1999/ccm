@@ -131,6 +131,7 @@ class _CountriesListState extends State<CountriesList> {
                                         isLessThan: search.toTitleCase() + 'z')
                                     .snapshots(),
                                 builder: (context, snapshot) {
+                                  print(snapshot.hasData);
                                   if (snapshot.connectionState ==
                                           ConnectionState.active &&
                                       snapshot.hasData) {
@@ -143,40 +144,57 @@ class _CountriesListState extends State<CountriesList> {
                                         )
                                         .toList();
                                     session.countries = _tempCountries;
-                                    session.country = session.countries.first;
-                                    print(session.country);
-                                    return GridView.count(
-                                      shrinkWrap: true,
-                                      crossAxisCount: 5,
-                                      childAspectRatio: 4,
-                                      children: _tempCountries
-                                          .map((e) => InkWell(
-                                              onTap: () {
-                                                // showDialog(
-                                                //     context: context,
-                                                //     builder: (context) {
-                                                //       return AlertDialog(
-                                                //         content: Row(
-                                                //           children: [
-                                                //             CircularProgressIndicator(),
-                                                //             SizedBox(
-                                                //               width: 10,
-                                                //             ),
-                                                //             Text(
-                                                //                 'Please Wait, Loading...')
-                                                //           ],
-                                                //         ),
-                                                //       );
-                                                //     });
-                                                session.country = e;
-                                                // Navigator.pop(context);
-                                                Get.to(() => CwrSummary());
-                                              },
-                                              child: CountryCard(
-                                                  text: e.name,
-                                                  code: e.code.toLowerCase())))
-                                          .toList(),
-                                    );
+                                    _tempCountries.isEmpty
+                                        ? null
+                                        : session.country =
+                                            session.countries.first;
+                                    // print(session.country);
+                                    return _tempCountries.isEmpty
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Center(
+                                              child: Text(
+                                                'No Countries found',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline4,
+                                              ),
+                                            ),
+                                          )
+                                        : GridView.count(
+                                            shrinkWrap: true,
+                                            crossAxisCount: 5,
+                                            childAspectRatio: 4,
+                                            children: _tempCountries
+                                                .map((e) => InkWell(
+                                                    onTap: () {
+                                                      // showDialog(
+                                                      //     context: context,
+                                                      //     builder: (context) {
+                                                      //       return AlertDialog(
+                                                      //         content: Row(
+                                                      //           children: [
+                                                      //             CircularProgressIndicator(),
+                                                      //             SizedBox(
+                                                      //               width: 10,
+                                                      //             ),
+                                                      //             Text(
+                                                      //                 'Please Wait, Loading...')
+                                                      //           ],
+                                                      //         ),
+                                                      //       );
+                                                      //     });
+                                                      session.country = e;
+                                                      // Navigator.pop(context);
+                                                      Get.to(
+                                                          () => CwrSummary());
+                                                    },
+                                                    child: CountryCard(
+                                                        text: e.name,
+                                                        code: e.code
+                                                            .toLowerCase())))
+                                                .toList(),
+                                          );
                                   } else {
                                     //   return Center(
                                     //     child: CircularProgressIndicator(),

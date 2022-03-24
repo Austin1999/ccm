@@ -620,7 +620,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                 //               elevation: 5,
                 //               color: Colors.lightBlue[50],
                 //               child: Padding(
-                //                   padding: const EdgeInsets.all(4.0),
+                //                   padding: const EdgeInse xts.all(4.0),
                 //                   child:),),),
               ],
             ),
