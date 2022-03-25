@@ -65,3 +65,82 @@ class Client {
     });
   }
 }
+
+InvoicePaymentModel clientCreditModelFromJson(String str) =>
+    InvoicePaymentModel.fromJson(json.decode(str));
+
+String clientCreditModelToJson(InvoicePaymentModel data) =>
+    json.encode(data.toJson());
+
+class InvoicePaymentModel {
+  InvoicePaymentModel({
+    this.invoiceamount,
+    this.invoicenumber,
+    this.issueddate,
+    this.paymentdate,
+    this.recievedamount,
+  });
+
+  double? invoiceamount;
+  String? invoicenumber;
+  String? issueddate;
+  String? paymentdate;
+  double? recievedamount;
+
+  factory InvoicePaymentModel.fromJson(Map<String, dynamic> json) =>
+      InvoicePaymentModel(
+        invoiceamount: json["invoiceamount"],
+        invoicenumber: json["invoicenumber"],
+        issueddate: json["issueddate"],
+        paymentdate: json["paymentdate"],
+        recievedamount: json["recievedamount"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "invoiceamount": invoiceamount,
+        "invoicenumber": invoicenumber,
+        "issueddate": issueddate,
+        "paymentdate": paymentdate,
+        "recievedamount": recievedamount,
+      };
+}
+
+CreditModel clientInvoiePaymentModelFromJson(String str) => CreditModel.fromJson(json.decode(str));
+
+String clientInvoiePaymentModelToJson(CreditModel data) => json.encode(data.toJson());
+
+class CreditModel {
+    CreditModel({
+        this.invoiceamount,
+        this.invoicenumber,
+        this.issueddate,
+        this.creditRecieveDate,
+        this.creditamount,
+        this.creditnoteno,
+    });
+
+    double? invoiceamount;
+    String? invoicenumber;
+    String? issueddate;
+    String? creditRecieveDate;
+    double? creditamount;
+    String? creditnoteno;
+
+    factory CreditModel.fromJson(Map<String, dynamic> json) => CreditModel(
+        invoiceamount: json["invoiceamount"],
+        invoicenumber: json["invoicenumber"],
+        issueddate: json["issueddate"],
+        creditRecieveDate: json["creditRecieveDate"],
+        creditamount: json["creditamount"],
+        creditnoteno: json["creditnoteno"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "invoiceamount": invoiceamount,
+        "invoicenumber": invoicenumber,
+        "issueddate": issueddate,
+        "creditRecieveDate": creditRecieveDate,
+        "creditamount": creditamount,
+        "creditnoteno": creditnoteno,
+    };
+}

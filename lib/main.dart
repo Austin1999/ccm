@@ -16,7 +16,6 @@ Future<void> main() async {
   );
 
   Get.put(CountryController());
-  
   Get.put(getxcon.AuthController());
   Get.put(getxcon.SessionController());
   runApp(MyApp());

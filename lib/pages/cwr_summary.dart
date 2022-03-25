@@ -21,13 +21,22 @@ class CwrSummary extends StatefulWidget {
 class _CwrSummaryState extends State<CwrSummary>
     with SingleTickerProviderStateMixin {
   String? _value;
+  TextEditingController clientQuoteclientName = TextEditingController();
+  TextEditingController searchcon = TextEditingController();
+  late List<QueryDocumentSnapshot<Map<String, dynamic>>> filtereddocs;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Get.put(ClientController());
+
     Get.put(QuotationController());
     Get.put(ContractorController());
+    setState(() {
+      clientQuoteclientName = TextEditingController(
+          text: clientController.clientlist.isEmpty
+              ? 'N/A'
+              : clientController.clientlist.first.name);
+    });
   }
 
   @override
@@ -600,6 +609,8 @@ class _CwrSummaryState extends State<CwrSummary>
                                 elevation: 5,
                                 shadowColor: Colors.grey,
                                 child: TextFormField(
+                                  onChanged: (value) => setState(() {}),
+                                  controller: searchcon,
                                   decoration: InputDecoration(
                                     hintText: 'Search',
                                     border: OutlineInputBorder(
@@ -728,6 +739,13 @@ class _CwrSummaryState extends State<CwrSummary>
                                             onChanged: (String? value) {
                                               setState(() {
                                                 _value = value;
+                                                filtereddocs.where((element) {
+                                                  Quotation data =
+                                                      Quotation.fromJson(
+                                                          element.data());
+                                                  return data.overallstatus ==
+                                                      value;
+                                                });
                                               });
                                             },
                                             hint: Text("Select item")),
@@ -831,32 +849,33 @@ class _CwrSummaryState extends State<CwrSummary>
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8.0),
-                                        child: DropdownButton(
-                                            value: _value,
-                                            items: [
-                                              DropdownMenuItem(
-                                                child: Text("Pending"),
-                                                value: 'Pending',
-                                              ),
-                                              DropdownMenuItem(
-                                                child: Text("Completed"),
-                                                value: 'Completed',
-                                              ),
-                                              DropdownMenuItem(
-                                                child: Text("Canceled"),
-                                                value: 'Canceled',
-                                              ),
-                                              DropdownMenuItem(
-                                                child: Text("All Quotations"),
-                                                value: 'All Quotations',
-                                              )
-                                            ],
+                                        child: DropdownButton<String>(
+                                            value: clientQuoteclientName.text,
+                                            items: clientController
+                                                    .clientlist.isEmpty
+                                                ? [
+                                                    DropdownMenuItem(
+                                                      value: "N/A",
+                                                      child: Text(
+                                                        "N/A",
+                                                      ),
+                                                    )
+                                                  ]
+                                                : clientController.clientlist
+                                                    .toSet()
+                                                    .map((e) =>
+                                                        DropdownMenuItem(
+                                                          child: Text(e.name),
+                                                          value: e.name,
+                                                        ))
+                                                    .toList(),
                                             onChanged: (String? value) {
                                               setState(() {
-                                                _value = value;
+                                                clientQuoteclientName.text =
+                                                    value!;
                                               });
                                             },
-                                            hint: Text("Select item")),
+                                            hint: Text("Client Name")),
                                       ),
                                     ),
                                   ),
@@ -876,8 +895,10 @@ class _CwrSummaryState extends State<CwrSummary>
                     .doc(session.country!.code)
                     .collection('quotations')
                     .where('isTrash', isEqualTo: false)
+                    .where('search', arrayContains: searchcon.text)
                     .snapshots(),
                 builder: (context, snapshot) {
+                  filtereddocs = snapshot.data!.docs;
                   if (snapshot.connectionState == ConnectionState.active &&
                       snapshot.hasData) {
                     return SingleChildScrollView(
@@ -901,7 +922,7 @@ class _CwrSummaryState extends State<CwrSummary>
                               "COMPLETION DATE",
                               "DELETE"
                             ].map((e) => DataColumn(label: Text(e))).toList(),
-                            rows: snapshot.data!.docs.map<DataRow>((e) {
+                            rows: filtereddocs.map<DataRow>((e) {
                               print(e.data());
                               Quotation data = Quotation.fromJson(e.data());
                               return DataRow(

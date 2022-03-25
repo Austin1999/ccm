@@ -4,6 +4,7 @@ import 'package:ccm/models/contractor.dart';
 import 'package:ccm/models/countries.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -32,7 +33,7 @@ class _ContractorListState extends State<ContractorList> {
       {required isEdit,
       nameval,
       addressval,
-      cwrval,
+      required cwrval,
       emailval,
       phoneval,
       contact,
@@ -46,7 +47,8 @@ class _ContractorListState extends State<ContractorList> {
     showDialog(
         context: context,
         builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
             return Dialog(
               backgroundColor: Color(0xFFE8F3FA),
               child: Padding(
@@ -158,7 +160,7 @@ class _ContractorListState extends State<ContractorList> {
                                             items: session.countries
                                                 .map((e) => DropdownMenuItem(
                                                       child: Text(e.name),
-                                                      value: e.name,
+                                                      value: e.code,
                                                     ))
                                                 .toList(),
                                             onChanged: (String? value) {
@@ -174,9 +176,6 @@ class _ContractorListState extends State<ContractorList> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 15.0,
-                          ),
                         ],
                       ),
                     ),
@@ -185,6 +184,7 @@ class _ContractorListState extends State<ContractorList> {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        SizedBox(height: 25.0),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 8.0),
@@ -336,10 +336,13 @@ class _ContractorListState extends State<ContractorList> {
                                         ),
                                       );
                                     });
-                                Contractor contractordata =
-                                    Contractor(name: name.text);
+
                                 isEdit
-                                    ? contractors.doc(doc_id).update(
+                                    ? countries
+                                        .doc(session.country!.code)
+                                        .collection('clients')
+                                        .doc(doc_id)
+                                        .update(
                                         {
                                           'name': name.text,
                                           'address': address.text,
@@ -359,7 +362,10 @@ class _ContractorListState extends State<ContractorList> {
                                         Navigator.pop(context);
                                         Navigator.pop(context);
                                       })
-                                    : await contractors.add(
+                                    : await countries
+                                        .doc(session.country!.code)
+                                        .collection('clients')
+                                        .add(
                                         {
                                           'name': name.text,
                                           'cwr': cwr.text,
@@ -368,7 +374,6 @@ class _ContractorListState extends State<ContractorList> {
                                           'country': session.country!.code,
                                           'email': email.text,
                                           'phone': phone.text,
-                                          'countryName': session.country!.name
                                         },
                                       ).then((value) {
                                         name.clear();
@@ -403,7 +408,7 @@ class _ContractorListState extends State<ContractorList> {
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: () {
-            addContractor(isEdit: false, cwrval: session.country!.name);
+            addContractor(isEdit: false, cwrval: searchcountry);
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -627,10 +632,34 @@ class _ContractorListState extends State<ContractorList> {
                                                         Icons.delete,
                                                         color: Colors.red,
                                                       ), onTap: () {
-                                                    contractors
-                                                        .doc(e.docid)
-                                                        .delete();
-                                                  }),
+                                                    CoolAlert.show(
+                                                      context: context,
+                                                      type: CoolAlertType.confirm,
+                                                        width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width >
+                                                                500
+                                                            ? MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width /
+                                                                2
+                                                            : MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.85,
+                                                        showCancelBtn: true,
+                                                        onCancelBtnTap: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        onConfirmBtnTap: () {
+                                                          contractors
+                                                              .doc(e.docid)
+                                                              .delete().then((value) => Navigator.pop(context),);
+                                                        });
+                                                  },),
                                                   DataCell(
                                                       Icon(
                                                         Icons.edit,
@@ -643,7 +672,7 @@ class _ContractorListState extends State<ContractorList> {
                                                         addressval: e.address,
                                                         emailval: e.email,
                                                         phoneval: e.phone,
-                                                        cwrval: e.cwr,
+                                                        cwrval: e.country,
                                                         contact:
                                                             e.contactPerson,
                                                         doc_id: e.docid);

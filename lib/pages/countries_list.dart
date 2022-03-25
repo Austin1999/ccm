@@ -1,3 +1,4 @@
+import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/countries.dart';
 import 'package:ccm/pages/cwr_summary.dart';
@@ -23,6 +24,7 @@ class _CountriesListState extends State<CountriesList> {
   void initState() {
     super.initState();
     _selectedCountry = Country.countries.first.code;
+    
   }
 
   @override
@@ -185,6 +187,7 @@ class _CountriesListState extends State<CountriesList> {
                                                       //       );
                                                       //     });
                                                       session.country = e;
+                                                      Get.put(ClientController());
                                                       // Navigator.pop(context);
                                                       Get.to(
                                                           () => CwrSummary());

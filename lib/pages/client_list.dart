@@ -3,6 +3,7 @@ import 'package:ccm/models/client.dart';
 import 'package:ccm/models/countries.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -27,7 +28,7 @@ class _ClientListState extends State<ClientList> {
       {required isEdit,
       nameval,
       addressval,
-      cwrval,
+      required cwrval,
       emailval,
       phoneval,
       contact,
@@ -403,7 +404,7 @@ class _ClientListState extends State<ClientList> {
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: () {
-            addContractor(isEdit: false, cwrval: session.country!.name);
+            addContractor(isEdit: false, cwrval: searchcountry);
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -614,17 +615,46 @@ class _ClientListState extends State<ClientList> {
                                                     Text(e.contactPerson!),
                                                   ),
                                                   DataCell(
-                                                      Icon(
-                                                        Icons.delete,
-                                                        color: Colors.red,
-                                                      ), onTap: () {
-                                                    countries
-                                                        .doc(session
-                                                            .country!.code)
-                                                        .collection('clients')
-                                                        .doc(e.docid)
-                                                        .delete();
-                                                  }),
+                                                    Icon(
+                                                      Icons.delete,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onTap: () {
+                                                      CoolAlert.show(
+                                                          context: context,
+                                                          type: CoolAlertType
+                                                              .confirm,
+                                                          width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width >
+                                                                  500
+                                                              ? MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width /
+                                                                  2
+                                                              : MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                          showCancelBtn: true,
+                                                          onCancelBtnTap: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          onConfirmBtnTap: () {
+                                                            countries
+                                                                .doc(session
+                                                                    .country!
+                                                                    .code)
+                                                                .collection(
+                                                                    'clients')
+                                                                .doc(e.docid)
+                                                                .delete();
+                                                          });
+                                                    },
+                                                  ),
                                                   DataCell(
                                                       Icon(
                                                         Icons.edit,
@@ -637,7 +667,7 @@ class _ClientListState extends State<ClientList> {
                                                         addressval: e.address,
                                                         emailval: e.email,
                                                         phoneval: e.phone,
-                                                        cwrval: e.cwr,
+                                                        cwrval: e.country,
                                                         contact:
                                                             e.contactPerson,
                                                         doc_id: e.docid);

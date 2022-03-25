@@ -1,15 +1,13 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/models/client.dart';
 import 'package:ccm/models/quotation.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:cool_alert/cool_alert.dart';
-import 'package:country_picker/country_picker.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class QuotationView extends StatefulWidget {
   QuotationView({Key? key, this.data, required this.isEdit, this.id})
@@ -65,6 +63,22 @@ class _QuotationViewState extends State<QuotationView> {
   TextEditingController contractorInvoiceLastPaidDate = TextEditingController();
   TextEditingController comment = TextEditingController();
   TextEditingController clientInvoiceLastRecieveDate = TextEditingController();
+  // TextEditingController invoicenumber = TextEditingController();
+  // TextEditingController invoiceamount = TextEditingController();
+  // TextEditingController issueddate = TextEditingController();
+  TextEditingController clientrecievedamount = TextEditingController();
+  TextEditingController clientpaymentdate = TextEditingController();
+
+  TextEditingController clientcreditRecieveDate = TextEditingController();
+  TextEditingController clientcreditamount = TextEditingController();
+  TextEditingController clientcreditnoteno = TextEditingController();
+
+  TextEditingController contractorrecievedamount = TextEditingController();
+  TextEditingController contractorpaymentdate = TextEditingController();
+
+  TextEditingController contractorcreditRecieveDate = TextEditingController();
+  TextEditingController contractorcreditamount = TextEditingController();
+  TextEditingController contractorcreditnoteno = TextEditingController();
   Future<DateTime> _selectDate(
       BuildContext context, DateTime selectedDate) async {
     final DateTime? picked = await showDatePicker(
@@ -76,6 +90,10 @@ class _QuotationViewState extends State<QuotationView> {
     return picked!;
   }
 
+  List<InvoicePaymentModel> clientinvoicepayment = [];
+  List<CreditModel> clientcredits = [];
+  List<InvoicePaymentModel> contractorinvoicepayment = [];
+  List<CreditModel> contractorcredits = [];
   List<String> categorylist = [
     "FM Contract",
     "Interior and General",
@@ -94,7 +112,9 @@ class _QuotationViewState extends State<QuotationView> {
   List<ContractorPurchaseOrder> contractorPO = [];
   List<String> comments = [];
   String? category = "FM Contract";
-  String parentQuote = quotationController.quotionlist.first.qnumber;
+  String parentQuote = quotationController.quotionlist.isEmpty
+      ? 'N/A'
+      : quotationController.quotionlist.first.qnumber;
 
   @override
   void initState() {
@@ -180,7 +200,6 @@ class _QuotationViewState extends State<QuotationView> {
 
   @override
   Widget build(BuildContext context) {
-    print(clientController.clientlist);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -248,12 +267,11 @@ class _QuotationViewState extends State<QuotationView> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: DropdownButton<String>(
-                              value: quotationController.quotionlist.isEmpty
-                                  ? "N/A"
-                                  : parentQuote,
+                              value: parentQuote,
                               items: quotationController.quotionlist.isEmpty
                                   ? [
                                       DropdownMenuItem(
+                                        value: 'N/A',
                                         child: Text(
                                           "N/A",
                                         ),
@@ -287,33 +305,33 @@ class _QuotationViewState extends State<QuotationView> {
                       // ),
                     ),
                   ),
-                  // Expanded(
-                  //   child: Card(
-                  //     color: Colors.white,
-                  //     elevation: 5,
-                  //     shadowColor: Colors.grey,
-                  //     child: DropdownButtonHideUnderline(
-                  //       child: Padding(
-                  //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  //         child: DropdownButton(
-                  //             value: category,
-                  //             items: categorylist
-                  //                 .toSet()
-                  //                 .map((e) => DropdownMenuItem(
-                  //                       child: Text(e),
-                  //                       value: e,
-                  //                     ))
-                  //                 .toList(),
-                  //             onChanged: (String? value) {
-                  //               setState(() {
-                  //                 category = value!;
-                  //               });
-                  //             },
-                  //             hint: Text("Select item")),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+                  Expanded(
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 5,
+                      shadowColor: Colors.grey,
+                      child: DropdownButtonHideUnderline(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: DropdownButton(
+                              value: category,
+                              items: categorylist
+                                  .toSet()
+                                  .map((e) => DropdownMenuItem(
+                                        child: Text(e),
+                                        value: e,
+                                      ))
+                                  .toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  category = value!;
+                                });
+                              },
+                              hint: Text("Select item")),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               Padding(
@@ -964,6 +982,9 @@ class _QuotationViewState extends State<QuotationView> {
                                           setState(() {
                                             clientinvoices.add(
                                               ClientInvoice(
+                                                clientcredits: clientcredits,
+                                                clientinvoicepayments:
+                                                    clientinvoicepayment,
                                                 number: clientInvoiceNo.text,
                                                 receivedDate: DateTime.parse(
                                                     clientInvoiceLastRecieveDate
@@ -1221,7 +1242,23 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showcredits(
+                                              name: 'Client',
+                                              invoiceNo: clientInvoiceNo,
+                                              invoiceAmount:
+                                                  clientInvoiceAmount,
+                                              invoiceIssueDate:
+                                                  clientInvoiceIssueDate,
+                                              creditamount: clientcreditamount,
+                                              clientInvoiceNo: clientInvoiceNo,
+                                              creditRecieveDate:
+                                                  clientcreditRecieveDate,
+                                              creditnoteno: clientcreditnoteno,
+                                              recievedamount:
+                                                  clientrecievedamount,
+                                              paymentdate: clientpaymentdate);
+                                        },
                                         child: Text('Payments/Credits'),
                                       ),
                                     )),
@@ -2025,6 +2062,10 @@ class _QuotationViewState extends State<QuotationView> {
                                             contractorInvoice.add(
                                               ContractorInvoice(
                                                 // payments: [],
+                                                contractorinvoicepayments:
+                                                    contractorinvoicepayment,
+                                                contractorcredits:
+                                                    contractorcredits,
                                                 number:
                                                     contractorInvoiceNo.text,
                                                 receivedDate: DateTime.parse(
@@ -2287,7 +2328,27 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showcredits(
+                                              name: 'Contrator',
+                                              invoiceNo: contractorInvoiceNo,
+                                              invoiceAmount:
+                                                  contractorInvoiceAmount,
+                                              invoiceIssueDate:
+                                                  contractorInvoiceLastPaidDate,
+                                              creditamount:
+                                                  contractorcreditamount,
+                                              clientInvoiceNo:
+                                                  contractorInvoiceNo,
+                                              creditRecieveDate:
+                                                  contractorcreditRecieveDate,
+                                              creditnoteno:
+                                                  contractorcreditnoteno,
+                                              recievedamount:
+                                                  contractorrecievedamount,
+                                              paymentdate:
+                                                  contractorpaymentdate);
+                                        },
                                         child: Text('Payments/Credits'),
                                       ),
                                     )),
@@ -2434,6 +2495,17 @@ class _QuotationViewState extends State<QuotationView> {
                             type: CoolAlertType.loading,
                             text: 'Loading');
                         Quotation quotationval = Quotation(
+                            search: [
+                              clientQuotequotationNumber.text,
+                              clientInvoiceNo.text,
+                              contractorInvoiceNo.text,
+                              clientQuoteCCMTicketNumber.text,
+                              contractorQuotationPONumber.text,
+                              contractorcreditnoteno.text,
+                              clientcreditnoteno.text
+                            ],
+                            category: category!,
+                            inr: currency.text,
                             isTrash: false,
                             qnumber: clientQuotequotationNumber.text,
                             clientname: clientQuoteclientName.text,
@@ -2493,15 +2565,69 @@ class _QuotationViewState extends State<QuotationView> {
                                   quotationval.toJson(),
                                 )
                                 .whenComplete(() {
-                                CoolAlert.show(
-                                    onConfirmBtnTap: () {
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
+                                var condocid;
+                                contractorController.contractorlist
+                                    .forEach((v) {
+                                  if (v.name ==
+                                      contractorQuotationContractorName.text) {
+                                    condocid = v.docid;
+                                    print(condocid);
+                                  }
+                                });
+                                contractors.doc(condocid).update(
+                                  {
+                                    "payable": int.parse(
+                                        contractorQuotationPOAmount.text),
+                                  },
+                                ).then((v) {
+                                  List<double> templist = [];
+                                  clientinvoices.forEach((element1) {
+                                    element1.clientinvoicepayments!
+                                        .forEach((element2) {
+                                      templist.add(element2.invoiceamount!);
+                                    });
+                                  });
+                                  // .fold(
+                                  //     clientinvoices
+                                  //         .first.clientinvoicepayments,
+                                  //     (List<InvoicePaymentModel>? previousValue,
+                                  //             element) =>
+                                  //         previousValue +
+                                  //         element.clientinvoicepayments);
+                                  firestore
+                                      .collection('payments')
+                                      .doc('clienttotals')
+                                      .update(
+                                    {
+                                      'totalamount': FieldValue.increment(
+                                        double.parse(
+                                          clientQuoteAmount.text,
+                                        ),
+                                      ),
+                                      'totalrecieved': FieldValue.increment(
+                                        templist.fold(
+                                            0,
+                                            (previousValue, element) =>
+                                                previousValue + element),
+                                      ),
+                                      DateTime.now().month.toString():
+                                          FieldValue.increment(
+                                        double.parse(
+                                          clientQuoteAmount.text,
+                                        ),
+                                      ),
                                     },
-                                    context: context,
-                                    type: CoolAlertType.success,
-                                    text: 'Quotation Added!');
+                                  );
+                                  CoolAlert.show(
+                                      onConfirmBtnTap: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      context: context,
+                                      type: CoolAlertType.success,
+                                      text: 'Quotation Added!');
+                                });
                               });
                       },
                       child: Text('Submit'),
@@ -2512,6 +2638,519 @@ class _QuotationViewState extends State<QuotationView> {
         ),
       ),
     );
+  }
+
+  showcredits({
+    required String name,
+    required TextEditingController invoiceNo,
+    required TextEditingController invoiceAmount,
+    required TextEditingController invoiceIssueDate,
+    required TextEditingController creditamount,
+    required TextEditingController clientInvoiceNo,
+    required TextEditingController creditRecieveDate,
+    required TextEditingController creditnoteno,
+    required TextEditingController recievedamount,
+    required TextEditingController paymentdate,
+  }) {
+    bool isCredit = false;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            child: SingleChildScrollView(
+              child: StatefulBuilder(builder: (context, setState) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        name,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('Back'),
+                          ),
+                          SizedBox(
+                            width: 25.0,
+                          ),
+                          ElevatedButton(
+                            onPressed: () =>
+                                setState(() => isCredit = !isCredit),
+                            child:
+                                Text(isCredit ? 'Add Invoice' : 'Add Credit'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    isCredit
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CardInputField(
+                                      readonly: true,
+                                      controller: invoiceNo,
+                                      hinttext: 'Invoice Number',
+                                      text: 'Invoice Number'),
+                                  CardInputField(
+                                      readonly: true,
+                                      controller: invoiceAmount,
+                                      hinttext: 'Invoice Amount',
+                                      text: 'Invoice Amount'),
+                                  CardInputField(
+                                      readonly: true,
+                                      controller: invoiceIssueDate,
+                                      hinttext: 'Issued Date',
+                                      text: 'Issued Date'),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  CardInputField(
+                                      readonly: false,
+                                      controller: creditamount,
+                                      hinttext: 'Credit Amount',
+                                      text: 'Credit Amount'),
+                                  CardInputField(
+                                      readonly: false,
+                                      controller: creditRecieveDate,
+                                      hinttext: 'Client Recieved Date',
+                                      text: 'Client Recieved Date'),
+                                  CardInputField(
+                                      readonly: false,
+                                      controller: creditnoteno,
+                                      hinttext: 'Client Note No',
+                                      text: 'Client Note No'),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 16.0, left: 16.0, top: 10.0),
+                                    child: SizedBox(
+                                      height: 50,
+                                      width: 100,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          setState(
+                                            () => name == 'Client'
+                                                ? clientcredits.add(
+                                                    CreditModel(
+                                                      invoiceamount:
+                                                          double.parse(
+                                                              clientInvoiceAmount
+                                                                  .text),
+                                                      invoicenumber:
+                                                          clientInvoiceNo.text,
+                                                      issueddate:
+                                                          clientInvoiceIssueDate
+                                                              .text,
+                                                      creditRecieveDate:
+                                                          creditRecieveDate
+                                                              .text,
+                                                      creditamount:
+                                                          double.parse(
+                                                              creditamount
+                                                                  .text),
+                                                    ),
+                                                  )
+                                                : contractorcredits.add(
+                                                    CreditModel(
+                                                      invoiceamount:
+                                                          double.parse(
+                                                              clientInvoiceAmount
+                                                                  .text),
+                                                      invoicenumber:
+                                                          clientInvoiceNo.text,
+                                                      issueddate:
+                                                          clientInvoiceIssueDate
+                                                              .text,
+                                                      creditRecieveDate:
+                                                          creditRecieveDate
+                                                              .text,
+                                                      creditamount:
+                                                          double.parse(
+                                                              creditamount
+                                                                  .text),
+                                                    ),
+                                                  ),
+                                          );
+                                        },
+                                        child: Text('Add'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 15.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: DataTable(
+                                    columns: [
+                                      'Credit Note Amount',
+                                      'Client Note Recieved Date',
+                                      'Client Note Number',
+                                      'Edit',
+                                      'Delete'
+                                    ]
+                                        .map<DataColumn>(
+                                          (e) => DataColumn(
+                                            label: Text(e),
+                                          ),
+                                        )
+                                        .toList(),
+                                    rows: clientcredits
+                                        .map<DataRow>((e) => DataRow(cells: [
+                                              DataCell(
+                                                Text(
+                                                  e.creditamount.toString(),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  e.creditRecieveDate!,
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  e.creditnoteno!,
+                                                ),
+                                              ),
+                                              DataCell(IconButton(
+                                                  onPressed: () {},
+                                                  icon: Icon(Icons.edit))),
+                                              DataCell(
+                                                IconButton(
+                                                  onPressed: () {
+                                                    CoolAlert.show(
+                                                        type: CoolAlertType
+                                                            .confirm,
+                                                        context: context,
+                                                        width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width >
+                                                                500
+                                                            ? MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width /
+                                                                2
+                                                            : MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.85,
+                                                        showCancelBtn: true,
+                                                        onCancelBtnTap: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        onConfirmBtnTap: () {
+                                                          clientcredits
+                                                              .remove(e);
+                                                        });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ]))
+                                        .toList()),
+                              )
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CardInputField(
+                                      readonly: true,
+                                      controller: clientInvoiceNo,
+                                      hinttext: 'Invoice Number',
+                                      text: 'Invoice Number'),
+                                  CardInputField(
+                                      readonly: true,
+                                      controller: clientInvoiceAmount,
+                                      hinttext: 'Invoice Amount',
+                                      text: 'Invoice Amount'),
+                                  CardInputField(
+                                      readonly: true,
+                                      controller: clientInvoiceIssueDate,
+                                      hinttext: 'Issued Date',
+                                      text: 'Issued Date'),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  CardInputField(
+                                      readonly: false,
+                                      controller: recievedamount,
+                                      hinttext: 'Recieved Amount',
+                                      text: 'Recieved Amount'),
+                                  CardInputField(
+                                      readonly: false,
+                                      controller: paymentdate,
+                                      hinttext: 'Payment Date',
+                                      text: 'Payment Date'),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 16.0, left: 16.0, top: 10.0),
+                                    child: SizedBox(
+                                      height: 50,
+                                      width: 100,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          setState(
+                                            () => name == 'Client'
+                                                ? clientinvoicepayment.add(
+                                                    InvoicePaymentModel(
+                                                        invoiceamount:
+                                                            double.parse(
+                                                                clientInvoiceAmount
+                                                                    .text),
+                                                        invoicenumber:
+                                                            clientInvoiceNo
+                                                                .text,
+                                                        issueddate:
+                                                            clientInvoiceIssueDate
+                                                                .text,
+                                                        recievedamount:
+                                                            double.parse(
+                                                                recievedamount
+                                                                    .text),
+                                                        paymentdate:
+                                                            paymentdate.text),
+                                                  )
+                                                : contractorinvoicepayment.add(
+                                                    InvoicePaymentModel(
+                                                        invoiceamount: double
+                                                            .parse(
+                                                                clientInvoiceAmount
+                                                                    .text),
+                                                        invoicenumber:
+                                                            clientInvoiceNo
+                                                                .text,
+                                                        issueddate:
+                                                            clientInvoiceIssueDate
+                                                                .text,
+                                                        recievedamount:
+                                                            double.parse(
+                                                                recievedamount
+                                                                    .text),
+                                                        paymentdate:
+                                                            paymentdate.text)),
+                                          );
+                                        },
+                                        child: Text('Add'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 15.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: DataTable(
+                                    columns: [
+                                      'Invoice No',
+                                      'Invoice Amount',
+                                      'Issue Date',
+                                      'Recieved Date',
+                                      'Recieved Amount',
+                                      'Edit',
+                                      'Delete'
+                                    ]
+                                        .map<DataColumn>(
+                                          (e) => DataColumn(
+                                            label: Text(e),
+                                          ),
+                                        )
+                                        .toList(),
+                                    rows: clientinvoicepayment
+                                        .map<DataRow>((e) => DataRow(cells: [
+                                              DataCell(
+                                                Text(
+                                                  e.invoicenumber!,
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  e.invoiceamount.toString(),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  e.issueddate!,
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  e.paymentdate!,
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  e.recievedamount.toString(),
+                                                ),
+                                              ),
+                                              DataCell(IconButton(
+                                                  onPressed: () {},
+                                                  icon: Icon(Icons.edit))),
+                                              DataCell(
+                                                IconButton(
+                                                  onPressed: () {
+                                                    CoolAlert.show(
+                                                        type: CoolAlertType
+                                                            .confirm,
+                                                        context: context,
+                                                        width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width >
+                                                                500
+                                                            ? MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width /
+                                                                2
+                                                            : MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.85,
+                                                        showCancelBtn: true,
+                                                        onCancelBtnTap: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        onConfirmBtnTap: () {
+                                                          clientinvoicepayment
+                                                              .remove(e);
+                                                        });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ]))
+                                        .toList()),
+                              )
+                            ],
+                          ),
+                  ],
+                );
+              }),
+            ),
+          );
+        });
+  }
+}
+
+// class AddInovice extends StatelessWidget {
+//   AddInovice(
+//       {required this.invoiceamount,
+//       required this.invoicenumber,
+//       required this.issueddate,
+//       required this.paymentdate,
+//       required this.recievedamount,
+//       required this.clientcredits,
+//       Key? key})
+//       : super(key: key);
+//   TextEditingController invoicenumber,
+//       invoiceamount,
+//       issueddate,
+//       recievedamount,
+//       paymentdate;
+//   List<ClientCreditModel> clientcredits;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         Row(
+//           children: [
+//             CardInputField(
+//                 readonly: false,
+//                 controller: invoicenumber,
+//                 hinttext: 'Invoice Number',
+//                 text: 'Invoice Number'),
+//             CardInputField(
+//                 readonly: false,
+//                 controller: invoiceamount,
+//                 hinttext: 'Invoice Amount',
+//                 text: 'Invoice Amount'),
+//             CardInputField(
+//                 readonly: false,
+//                 controller: invoicenumber,
+//                 hinttext: 'Issued Date',
+//                 text: 'Issued Date'),
+//           ],
+//         ),
+//         Row(
+//           children: [
+//             CardInputField(
+//                 readonly: false,
+//                 controller: invoicenumber,
+//                 hinttext: 'Invoice Number',
+//                 text: 'Invoice Number'),
+//             CardInputField(
+//                 readonly: false,
+//                 controller: invoicenumber,
+//                 hinttext: 'Invoice Number',
+//                 text: 'Invoice Number'),
+//             Padding(
+//               padding:
+//                   const EdgeInsets.only(right: 16.0, left: 16.0, top: 10.0),
+//               child: SizedBox(
+//                 height: 50,
+//                 width: 100,
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     this.clientcredits.add(ClientCreditModel(
+//                         invoiceamount: double.parse(invoiceamount.text),
+//                         invoicenumber: invoicenumber.text,
+//                         issueddate: issueddate.text,
+//                         recievedamount: double.parse(recievedamount.text),
+//                         paymentdate: paymentdate.text));
+//                   },
+//                   child: Text('Add'),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+class AddCredit extends StatelessWidget {
+  const AddCredit({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
 
