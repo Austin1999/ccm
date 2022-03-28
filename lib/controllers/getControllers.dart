@@ -105,11 +105,34 @@ class QuotationController extends GetxController {
     return countries
         .doc(session.country!.code)
         .collection('quotations')
+        .where('isTrash', isEqualTo: false)
         .snapshots()
         .map((query) => query.docs.map((e) {
               print(session.country!.code);
               print(e.data());
-              return Quotation.fromJson(e.data());
+              return Quotation.fromJson(e.data(), e.id);
             }).toList());
+  }
+}
+
+class ClientDashboardController extends GetxController {
+  static ClientDashboardController instance = Get.find();
+  RxMap<String, dynamic> clientpayment = RxMap<String, dynamic>();
+  
+
+  @override
+  void onReady() {
+    // TODO: implement onReady
+    super.onReady();
+    print('ready');
+    clientpayment.bindStream(getClientvalues());
+  }
+
+  Stream<Map<String, dynamic>> getClientvalues() {
+    return firestore
+        .collection('payments')
+        .doc('clienttotals')
+        .snapshots()
+        .map((event) => event.data()!);
   }
 }

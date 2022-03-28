@@ -369,6 +369,7 @@ class _ContractorListState extends State<ContractorList> {
                                         {
                                           'name': name.text,
                                           'cwr': cwr.text,
+                                          'payable': 0,
                                           'address': address.text,
                                           'contactPerson': contactPerson.text,
                                           'country': session.country!.code,
@@ -628,38 +629,46 @@ class _ContractorListState extends State<ContractorList> {
                                                     Text(e.contactPerson!),
                                                   ),
                                                   DataCell(
-                                                      Icon(
-                                                        Icons.delete,
-                                                        color: Colors.red,
-                                                      ), onTap: () {
-                                                    CoolAlert.show(
-                                                      context: context,
-                                                      type: CoolAlertType.confirm,
-                                                        width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width >
-                                                                500
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width /
-                                                                2
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.85,
-                                                        showCancelBtn: true,
-                                                        onCancelBtnTap: () =>
-                                                            Navigator.pop(
-                                                                context),
-                                                        onConfirmBtnTap: () {
-                                                          contractors
-                                                              .doc(e.docid)
-                                                              .delete().then((value) => Navigator.pop(context),);
-                                                        });
-                                                  },),
+                                                    Icon(
+                                                      Icons.delete,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onTap: () {
+                                                      CoolAlert.show(
+                                                          context: context,
+                                                          type: CoolAlertType
+                                                              .confirm,
+                                                          width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width >
+                                                                  500
+                                                              ? MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width /
+                                                                  2
+                                                              : MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.85,
+                                                          showCancelBtn: true,
+                                                          onCancelBtnTap: () =>
+                                                              Navigator.pop(
+                                                                  context),
+                                                          onConfirmBtnTap: () {
+                                                            contractors
+                                                                .doc(e.docid)
+                                                                .delete()
+                                                                .then(
+                                                                  (value) =>
+                                                                      Navigator.pop(
+                                                                          context),
+                                                                );
+                                                          });
+                                                    },
+                                                  ),
                                                   DataCell(
                                                       Icon(
                                                         Icons.edit,

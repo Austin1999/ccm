@@ -46,6 +46,7 @@ dependencies:
   flutter_typeahead: ^3.2.4
   autocomplete_textfield: ^1.7.3
   syncfusion_flutter_charts: ^19.4.56
+  easy_sidemenu: ^0.2.0
 
 dev_dependencies:
   flutter_test:

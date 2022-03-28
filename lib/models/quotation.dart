@@ -6,9 +6,9 @@ import 'dart:convert';
 
 import 'package:ccm/models/client.dart';
 
-Quotation quotationFromJson(String str) => Quotation.fromJson(json.decode(str));
+// Quotation quotationFromJson(String str) => Quotation.fromJson(json.decode(str));
 
-String quotationToJson(Quotation data) => json.encode(data.toJson());
+// String quotationToJson(Quotation data) => json.encode(data.toJson());
 
 class Quotation {
   Quotation(
@@ -27,6 +27,7 @@ class Quotation {
       required this.contractorPurchaseOrders,
       required this.isTrash,
       this.comment,
+      this.id,
       required this.category,
       required this.search,
       required this.inr});
@@ -46,12 +47,14 @@ class Quotation {
   DateTime jobcompletionDate;
   String overallstatus;
   String? parentQuoteId;
+  String? id;
   List<dynamic> search;
   List<ClientInvoice> clientInvoices;
   List<ContractorPurchaseOrder> contractorPurchaseOrders;
 
-  factory Quotation.fromJson(Map<String, dynamic> json) => Quotation(
-        search: json['search'] ?? '',
+  factory Quotation.fromJson(Map<String, dynamic> json, id) => Quotation(
+        search: json['search'] ?? [],
+        id: id,
         inr: json['inr'] ?? '',
         category: json['category'] ?? '',
         comment: json["comment"] ?? [],

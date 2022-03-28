@@ -15,6 +15,7 @@ class Contractor {
       this.email,
       this.phone,
       this.contactPerson,
+      this.payable,
       this.docid,
       this.cwr});
 
@@ -23,6 +24,7 @@ class Contractor {
   String? country;
   String? email;
   String? phone;
+  int? payable;
   String? cwr;
   String? contactPerson;
   String? docid;
@@ -32,6 +34,7 @@ class Contractor {
       address: json["address"],
       country: json["country"],
       email: json["email"],
+      payable: json['payable']??0,
       phone: json["phone"],
       cwr: json["cwr"] ?? '',
       docid: doc_id,
@@ -41,6 +44,7 @@ class Contractor {
         "name": name,
         "address": address,
         "country": country,
+        "payable":payable,
         "email": email,
         "phone": phone,
         "cwr": cwr,

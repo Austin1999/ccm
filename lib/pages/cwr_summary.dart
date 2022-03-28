@@ -21,21 +21,24 @@ class CwrSummary extends StatefulWidget {
 class _CwrSummaryState extends State<CwrSummary>
     with SingleTickerProviderStateMixin {
   String? _value;
+  String? _approvalvalue;
   TextEditingController clientQuoteclientName = TextEditingController();
   TextEditingController searchcon = TextEditingController();
-  late List<QueryDocumentSnapshot<Map<String, dynamic>>> filtereddocs;
+  List<Quotation>? filtereddocs;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     Get.put(QuotationController());
-    Get.put(ContractorController());
+
     setState(() {
       clientQuoteclientName = TextEditingController(
           text: clientController.clientlist.isEmpty
               ? 'N/A'
               : clientController.clientlist.first.name);
+      filtereddocs = quotationController.quotionlist;
+      // print(filtereddocs);
     });
   }
 
@@ -196,7 +199,8 @@ class _CwrSummaryState extends State<CwrSummary>
                                                           Quotation data =
                                                               Quotation
                                                                   .fromJson(
-                                                                      e.data());
+                                                                      e.data(),
+                                                                      e.id);
                                                           return DataRow(
                                                             cells: [
                                                               DataCell(
@@ -583,9 +587,10 @@ class _CwrSummaryState extends State<CwrSummary>
                 elevation: 5,
                 color: Color(0xFFE8F3FA),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Table(children: [
-                    TableRow(
+                    padding: const EdgeInsets.all(8.0),
+                    child:
+                        // Table(children: [
+                        Row(
                       children: [
                         Expanded(
                             child: Padding(
@@ -739,13 +744,16 @@ class _CwrSummaryState extends State<CwrSummary>
                                             onChanged: (String? value) {
                                               setState(() {
                                                 _value = value;
-                                                filtereddocs.where((element) {
-                                                  Quotation data =
-                                                      Quotation.fromJson(
-                                                          element.data());
-                                                  return data.overallstatus ==
+                                                filtereddocs!
+                                                    // quotationController.quotionlist
+                                                    .where((element) {
+                                                  // Quotation data =
+                                                  //     Quotation.fromJson(
+                                                  //         element.data());
+                                                  return element
+                                                          .overallstatus ==
                                                       value;
-                                                });
+                                                }).toList();
                                               });
                                             },
                                             hint: Text("Select item")),
@@ -785,7 +793,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8.0),
                                         child: DropdownButton(
-                                            value: _value,
+                                            value: _approvalvalue,
                                             items: [
                                               DropdownMenuItem(
                                                 child: Text("Approved"),
@@ -810,7 +818,18 @@ class _CwrSummaryState extends State<CwrSummary>
                                             ],
                                             onChanged: (String? value) {
                                               setState(() {
-                                                _value = value;
+                                                _approvalvalue = value;
+                                                filtereddocs!
+                                                    // quotationController.quotionlist
+                                                    .where((element) {
+                                                  // Quotation data =
+                                                  //     Quotation.fromJson(
+                                                  //         element.data());
+                                                  return element
+                                                          .approvalStatus ==
+                                                      value;
+                                                }).toList();
+                                                print(filtereddocs);
                                               });
                                             },
                                             hint: Text("Select item")),
@@ -886,8 +905,8 @@ class _CwrSummaryState extends State<CwrSummary>
                         ),
                       ],
                     )
-                  ]),
-                ),
+                    // ]),
+                    ),
               ),
             ),
             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -898,136 +917,138 @@ class _CwrSummaryState extends State<CwrSummary>
                     .where('search', arrayContains: searchcon.text)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  filtereddocs = snapshot.data!.docs;
                   if (snapshot.connectionState == ConnectionState.active &&
                       snapshot.hasData) {
+                    filtereddocs = snapshot.data!.docs
+                        .map((e) => Quotation.fromJson(e.data(), e.id))
+                        .toList();
+                    // filtereddocs!.value.isNotEmpty && filtereddocs != null
+                    // quotationController.quotionlist.isNotEmpty
+                    // ?
                     return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                            headingTextStyle:
-                                TextStyle(fontWeight: FontWeight.bold),
-                            columns: [
-                              "EDIT",
-                              "INVOICE",
-                              "QUOTE NO",
-                              "DATE ISSUED",
-                              "CLIENT",
-                              "DESCRIPTION",
-                              "QUOTE AMT",
-                              "STATUS",
-                              "CLIENT PO",
-                              // "MARGIN %",
-                              "MARGIN AMT",
-                              "CCM TKT NO",
-                              "COMPLETION DATE",
-                              "DELETE"
-                            ].map((e) => DataColumn(label: Text(e))).toList(),
-                            rows: filtereddocs.map<DataRow>((e) {
-                              print(e.data());
-                              Quotation data = Quotation.fromJson(e.data());
-                              return DataRow(
-                                cells: [
-                                  DataCell(
-                                    IconButton(
-                                        onPressed: () {
-                                          Get.to(
-                                            () => QuotationView(
-                                              isEdit: true,
-                                              data: data,
-                                              id: e.id,
-                                            ),
-                                          );
-                                        },
-                                        icon: Icon(Icons.edit)),
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        headingTextStyle:
+                            TextStyle(fontWeight: FontWeight.bold),
+                        columns: [
+                          "EDIT",
+                          "INVOICE",
+                          "QUOTE NO",
+                          "DATE ISSUED",
+                          "CLIENT",
+                          "DESCRIPTION",
+                          "QUOTE AMT",
+                          "STATUS",
+                          "CLIENT PO",
+                          // "MARGIN %",
+                          "MARGIN AMT",
+                          "CCM TKT NO",
+                          "COMPLETION DATE",
+                          "DELETE"
+                        ].map((e) => DataColumn(label: Text(e))).toList(),
+                        rows:
+                            // quotationController.quotionlist
+                            filtereddocs!.map<DataRow>((data) {
+                          // print(e.data());
+
+                          return DataRow(
+                            cells: [
+                              DataCell(
+                                IconButton(
+                                    onPressed: () {
+                                      Get.to(
+                                        () => QuotationView(
+                                          isEdit: true,
+                                          data: data,
+                                          id: data.id,
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(Icons.edit)),
+                              ),
+                              DataCell(
+                                IconButton(
+                                  onPressed: () {
+                                    listInvoice(data);
+                                  },
+                                  icon: Icon(
+                                    Icons.notes_rounded,
                                   ),
-                                  DataCell(
-                                    IconButton(
-                                      onPressed: () {
-                                        listInvoice(data);
-                                      },
-                                      icon: Icon(
-                                        Icons.notes_rounded,
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Text(data.qnumber),
-                                  ),
-                                  DataCell(
-                                    Text(
-                                      data.dateIssued
-                                          .toString()
-                                          .substring(0, 10),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Text(data.clientname),
-                                  ),
-                                  DataCell(
-                                    Text(data.description),
-                                  ),
-                                  DataCell(
-                                    Text(data.qamount.toString()),
-                                  ),
-                                  DataCell(
-                                    Text(data.approvalStatus),
-                                  ),
-                                  DataCell(
-                                    Text(''),
-                                  ),
-                                  DataCell(
-                                    Text(''),
-                                  ),
-                                  DataCell(
-                                    Text(data.ccmTicketNumber),
-                                  ),
-                                  DataCell(
-                                    Text(data.jobcompletionDate
-                                        .toString()
-                                        .substring(0, 10)),
-                                  ),
-                                  DataCell(
-                                    IconButton(
-                                      onPressed: () {
-                                        CoolAlert.show(
-                                          width: MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  500
-                                              ? MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  2
-                                              : MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.85,
-                                          showCancelBtn: true,
-                                          onCancelBtnTap: () =>
-                                              Navigator.pop(context),
-                                          onConfirmBtnTap: () {
-                                            // setState(() {
-                                            countries
-                                                .doc(session.country!.code)
-                                                .collection('quotations')
-                                                .doc(e.id)
-                                                .update(
-                                              {"isTrash": true},
-                                            );
-                                            // });
-                                            Navigator.pop(context);
-                                          },
-                                          context: context,
-                                          type: CoolAlertType.confirm,
+                                ),
+                              ),
+                              DataCell(
+                                Text(data.qnumber),
+                              ),
+                              DataCell(
+                                Text(
+                                  data.dateIssued.toString().substring(0, 10),
+                                ),
+                              ),
+                              DataCell(
+                                Text(data.clientname),
+                              ),
+                              DataCell(
+                                Text(data.description),
+                              ),
+                              DataCell(
+                                Text(data.qamount.toString()),
+                              ),
+                              DataCell(
+                                Text(data.approvalStatus),
+                              ),
+                              DataCell(
+                                Text(''),
+                              ),
+                              DataCell(
+                                Text(''),
+                              ),
+                              DataCell(
+                                Text(data.ccmTicketNumber),
+                              ),
+                              DataCell(
+                                Text(data.jobcompletionDate
+                                    .toString()
+                                    .substring(0, 10)),
+                              ),
+                              DataCell(
+                                IconButton(
+                                  onPressed: () {
+                                    CoolAlert.show(
+                                      width: MediaQuery.of(context).size.width >
+                                              500
+                                          ? MediaQuery.of(context).size.width /
+                                              2
+                                          : MediaQuery.of(context).size.width *
+                                              0.85,
+                                      showCancelBtn: true,
+                                      onCancelBtnTap: () =>
+                                          Navigator.pop(context),
+                                      onConfirmBtnTap: () {
+                                        // setState(() {
+                                        countries
+                                            .doc(session.country!.code)
+                                            .collection('quotations')
+                                            .doc(data.id)
+                                            .update(
+                                          {"isTrash": true},
                                         );
+                                        // });
+                                        Navigator.pop(context);
                                       },
-                                      icon: Icon(Icons.delete),
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }).toList()));
+                                      context: context,
+                                      type: CoolAlertType.confirm,
+                                    );
+                                  },
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    );
+                    // ));
                   } else {
                     return Shimmer.fromColors(
                       baseColor: Colors.grey[300]!,
