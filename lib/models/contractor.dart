@@ -17,7 +17,7 @@ class Contractor {
       this.contactPerson,
       this.payable,
       this.docid,
-      this.cwr});
+      this.countryName});
 
   String name;
   String? address;
@@ -25,7 +25,7 @@ class Contractor {
   String? email;
   String? phone;
   int? payable;
-  String? cwr;
+  String? countryName;
   String? contactPerson;
   String? docid;
 
@@ -36,7 +36,7 @@ class Contractor {
       email: json["email"],
       payable: json['payable']??0,
       phone: json["phone"],
-      cwr: json["cwr"] ?? '',
+      countryName: json["countryName"] ?? '',
       docid: doc_id,
       contactPerson: json["contactPerson"] ?? '');
 
@@ -47,7 +47,7 @@ class Contractor {
         "payable":payable,
         "email": email,
         "phone": phone,
-        "cwr": cwr,
+        "countryName": countryName,
         "contactPerson": contactPerson
       };
 

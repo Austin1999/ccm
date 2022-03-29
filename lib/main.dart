@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'Crystal Clear Management',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         secondaryHeaderColor: Color(0xFF29588c),

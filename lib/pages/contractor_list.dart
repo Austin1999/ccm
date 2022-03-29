@@ -36,11 +36,14 @@ class _ContractorListState extends State<ContractorList> {
       required cwrval,
       emailval,
       phoneval,
+      countrynameval,
       contact,
       doc_id}) {
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
-    TextEditingController cwr = TextEditingController(text: cwrval);
+    TextEditingController countrycode = TextEditingController(text: cwrval);
+    TextEditingController countryname =
+        TextEditingController(text: countrynameval);
     TextEditingController email = TextEditingController(text: emailval);
     TextEditingController phone = TextEditingController(text: phoneval);
     TextEditingController contactPerson = TextEditingController(text: contact);
@@ -156,7 +159,7 @@ class _ContractorListState extends State<ContractorList> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8.0),
                                         child: DropdownButton(
-                                            value: cwr.text,
+                                            value: countrycode.text,
                                             items: session.countries
                                                 .map((e) => DropdownMenuItem(
                                                       child: Text(e.name),
@@ -165,7 +168,14 @@ class _ContractorListState extends State<ContractorList> {
                                                 .toList(),
                                             onChanged: (String? value) {
                                               setState(() {
-                                                cwr.text = value!;
+                                                countrycode.text = value!;
+                                                session.countries
+                                                    .forEach((element) {
+                                                  if (element.code == value) {
+                                                    countryname.text =
+                                                        element.name;
+                                                  }
+                                                });
                                               });
                                             },
                                             hint: Text("Select item")),
@@ -338,48 +348,47 @@ class _ContractorListState extends State<ContractorList> {
                                     });
 
                                 isEdit
-                                    ? countries
-                                        .doc(session.country!.code)
-                                        .collection('clients')
+                                
+                                    ? contractors
                                         .doc(doc_id)
                                         .update(
                                         {
                                           'name': name.text,
                                           'address': address.text,
                                           'contactPerson': contactPerson.text,
-                                          'country': session.country!.code,
+                                          'countryName': countryname.text,
+                                          'country': countrycode.text,
                                           'email': email.text,
                                           'phone': phone.text,
-                                          'cwr': cwr.text,
+                                          // 'cwr': countrycode.text,
                                         },
                                       ).then((value) {
                                         name.clear();
                                         address.clear();
-                                        cwr.clear();
+                                        countrycode.clear();
                                         email.clear();
                                         phone.clear();
                                         contactPerson.clear();
                                         Navigator.pop(context);
                                         Navigator.pop(context);
                                       })
-                                    : await countries
-                                        .doc(session.country!.code)
-                                        .collection('clients')
+                                    : await contractors
                                         .add(
                                         {
                                           'name': name.text,
-                                          'cwr': cwr.text,
+                                          // 'cwr': countrycode.text,
                                           'payable': 0,
                                           'address': address.text,
+                                          'countryName': countryname.text,
                                           'contactPerson': contactPerson.text,
-                                          'country': session.country!.code,
+                                          'country': countrycode.text,
                                           'email': email.text,
                                           'phone': phone.text,
                                         },
                                       ).then((value) {
                                         name.clear();
                                         address.clear();
-                                        cwr.clear();
+                                        countrycode.clear();
                                         email.clear();
                                         phone.clear();
                                         contactPerson.clear();
@@ -409,7 +418,15 @@ class _ContractorListState extends State<ContractorList> {
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: () {
-            addContractor(isEdit: false, cwrval: searchcountry);
+            addContractor(
+                isEdit: false,
+                nameval: '',
+                phoneval: '',
+                addressval: '',
+                emailval: '',
+                contact: '',
+                countrynameval: '',
+                cwrval: searchcountry);
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -533,8 +550,10 @@ class _ContractorListState extends State<ContractorList> {
                                     // session = _tempCountries;
                                     // session.country = session.countries.first;
                                     return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: DataTable(
+                                        scrollDirection: Axis.vertical,
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: DataTable(
                                         columns: [
                                           DataColumn(
                                             label: Text(
@@ -571,13 +590,13 @@ class _ContractorListState extends State<ContractorList> {
                                                   fontWeight: FontWeight.bold),
                                             ),
                                           ),
-                                          DataColumn(
-                                            label: Text(
-                                              'CWR Country',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
+                                          // DataColumn(
+                                          //   label: Text(
+                                          //     'CWR Country',
+                                          //     style: TextStyle(
+                                          //         fontWeight: FontWeight.bold),
+                                          //   ),
+                                          // ),
                                           DataColumn(
                                             label: Text(
                                               'Contact Person',
@@ -622,9 +641,9 @@ class _ContractorListState extends State<ContractorList> {
                                                   DataCell(
                                                     Text(e.country!),
                                                   ),
-                                                  DataCell(
-                                                    Text(e.cwr!),
-                                                  ),
+                                                  // DataCell(
+                                                  //   Text(e.cwr!),
+                                                  // ),
                                                   DataCell(
                                                     Text(e.contactPerson!),
                                                   ),
@@ -690,7 +709,7 @@ class _ContractorListState extends State<ContractorList> {
                                               ),
                                             )
                                             .toList(),
-                                      ),
+                                      ),)
                                     );
                                   } else {
                                     //   return Center(

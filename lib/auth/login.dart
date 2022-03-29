@@ -142,7 +142,11 @@ class _SignInState extends State<SignIn> {
                       ElevatedButton(
                           onPressed: () {
                             CoolAlert.show(
-                                context: context, type: CoolAlertType.loading);
+                                width: MediaQuery.of(context).size.width > 500
+                                    ? MediaQuery.of(context).size.width / 2
+                                    : MediaQuery.of(context).size.width * 0.85,
+                                context: context,
+                                type: CoolAlertType.loading);
                             authController.auth
                                 .signInWithEmailAndPassword(
                                     username.text, password.text)

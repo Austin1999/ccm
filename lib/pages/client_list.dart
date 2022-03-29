@@ -24,6 +24,8 @@ class _ClientListState extends State<ClientList> {
   }
 
   late Country _selectedCountry;
+  String searchclient = '';
+  String searchcountry = session.countries.first.code;
   addContractor(
       {required isEdit,
       nameval,
@@ -333,7 +335,7 @@ class _ClientListState extends State<ClientList> {
 
                                 isEdit
                                     ? countries
-                                        .doc(session.country!.code)
+                                        .doc(searchcountry)
                                         .collection('clients')
                                         .doc(doc_id)
                                         .update(
@@ -341,7 +343,7 @@ class _ClientListState extends State<ClientList> {
                                           'name': name.text,
                                           'address': address.text,
                                           'contactPerson': contactPerson.text,
-                                          'country': session.country!.code,
+                                          'country': searchcountry,
                                           'email': email.text,
                                           'phone': phone.text,
                                           'cwr': cwr.text,
@@ -357,7 +359,7 @@ class _ClientListState extends State<ClientList> {
                                         Navigator.pop(context);
                                       })
                                     : await countries
-                                        .doc(session.country!.code)
+                                        .doc(searchcountry)
                                         .collection('clients')
                                         .add(
                                         {
@@ -365,7 +367,7 @@ class _ClientListState extends State<ClientList> {
                                           'cwr': cwr.text,
                                           'address': address.text,
                                           'contactPerson': contactPerson.text,
-                                          'country': session.country!.code,
+                                          'country': searchcountry,
                                           'email': email.text,
                                           'phone': phone.text,
                                         },
@@ -397,8 +399,6 @@ class _ClientListState extends State<ClientList> {
         });
   }
 
-  String searchclient = '';
-  String searchcountry = session.countries.first.code;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -522,162 +522,181 @@ class _ClientListState extends State<ClientList> {
                                     // session = _tempCountries;
                                     // session.country = session.countries.first;
                                     return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: DataTable(
-                                        columns: [
-                                          DataColumn(
-                                            label: Text(
-                                              'Contractor Name',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Address',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Email ID',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Phone No',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Country',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'CWR Country',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Contact Person',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Delete',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Edit',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ],
-                                        rows: _clients
-                                            .map<DataRow>(
-                                              (e) => DataRow(
-                                                cells: [
-                                                  DataCell(
-                                                    Text(e.name),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.address!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.email!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.phone!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.country!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.cwr!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.contactPerson!),
-                                                  ),
-                                                  DataCell(
-                                                    Icon(
-                                                      Icons.delete,
-                                                      color: Colors.red,
-                                                    ),
-                                                    onTap: () {
-                                                      CoolAlert.show(
-                                                          context: context,
-                                                          type: CoolAlertType
-                                                              .confirm,
-                                                          width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width >
-                                                                  500
-                                                              ? MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width /
-                                                                  2
-                                                              : MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.85,
-                                                          showCancelBtn: true,
-                                                          onCancelBtnTap: () =>
-                                                              Navigator.pop(
-                                                                  context),
-                                                          onConfirmBtnTap: () {
-                                                            countries
-                                                                .doc(session
-                                                                    .country!
-                                                                    .code)
-                                                                .collection(
-                                                                    'clients')
-                                                                .doc(e.docid)
-                                                                .delete();
-                                                          });
-                                                    },
-                                                  ),
-                                                  DataCell(
-                                                      Icon(
-                                                        Icons.edit,
-                                                        // color: Colors.,
-                                                      ), onTap: () {
-                                                    print(e.docid);
-                                                    addContractor(
-                                                        isEdit: true,
-                                                        nameval: e.name,
-                                                        addressval: e.address,
-                                                        emailval: e.email,
-                                                        phoneval: e.phone,
-                                                        cwrval: e.country,
-                                                        contact:
-                                                            e.contactPerson,
-                                                        doc_id: e.docid);
-                                                  }),
-                                                ],
+                                        scrollDirection: Axis.vertical,
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: DataTable(
+                                            columns: [
+                                              DataColumn(
+                                                label: Text(
+                                                  'Contractor Name',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
                                               ),
-                                            )
-                                            .toList(),
-                                      ),
-                                    );
+                                              DataColumn(
+                                                label: Text(
+                                                  'Address',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Email ID',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Phone No',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Country',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'CWR Country',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Contact Person',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Delete',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              DataColumn(
+                                                label: Text(
+                                                  'Edit',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
+                                            rows: _clients
+                                                .map<DataRow>(
+                                                  (e) => DataRow(
+                                                    cells: [
+                                                      DataCell(
+                                                        Text(e.name),
+                                                      ),
+                                                      DataCell(
+                                                        Text(e.address!),
+                                                      ),
+                                                      DataCell(
+                                                        Text(e.email!),
+                                                      ),
+                                                      DataCell(
+                                                        Text(e.phone!),
+                                                      ),
+                                                      DataCell(
+                                                        Text(e.country!),
+                                                      ),
+                                                      DataCell(
+                                                        Text(e.cwr!),
+                                                      ),
+                                                      DataCell(
+                                                        Text(e.contactPerson!),
+                                                      ),
+                                                      DataCell(
+                                                        Icon(
+                                                          Icons.delete,
+                                                          color: Colors.red,
+                                                        ),
+                                                        onTap: () {
+                                                          CoolAlert.show(
+                                                              context: context,
+                                                              type: CoolAlertType
+                                                                  .confirm,
+                                                              width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width >
+                                                                      500
+                                                                  ? MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width /
+                                                                      2
+                                                                  : MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.85,
+                                                              showCancelBtn:
+                                                                  true,
+                                                              onCancelBtnTap: () =>
+                                                                  Navigator.pop(
+                                                                      context),
+                                                              onConfirmBtnTap:
+                                                                  () async {
+                                                                await countries
+                                                                    .doc(session
+                                                                        .country!
+                                                                        .code)
+                                                                    .collection(
+                                                                        'clients')
+                                                                    .doc(
+                                                                        e.docid)
+                                                                    .delete();
+                                                                // .whenComplete(() =>
+                                                                Navigator.pop(
+                                                                    context);
+                                                                // );
+                                                              });
+                                                        },
+                                                      ),
+                                                      DataCell(
+                                                          Icon(
+                                                            Icons.edit,
+                                                            // color: Colors.,
+                                                          ), onTap: () {
+                                                        print(e.docid);
+                                                        addContractor(
+                                                            isEdit: true,
+                                                            nameval: e.name,
+                                                            addressval:
+                                                                e.address,
+                                                            emailval: e.email,
+                                                            phoneval: e.phone,
+                                                            cwrval: e.country,
+                                                            contact:
+                                                                e.contactPerson,
+                                                            doc_id: e.docid);
+                                                      }),
+                                                    ],
+                                                  ),
+                                                )
+                                                .toList(),
+                                          ),
+                                        ));
                                   } else {
                                     //   return Center(
                                     //     child: CircularProgressIndicator(),

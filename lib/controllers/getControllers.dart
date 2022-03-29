@@ -105,7 +105,7 @@ class QuotationController extends GetxController {
     return countries
         .doc(session.country!.code)
         .collection('quotations')
-        .where('isTrash', isEqualTo: false)
+        // .where('isTrash', isEqualTo: false)
         .snapshots()
         .map((query) => query.docs.map((e) {
               print(session.country!.code);
@@ -118,7 +118,6 @@ class QuotationController extends GetxController {
 class ClientDashboardController extends GetxController {
   static ClientDashboardController instance = Get.find();
   RxMap<String, dynamic> clientpayment = RxMap<String, dynamic>();
-  
 
   @override
   void onReady() {

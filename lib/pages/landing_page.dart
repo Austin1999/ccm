@@ -270,14 +270,14 @@ class _LandingPageState extends State<LandingPage> {
                 },
                 icon: Icon(Icons.account_circle),
               ),
+              // SideMenuItem(
+              //   priority: 3,
+              //   title: 'Administration',
+              //   onTap: () => null,
+              //   icon: Icon(Icons.settings),
+              // ),
               SideMenuItem(
                 priority: 3,
-                title: 'Administration',
-                onTap: () => null,
-                icon: Icon(Icons.settings),
-              ),
-              SideMenuItem(
-                priority: 4,
                 title: 'User',
                 onTap: () {
                   page.jumpToPage(3);
@@ -293,7 +293,7 @@ class _LandingPageState extends State<LandingPage> {
                 icon: Icon(Icons.person),
               ),
               SideMenuItem(
-                priority: 4,
+                priority: 5,
                 title: 'Contractor',
                 onTap: () {
                   page.jumpToPage(5);

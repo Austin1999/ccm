@@ -24,7 +24,6 @@ class _CountriesListState extends State<CountriesList> {
   void initState() {
     super.initState();
     _selectedCountry = Country.countries.first.code;
-    
   }
 
   @override
@@ -57,19 +56,17 @@ class _CountriesListState extends State<CountriesList> {
                             },
                             value: _selectedCountry,
                           ),
-                          Positioned(
-                            child: ElevatedButton(
-                              child: Text(
-                                'Add Country',
-                              ),
-                              onPressed: () {
-                                Country.countries
-                                    .firstWhere((element) =>
-                                        element.code == _selectedCountry)
-                                    .add();
-                                Navigator.of(context).pop();
-                              },
+                          ElevatedButton(
+                            child: Text(
+                              'Add Country',
                             ),
+                            onPressed: () {
+                              Country.countries
+                                  .firstWhere((element) =>
+                                      element.code == _selectedCountry)
+                                  .add();
+                              Navigator.of(context).pop();
+                            },
                           ),
                         ],
                       ),
@@ -187,8 +184,8 @@ class _CountriesListState extends State<CountriesList> {
                                                       //       );
                                                       //     });
                                                       session.country = e;
-                                                      Get.put(ClientController());
-                                                      // Navigator.pop(context);
+                                                      Get.put(
+                                                          ClientController());
                                                       Get.to(
                                                           () => CwrSummary());
                                                     },

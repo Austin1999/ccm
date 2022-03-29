@@ -17,15 +17,15 @@ class SessionController extends GetxController {
   static SessionController instance = Get.find();
   Country? country;
   List<Country> countries = [];
-  List<Client> clients = [];
+  // List<Client> clients = [];
   setCountry(value) {
     country = value;
-    loadClients();
+    // loadClients();
   }
 
-  void loadClients() {
-    Client.list().then((value) => clients = value);
-  }
+  // void loadClients() {
+  //   Client.list().then((value) => clients = value);
+  // }
 }
 
 SessionController session = SessionController.instance;

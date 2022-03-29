@@ -23,8 +23,10 @@ class QuotationView extends StatefulWidget {
 class _QuotationViewState extends State<QuotationView> {
   TextEditingController currency = TextEditingController();
   TextEditingController clientQuotequotationNumber = TextEditingController();
-  TextEditingController clientQuoteclientName =
-      TextEditingController(text: clientController.clientlist.first.name);
+  TextEditingController clientQuoteclientName = TextEditingController(
+      text: clientController.clientlist.isEmpty
+          ? "N/A"
+          : clientController.clientlist.first.name);
   TextEditingController clientQuoteAmount = TextEditingController();
   GlobalKey<AutoCompleteTextFieldState<String>> clientkey = new GlobalKey();
   GlobalKey<AutoCompleteTextFieldState<String>> contractorkey = new GlobalKey();
@@ -45,7 +47,9 @@ class _QuotationViewState extends State<QuotationView> {
   TextEditingController contractorQuotationPONumber = TextEditingController();
   TextEditingController contractorQuotationContractorName =
       TextEditingController(
-          text: contractorController.contractorlist.first.name);
+          text: contractorController.contractorlist.isEmpty
+              ? 'N/A'
+              : contractorController.contractorlist.first.name);
   TextEditingController contractorQuotationPOAmount = TextEditingController();
   TextEditingController contractorQuotationPOIssueDate =
       TextEditingController();
@@ -116,87 +120,87 @@ class _QuotationViewState extends State<QuotationView> {
       ? 'N/A'
       : quotationController.quotionlist.first.qnumber;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    widget.isEdit ? getData() : null;
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   // widget.isEdit ? getData() : null;
+  // }
 
-  getData() {
-    ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
-    ContractorInvoice contractorInvoiceinit =
-        widget.data!.contractorPurchaseOrders.first.invoices.first;
-    ContractorPurchaseOrder contractorpo =
-        widget.data!.contractorPurchaseOrders.first;
-    contractorQuotationContractorName =
-        TextEditingController(text: contractorpo.name);
-    clientQuotequotationNumber =
-        TextEditingController(text: widget.data!.qnumber);
-    clientQuoteclientName =
-        TextEditingController(text: widget.data!.clientname);
-    clientQuoteAmount =
-        TextEditingController(text: widget.data!.qamount.toString());
-    clientQuoteclientApproval =
-        TextEditingController(text: widget.data!.clientApproval);
-    clientQuotedateIssued = TextEditingController(
-        text: widget.data!.dateIssued.toString().substring(0, 10));
-    clientQuoteDesciption =
-        TextEditingController(text: widget.data!.description);
-    clientQuoteApprovalStatus =
-        TextEditingController(text: widget.data!.approvalStatus);
-    clientQuoteCCMTicketNumber =
-        TextEditingController(text: widget.data!.ccmTicketNumber);
-    clientQuoteJobCompletionDate = TextEditingController(
-      text: widget.data!.jobcompletionDate.toString().substring(0, 10),
-    );
-    clientQuoteOverallStatus =
-        TextEditingController(text: widget.data!.overallstatus);
-    clientInvoiceNo = TextEditingController(text: clientInvoiceinit.number);
-    clientInvoiceAmount =
-        TextEditingController(text: clientInvoiceinit.amount.toString());
-    clientInvoiceIssueDate = TextEditingController(
-      text: clientInvoiceinit.issueDate.toString().substring(0, 10),
-    );
-    contractorQuotationPONumber =
-        TextEditingController(text: contractorpo.poNumber);
-    contractorQuotationPOAmount =
-        TextEditingController(text: contractorpo.poAmount.toString());
-    contractorQuotationPOIssueDate = TextEditingController(
-      text: contractorpo.issueDate.toString().substring(0, 10),
-    );
-    contractorQuotationNo =
-        TextEditingController(text: contractorpo.quotationNumber);
-    contractorQuotationAmount =
-        TextEditingController(text: contractorpo.quotationAmount.toString());
-    contractorQuotationWorkCommence = TextEditingController(
-      text: contractorpo.workCommenceDate.toString().substring(0, 10),
-    );
-    contractorQuotationWorkComplete = TextEditingController(
-      text: contractorpo.workCompleteDate.toString().substring(0, 10),
-    );
-    contractorInvoiceNo =
-        TextEditingController(text: contractorInvoiceinit.number);
-    contractorInvoiceAmount =
-        TextEditingController(text: contractorInvoiceinit.amount.toString());
-    contractorInvoiceRecievedDate = TextEditingController(
-      text: contractorInvoiceinit.receivedDate.toString().substring(0, 10),
-    );
-    contractorInvoiceTaxInvoiceNo =
-        TextEditingController(text: contractorInvoiceinit.taxNumber);
-    contractorInvoicePaidAmount = TextEditingController(
-        text: contractorInvoiceinit.paidamount.toString());
-    contractorInvoiceLastPaidDate = TextEditingController(
-      text: contractorInvoiceinit.paidDate.toString().substring(0, 10),
-    );
-    clientInvoiceLastRecieveDate = TextEditingController(
-      text: clientInvoiceinit.receivedDate.toString().substring(0, 10),
-    );
-    clientinvoices = widget.data!.clientInvoices;
-    contractorInvoice = widget.data!.contractorPurchaseOrders.first.invoices;
-    contractorPO = widget.data!.contractorPurchaseOrders;
-    comments = widget.data!.comment!;
-  }
+  // getData() {
+  //   ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
+  //   ContractorInvoice contractorInvoiceinit =
+  //       widget.data!.contractorPurchaseOrders.first.invoices.first;
+  //   ContractorPurchaseOrder contractorpo =
+  //       widget.data!.contractorPurchaseOrders.first;
+  //   contractorQuotationContractorName =
+  //       TextEditingController(text: contractorpo.name);
+  //   clientQuotequotationNumber =
+  //       TextEditingController(text: widget.data!.qnumber);
+  //   clientQuoteclientName =
+  //       TextEditingController(text: widget.data!.clientname);
+  //   clientQuoteAmount =
+  //       TextEditingController(text: widget.data!.qamount.toString());
+  //   clientQuoteclientApproval =
+  //       TextEditingController(text: widget.data!.clientApproval);
+  //   clientQuotedateIssued = TextEditingController(
+  //       text: widget.data!.dateIssued.toString().substring(0, 10));
+  //   clientQuoteDesciption =
+  //       TextEditingController(text: widget.data!.description);
+  //   clientQuoteApprovalStatus =
+  //       TextEditingController(text: widget.data!.approvalStatus);
+  //   clientQuoteCCMTicketNumber =
+  //       TextEditingController(text: widget.data!.ccmTicketNumber);
+  //   clientQuoteJobCompletionDate = TextEditingController(
+  //     text: widget.data!.jobcompletionDate.toString().substring(0, 10),
+  //   );
+  //   clientQuoteOverallStatus =
+  //       TextEditingController(text: widget.data!.overallstatus);
+  //   clientInvoiceNo = TextEditingController(text: clientInvoiceinit.number);
+  //   clientInvoiceAmount =
+  //       TextEditingController(text: clientInvoiceinit.amount.toString());
+  //   clientInvoiceIssueDate = TextEditingController(
+  //     text: clientInvoiceinit.issueDate.toString().substring(0, 10),
+  //   );
+  //   contractorQuotationPONumber =
+  //       TextEditingController(text: contractorpo.poNumber);
+  //   contractorQuotationPOAmount =
+  //       TextEditingController(text: contractorpo.poAmount.toString());
+  //   contractorQuotationPOIssueDate = TextEditingController(
+  //     text: contractorpo.issueDate.toString().substring(0, 10),
+  //   );
+  //   contractorQuotationNo =
+  //       TextEditingController(text: contractorpo.quotationNumber);
+  //   contractorQuotationAmount =
+  //       TextEditingController(text: contractorpo.quotationAmount.toString());
+  //   contractorQuotationWorkCommence = TextEditingController(
+  //     text: contractorpo.workCommenceDate.toString().substring(0, 10),
+  //   );
+  //   contractorQuotationWorkComplete = TextEditingController(
+  //     text: contractorpo.workCompleteDate.toString().substring(0, 10),
+  //   );
+  //   contractorInvoiceNo =
+  //       TextEditingController(text: contractorInvoiceinit.number);
+  //   contractorInvoiceAmount =
+  //       TextEditingController(text: contractorInvoiceinit.amount.toString());
+  //   contractorInvoiceRecievedDate = TextEditingController(
+  //     text: contractorInvoiceinit.receivedDate.toString().substring(0, 10),
+  //   );
+  //   contractorInvoiceTaxInvoiceNo =
+  //       TextEditingController(text: contractorInvoiceinit.taxNumber);
+  //   contractorInvoicePaidAmount = TextEditingController(
+  //       text: contractorInvoiceinit.paidamount.toString());
+  //   contractorInvoiceLastPaidDate = TextEditingController(
+  //     text: contractorInvoiceinit.paidDate.toString().substring(0, 10),
+  //   );
+  //   clientInvoiceLastRecieveDate = TextEditingController(
+  //     text: clientInvoiceinit.receivedDate.toString().substring(0, 10),
+  //   );
+  //   clientinvoices = widget.data!.clientInvoices;
+  //   contractorInvoice = widget.data!.contractorPurchaseOrders.first.invoices;
+  //   contractorPO = widget.data!.contractorPurchaseOrders;
+  //   comments = widget.data!.comment!;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -389,14 +393,12 @@ class _QuotationViewState extends State<QuotationView> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
                                           child: DropdownButton<String>(
-                                              value: clientController
-                                                      .clientlist.isEmpty
-                                                  ? "N/A"
-                                                  : clientQuoteclientName.text,
+                                              value: clientQuoteclientName.text,
                                               items: clientController
                                                       .clientlist.isEmpty
                                                   ? [
                                                       DropdownMenuItem(
+                                                        value: "N/A",
                                                         child: Text(
                                                           "N/A",
                                                         ),
@@ -1425,15 +1427,14 @@ class _QuotationViewState extends State<QuotationView> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: DropdownButton<String>(
-                                                value: contractorController
-                                                        .contractorlist.isEmpty
-                                                    ? "N/A"
-                                                    : contractorQuotationContractorName
+                                                value:
+                                                    contractorQuotationContractorName
                                                         .text,
                                                 items: contractorController
                                                         .contractorlist.isEmpty
                                                     ? [
                                                         DropdownMenuItem(
+                                                          value: "N/A",
                                                           child: Text(
                                                             "N/A",
                                                           ),
