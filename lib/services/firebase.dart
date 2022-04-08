@@ -21,7 +21,7 @@ final FirebaseFirestore firestore = FirebaseFirestore.instance;
 final FirebaseStorage storage = FirebaseStorage.instance;
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
-CollectionReference<Map<String, dynamic>> users = firestore.collection('Users');
+// CollectionReference<Map<String, dynamic>> users = firestore.collection('Users');
 // CollectionReference<Map<String, dynamic>> clients = firestore.collection('Clients');
 CollectionReference<Map<String, dynamic>> contractors =
     firestore.collection('Contractors');

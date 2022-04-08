@@ -16,7 +16,7 @@ Future<void> main() async {
   );
 
   Get.put(CountryController());
-  Get.put(ContractorController());
+  // Get.put(ContractorController());
   Get.put(ClientDashboardController());
   Get.put(getxcon.AuthController());
   Get.put(getxcon.SessionController());

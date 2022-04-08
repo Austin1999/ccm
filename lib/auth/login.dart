@@ -188,9 +188,7 @@ class _SignInState extends State<SignIn> {
                                     );
                                   });
                             });
-                            print(
-                                "username : ${username.text} , password : ${password.text}");
-                          },
+                            },
                           child: Text("Login")),
                     ],
                   ),

@@ -177,6 +177,7 @@
 //   }
 // }
 
+import 'package:ccm/pages/profile.dart';
 import 'package:ccm/pages/userList.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
@@ -314,7 +315,7 @@ class _LandingPageState extends State<LandingPage> {
               children: [
                 CountriesList(),
                 DashBoardPage(),
-                UsersList(),
+                ProfilePage(),
                 UsersList(),
                 ClientList(),
                 ContractorList(),

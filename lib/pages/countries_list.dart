@@ -186,6 +186,8 @@ class _CountriesListState extends State<CountriesList> {
                                                       session.country = e;
                                                       Get.put(
                                                           ClientController());
+                                                      Get.put(
+                                                          ContractorController());
                                                       Get.to(
                                                           () => CwrSummary());
                                                     },

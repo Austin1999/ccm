@@ -151,6 +151,7 @@ class Quotation {
 class ContractorInvoice {
   ContractorInvoice({
     required this.number,
+    this.uid,
     required this.receivedDate,
     required this.amount,
     required this.paidDate,
@@ -163,6 +164,7 @@ class ContractorInvoice {
   String number;
   DateTime receivedDate;
   double amount;
+  String? uid;
   DateTime paidDate;
   List<CreditModel>? contractorcredits;
   List<InvoicePaymentModel>? contractorinvoicepayments;
@@ -206,6 +208,7 @@ class ContractorInvoice {
 class ClientInvoice {
   ClientInvoice(
       {required this.number,
+      this.uid,
       required this.receivedDate,
       required this.amount,
       required this.recievedamount,
@@ -217,6 +220,7 @@ class ClientInvoice {
 
   String number;
   DateTime receivedDate;
+  String? uid;
   double amount;
   double recievedamount;
   DateTime issueDate;
@@ -308,6 +312,7 @@ class ClientInvoice {
 
 class ContractorPurchaseOrder {
   ContractorPurchaseOrder({
+    this.uid,
     required this.poNumber,
     required this.name,
     required this.poAmount,
@@ -319,6 +324,7 @@ class ContractorPurchaseOrder {
     required this.invoices,
   });
   String poNumber;
+  String? uid;
   String name;
   double poAmount;
   DateTime issueDate;

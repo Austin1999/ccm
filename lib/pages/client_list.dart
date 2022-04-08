@@ -5,6 +5,8 @@ import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'countries_list.dart';
@@ -26,7 +28,7 @@ class _ClientListState extends State<ClientList> {
   late Country _selectedCountry;
   String searchclient = '';
   String searchcountry = session.countries.first.code;
-  addContractor(
+  addClient(
       {required isEdit,
       nameval,
       addressval,
@@ -41,6 +43,7 @@ class _ClientListState extends State<ClientList> {
     TextEditingController email = TextEditingController(text: emailval);
     TextEditingController phone = TextEditingController(text: phoneval);
     TextEditingController contactPerson = TextEditingController(text: contact);
+    GlobalKey<FormState> clientkey = GlobalKey();
     showDialog(
         context: context,
         builder: (context) {
@@ -50,17 +53,145 @@ class _ClientListState extends State<ClientList> {
               backgroundColor: Color(0xFFE8F3FA),
               child: Padding(
                 padding: const EdgeInsets.all(18.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('assets/logo.png'),
-                    ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                child: Form(
+                  key: clientkey,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset('assets/logo.png'),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Client Name',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Card(
+                                    color: Colors.white,
+                                    elevation: 5,
+                                    shadowColor: Colors.grey,
+                                    child: TextFormField(
+                                      validator: (val) => val!.isEmpty
+                                          ? 'Field Cannot be empty'
+                                          : null,
+                                      controller: name,
+                                      decoration: InputDecoration(
+                                        hintText: 'Full Name',
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Address',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Card(
+                                    color: Colors.white,
+                                    elevation: 5,
+                                    shadowColor: Colors.grey,
+                                    child: TextFormField(
+                                      validator: (val) => val!.isEmpty
+                                          ? 'Field Cannot be empty'
+                                          : null,
+                                      controller: address,
+                                      decoration: InputDecoration(
+                                        hintText: 'Address',
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'CWR Country',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Card(
+                                      color: Colors.white,
+                                      elevation: 5,
+                                      shadowColor: Colors.grey,
+                                      child: DropdownButtonHideUnderline(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: DropdownButton(
+                                              value: cwr.text,
+                                              items: session.countries
+                                                  .map((e) => DropdownMenuItem(
+                                                        child: Text(e.name),
+                                                        value: e.code,
+                                                      ))
+                                                  .toList(),
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  cwr.text = value!;
+                                                });
+                                              },
+                                              hint: Text("Select item")),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                          child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
@@ -69,7 +200,7 @@ class _ClientListState extends State<ClientList> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Contractor Name',
+                                  'Email',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 17,
@@ -83,9 +214,12 @@ class _ClientListState extends State<ClientList> {
                                   elevation: 5,
                                   shadowColor: Colors.grey,
                                   child: TextFormField(
-                                    controller: name,
+                                    validator: (val) => val!.isEmpty
+                                        ? 'Field Cannot be empty'
+                                        : null,
+                                    controller: email,
                                     decoration: InputDecoration(
-                                      hintText: 'Full Name',
+                                      hintText: 'Email',
                                       border: OutlineInputBorder(
                                           borderSide: BorderSide.none),
                                     ),
@@ -101,7 +235,7 @@ class _ClientListState extends State<ClientList> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Address',
+                                  'Phone Number',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 17,
@@ -114,284 +248,192 @@ class _ClientListState extends State<ClientList> {
                                   color: Colors.white,
                                   elevation: 5,
                                   shadowColor: Colors.grey,
-                                  child: TextFormField(
-                                    controller: address,
-                                    decoration: InputDecoration(
-                                      hintText: 'Address',
-                                      border: OutlineInputBorder(
-                                          borderSide: BorderSide.none),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'CWR Country',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Card(
-                                    color: Colors.white,
-                                    elevation: 5,
-                                    shadowColor: Colors.grey,
-                                    child: DropdownButtonHideUnderline(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: DropdownButton(
-                                            value: cwr.text,
-                                            items: session.countries
-                                                .map((e) => DropdownMenuItem(
-                                                      child: Text(e.name),
-                                                      value: e.code,
-                                                    ))
-                                                .toList(),
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                cwr.text = value!;
-                                              });
-                                            },
-                                            hint: Text("Select item")),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                        child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Email',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                shadowColor: Colors.grey,
-                                child: TextFormField(
-                                  controller: email,
-                                  decoration: InputDecoration(
-                                    hintText: 'Email',
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Phone Number',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                shadowColor: Colors.grey,
-                                child: TextFormField(
-                                  controller: phone,
-                                  decoration: InputDecoration(
-                                    hintText: 'Phone Number',
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Contact Person',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                shadowColor: Colors.grey,
-                                child: TextFormField(
-                                  controller: contactPerson,
-                                  decoration: InputDecoration(
-                                    hintText: 'Contact Person',
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              clipBehavior: Clip.antiAlias,
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    EdgeInsets.all(15)),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                'Cancel',
-                                style: TextStyle(fontSize: 18.0),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            ElevatedButton(
-                              clipBehavior: Clip.antiAlias,
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    EdgeInsets.all(15)),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () async {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        content: Row(
-                                          children: [
-                                            CircularProgressIndicator(),
-                                            SizedBox(width: 10.0),
-                                            Text(isEdit
-                                                ? 'Updating User...'
-                                                : 'Adding User...')
-                                          ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IntlPhoneField(
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'[0-9]'),
                                         ),
-                                      );
-                                    });
-
-                                isEdit
-                                    ? countries
-                                        .doc(searchcountry)
-                                        .collection('clients')
-                                        .doc(doc_id)
-                                        .update(
-                                        {
-                                          'name': name.text,
-                                          'address': address.text,
-                                          'contactPerson': contactPerson.text,
-                                          'country': searchcountry,
-                                          'email': email.text,
-                                          'phone': phone.text,
-                                          'cwr': cwr.text,
-                                        },
-                                      ).then((value) {
-                                        name.clear();
-                                        address.clear();
-                                        cwr.clear();
-                                        email.clear();
-                                        phone.clear();
-                                        contactPerson.clear();
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                      })
-                                    : await countries
-                                        .doc(searchcountry)
-                                        .collection('clients')
-                                        .add(
-                                        {
-                                          'name': name.text,
-                                          'cwr': cwr.text,
-                                          'address': address.text,
-                                          'contactPerson': contactPerson.text,
-                                          'country': searchcountry,
-                                          'email': email.text,
-                                          'phone': phone.text,
-                                        },
-                                      ).then((value) {
-                                        name.clear();
-                                        address.clear();
-                                        cwr.clear();
-                                        email.clear();
-                                        phone.clear();
-                                        contactPerson.clear();
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                      });
-                              },
-                              child: Text(
-                                'Add / Update',
-                                style: TextStyle(fontSize: 18.0),
-                              ),
+                                      ],
+                                      autofocus: true,
+                                      validator: (val) => val!.isEmpty
+                                          ? 'Phone number should not be empty'
+                                          : null,
+                                      controller: phone,
+                                      decoration: InputDecoration(
+                                        labelText: 'Phone Number',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                        ),
+                                      ),
+                                      initialCountryCode: 'SG',
+                                      onChanged: (phone) {
+                                        // print(mobile.text);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        )
-                      ],
-                    )),
-                  ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Contact Person',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
+                                  child: TextFormField(
+                                    validator: (val) => val!.isEmpty
+                                        ? 'Field Cannot be empty'
+                                        : null,
+                                    controller: contactPerson,
+                                    decoration: InputDecoration(
+                                      hintText: 'Contact Person',
+                                      border: OutlineInputBorder(
+                                          borderSide: BorderSide.none),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15.0,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                clipBehavior: Clip.antiAlias,
+                                style: ButtonStyle(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          EdgeInsets.all(15)),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              ElevatedButton(
+                                clipBehavior: Clip.antiAlias,
+                                style: ButtonStyle(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          EdgeInsets.all(15)),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  if (clientkey.currentState!.validate()) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Row(
+                                              children: [
+                                                CircularProgressIndicator(),
+                                                SizedBox(width: 10.0),
+                                                Text(isEdit
+                                                    ? 'Updating User...'
+                                                    : 'Adding User...')
+                                              ],
+                                            ),
+                                          );
+                                        });
+
+                                    isEdit
+                                        ? countries
+                                            .doc(searchcountry)
+                                            .collection('clients')
+                                            .doc(doc_id)
+                                            .update(
+                                            {
+                                              'name': name.text,
+                                              'address': address.text,
+                                              'contactPerson':
+                                                  contactPerson.text,
+                                              'country': searchcountry,
+                                              'email': email.text,
+                                              'phone': phone.text,
+                                              'cwr': cwr.text,
+                                            },
+                                          ).then((value) {
+                                            name.clear();
+                                            address.clear();
+                                            cwr.clear();
+                                            email.clear();
+                                            phone.clear();
+                                            contactPerson.clear();
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          })
+                                        : await countries
+                                            .doc(searchcountry)
+                                            .collection('clients')
+                                            .add(
+                                            {
+                                              'name': name.text,
+                                              'cwr': cwr.text,
+                                              'address': address.text,
+                                              'contactPerson':
+                                                  contactPerson.text,
+                                              'country': searchcountry,
+                                              'email': email.text,
+                                              'phone': phone.text,
+                                            },
+                                          ).then((value) {
+                                            name.clear();
+                                            address.clear();
+                                            cwr.clear();
+                                            email.clear();
+                                            phone.clear();
+                                            contactPerson.clear();
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          });
+                                  }
+                                },
+                                child: Text(
+                                  isEdit ? 'Update' : 'Add',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      )),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -404,7 +446,7 @@ class _ClientListState extends State<ClientList> {
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: () {
-            addContractor(isEdit: false, cwrval: searchcountry);
+            addClient(isEdit: false, cwrval: searchcountry);
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -529,7 +571,7 @@ class _ClientListState extends State<ClientList> {
                                             columns: [
                                               DataColumn(
                                                 label: Text(
-                                                  'Contractor Name',
+                                                  'Client Name',
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold),
@@ -679,7 +721,7 @@ class _ClientListState extends State<ClientList> {
                                                             // color: Colors.,
                                                           ), onTap: () {
                                                         print(e.docid);
-                                                        addContractor(
+                                                        addClient(
                                                             isEdit: true,
                                                             nameval: e.name,
                                                             addressval:

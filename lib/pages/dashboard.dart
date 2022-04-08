@@ -23,14 +23,21 @@ class _DashBoardPageState extends State<DashBoardPage> {
     ChartData('0', 50404, Colors.orange),
   ];
   final List<ChartData> total = [
-    ChartData('Total', clientDashboardController.clientpayment['totalamount'],
+    ChartData(
+        'Total',
+        double.parse(clientDashboardController.clientpayment['totalamount']
+            .toStringAsFixed(2)),
         Colors.grey),
-    ChartData('Recieved',
-        clientDashboardController.clientpayment['totalrecieved'], Colors.blue),
+    ChartData(
+        'Recieved',
+        double.parse(clientDashboardController.clientpayment['totalrecieved']
+            .toStringAsFixed(2)),
+        Colors.blue),
     ChartData(
         'Remaining',
-        (clientDashboardController.clientpayment['totalamount'] -
-            clientDashboardController.clientpayment['totalrecieved']),
+        double.parse((clientDashboardController.clientpayment['totalamount'] -
+                clientDashboardController.clientpayment['totalrecieved'])
+            .toStringAsFixed(2)),
         Colors.orange),
   ];
 
@@ -38,21 +45,24 @@ class _DashBoardPageState extends State<DashBoardPage> {
     ChartData(
         'Total',
         // 200,
-        clientDashboardController.clientpayment[DateTime.now().month.toString()]
-            ['total'],
+        double.parse(clientDashboardController
+            .clientpayment[DateTime.now().month.toString()]['total']
+            .toStringAsFixed(2)),
         Colors.grey),
     ChartData(
         'Recieved',
         // 500,
-        clientDashboardController.clientpayment[DateTime.now().month.toString()]
-            ['recieved'],
+        double.parse(clientDashboardController
+            .clientpayment[DateTime.now().month.toString()]['recieved']
+            .toStringAsFixed(2)),
         Colors.blue),
     ChartData(
         'Remaining',
-        (clientDashboardController
-                .clientpayment[DateTime.now().month.toString()]['total'] -
-            clientDashboardController
-                .clientpayment[DateTime.now().month.toString()]['recieved']),
+        double.parse((clientDashboardController
+                    .clientpayment[DateTime.now().month.toString()]['total'] -
+                clientDashboardController
+                    .clientpayment[DateTime.now().month.toString()]['recieved'])
+            .toStringAsFixed(2)),
         Colors.orange),
   ];
 
@@ -60,43 +70,120 @@ class _DashBoardPageState extends State<DashBoardPage> {
     ChartData(
         'Payables',
         // 200,
-        contractorController.contractorlist.fold(
-            0, (previousValue, element) => previousValue + element.payable!),
+        double.parse(contractorController.contractorlist
+            .fold(
+                0,
+                (int previousValue, element) =>
+                    previousValue + element.payable!)
+            .toStringAsFixed(2)),
         Colors.grey),
     ChartData(
         'Recieved',
-        (clientDashboardController.clientpayment['totalamount'] -
-            clientDashboardController.clientpayment['totalrecieved']),
+        double.parse((clientDashboardController.clientpayment['totalamount'] -
+                clientDashboardController.clientpayment['totalrecieved'])
+            .toStringAsFixed(2)),
         Colors.blue),
   ];
 
   List<ChartData> yearlytotal = [
-    ChartData(1, clientDashboardController.clientpayment['1']['total']),
-    ChartData(2, clientDashboardController.clientpayment['2']['total']),
-    ChartData(3, clientDashboardController.clientpayment['3']['total']),
-    ChartData(4, clientDashboardController.clientpayment['4']['total']),
-    ChartData(5, clientDashboardController.clientpayment['5']['total']),
-    ChartData(6, clientDashboardController.clientpayment['6']['total']),
-    ChartData(7, clientDashboardController.clientpayment['7']['total']),
-    ChartData(8, clientDashboardController.clientpayment['8']['total']),
-    ChartData(9, clientDashboardController.clientpayment['9']['total']),
-    ChartData(10, clientDashboardController.clientpayment['10']['total']),
-    ChartData(11, clientDashboardController.clientpayment['11']['total']),
-    ChartData(12, clientDashboardController.clientpayment['12']['total']),
+    ChartData(
+        1,
+        double.parse(clientDashboardController.clientpayment['1']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        2,
+        double.parse(clientDashboardController.clientpayment['2']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        3,
+        double.parse(clientDashboardController.clientpayment['3']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        4,
+        double.parse(clientDashboardController.clientpayment['4']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        5,
+        double.parse(clientDashboardController.clientpayment['5']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        6,
+        double.parse(clientDashboardController.clientpayment['6']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        7,
+        double.parse(clientDashboardController.clientpayment['7']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        8,
+        double.parse(clientDashboardController.clientpayment['8']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        9,
+        double.parse(clientDashboardController.clientpayment['9']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        10,
+        double.parse(clientDashboardController.clientpayment['10']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        11,
+        double.parse(clientDashboardController.clientpayment['11']['total']
+            .toStringAsFixed(2))),
+    ChartData(
+        12,
+        double.parse(clientDashboardController.clientpayment['12']['total']
+            .toStringAsFixed(2))),
   ];
   List<ChartData> yearlyrecieved = [
-    ChartData(1, clientDashboardController.clientpayment['1']['recieved']),
-    ChartData(2, clientDashboardController.clientpayment['2']['recieved']),
-    ChartData(3, clientDashboardController.clientpayment['3']['recieved']),
-    ChartData(4, clientDashboardController.clientpayment['4']['recieved']),
-    ChartData(5, clientDashboardController.clientpayment['5']['recieved']),
-    ChartData(6, clientDashboardController.clientpayment['6']['recieved']),
-    ChartData(7, clientDashboardController.clientpayment['7']['recieved']),
-    ChartData(8, clientDashboardController.clientpayment['8']['recieved']),
-    ChartData(9, clientDashboardController.clientpayment['9']['recieved']),
-    ChartData(10, clientDashboardController.clientpayment['10']['recieved']),
-    ChartData(11, clientDashboardController.clientpayment['11']['recieved']),
-    ChartData(12, clientDashboardController.clientpayment['12']['recieved']),
+    ChartData(
+        1,
+        double.parse(clientDashboardController.clientpayment['1']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        2,
+        double.parse(clientDashboardController.clientpayment['2']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        3,
+        double.parse(clientDashboardController.clientpayment['3']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        4,
+        double.parse(clientDashboardController.clientpayment['4']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        5,
+        double.parse(clientDashboardController.clientpayment['5']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        6,
+        double.parse(clientDashboardController.clientpayment['6']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        7,
+        double.parse(clientDashboardController.clientpayment['7']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        8,
+        double.parse(clientDashboardController.clientpayment['8']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        9,
+        double.parse(clientDashboardController.clientpayment['9']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        10,
+        double.parse(clientDashboardController.clientpayment['10']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        11,
+        double.parse(clientDashboardController.clientpayment['11']['recieved']
+            .toStringAsFixed(2))),
+    ChartData(
+        12,
+        double.parse(clientDashboardController.clientpayment['12']['recieved']
+            .toStringAsFixed(2))),
   ];
   List<ChartData> yearlyremaining = [
     ChartData(1, 35),

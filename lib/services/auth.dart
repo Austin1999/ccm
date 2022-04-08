@@ -28,6 +28,7 @@ class Auth {
     final userCredential = await _firebaseAuth.signInWithCredential(
       EmailAuthProvider.credential(email: email, password: password),
     );
+    print('User ID : ${userCredential.user!.uid}');
     return userCredential.user;
   }
 

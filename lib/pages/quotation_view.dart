@@ -83,6 +83,9 @@ class _QuotationViewState extends State<QuotationView> {
   TextEditingController contractorcreditRecieveDate = TextEditingController();
   TextEditingController contractorcreditamount = TextEditingController();
   TextEditingController contractorcreditnoteno = TextEditingController();
+  var clientinvoiceuid;
+  var constractorinvoiceuid;
+  var contractorpouid;
   Future<DateTime> _selectDate(
       BuildContext context, DateTime selectedDate) async {
     final DateTime? picked = await showDatePicker(
@@ -120,87 +123,87 @@ class _QuotationViewState extends State<QuotationView> {
       ? 'N/A'
       : quotationController.quotionlist.first.qnumber;
 
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   // widget.isEdit ? getData() : null;
-  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.isEdit ? getData() : null;
+  }
 
-  // getData() {
-  //   ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
-  //   ContractorInvoice contractorInvoiceinit =
-  //       widget.data!.contractorPurchaseOrders.first.invoices.first;
-  //   ContractorPurchaseOrder contractorpo =
-  //       widget.data!.contractorPurchaseOrders.first;
-  //   contractorQuotationContractorName =
-  //       TextEditingController(text: contractorpo.name);
-  //   clientQuotequotationNumber =
-  //       TextEditingController(text: widget.data!.qnumber);
-  //   clientQuoteclientName =
-  //       TextEditingController(text: widget.data!.clientname);
-  //   clientQuoteAmount =
-  //       TextEditingController(text: widget.data!.qamount.toString());
-  //   clientQuoteclientApproval =
-  //       TextEditingController(text: widget.data!.clientApproval);
-  //   clientQuotedateIssued = TextEditingController(
-  //       text: widget.data!.dateIssued.toString().substring(0, 10));
-  //   clientQuoteDesciption =
-  //       TextEditingController(text: widget.data!.description);
-  //   clientQuoteApprovalStatus =
-  //       TextEditingController(text: widget.data!.approvalStatus);
-  //   clientQuoteCCMTicketNumber =
-  //       TextEditingController(text: widget.data!.ccmTicketNumber);
-  //   clientQuoteJobCompletionDate = TextEditingController(
-  //     text: widget.data!.jobcompletionDate.toString().substring(0, 10),
-  //   );
-  //   clientQuoteOverallStatus =
-  //       TextEditingController(text: widget.data!.overallstatus);
-  //   clientInvoiceNo = TextEditingController(text: clientInvoiceinit.number);
-  //   clientInvoiceAmount =
-  //       TextEditingController(text: clientInvoiceinit.amount.toString());
-  //   clientInvoiceIssueDate = TextEditingController(
-  //     text: clientInvoiceinit.issueDate.toString().substring(0, 10),
-  //   );
-  //   contractorQuotationPONumber =
-  //       TextEditingController(text: contractorpo.poNumber);
-  //   contractorQuotationPOAmount =
-  //       TextEditingController(text: contractorpo.poAmount.toString());
-  //   contractorQuotationPOIssueDate = TextEditingController(
-  //     text: contractorpo.issueDate.toString().substring(0, 10),
-  //   );
-  //   contractorQuotationNo =
-  //       TextEditingController(text: contractorpo.quotationNumber);
-  //   contractorQuotationAmount =
-  //       TextEditingController(text: contractorpo.quotationAmount.toString());
-  //   contractorQuotationWorkCommence = TextEditingController(
-  //     text: contractorpo.workCommenceDate.toString().substring(0, 10),
-  //   );
-  //   contractorQuotationWorkComplete = TextEditingController(
-  //     text: contractorpo.workCompleteDate.toString().substring(0, 10),
-  //   );
-  //   contractorInvoiceNo =
-  //       TextEditingController(text: contractorInvoiceinit.number);
-  //   contractorInvoiceAmount =
-  //       TextEditingController(text: contractorInvoiceinit.amount.toString());
-  //   contractorInvoiceRecievedDate = TextEditingController(
-  //     text: contractorInvoiceinit.receivedDate.toString().substring(0, 10),
-  //   );
-  //   contractorInvoiceTaxInvoiceNo =
-  //       TextEditingController(text: contractorInvoiceinit.taxNumber);
-  //   contractorInvoicePaidAmount = TextEditingController(
-  //       text: contractorInvoiceinit.paidamount.toString());
-  //   contractorInvoiceLastPaidDate = TextEditingController(
-  //     text: contractorInvoiceinit.paidDate.toString().substring(0, 10),
-  //   );
-  //   clientInvoiceLastRecieveDate = TextEditingController(
-  //     text: clientInvoiceinit.receivedDate.toString().substring(0, 10),
-  //   );
-  //   clientinvoices = widget.data!.clientInvoices;
-  //   contractorInvoice = widget.data!.contractorPurchaseOrders.first.invoices;
-  //   contractorPO = widget.data!.contractorPurchaseOrders;
-  //   comments = widget.data!.comment!;
-  // }
+  getData() {
+    ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
+    ContractorInvoice contractorInvoiceinit =
+        widget.data!.contractorPurchaseOrders.first.invoices.first;
+    ContractorPurchaseOrder contractorpo =
+        widget.data!.contractorPurchaseOrders.first;
+    contractorQuotationContractorName =
+        TextEditingController(text: contractorpo.name);
+    clientQuotequotationNumber =
+        TextEditingController(text: widget.data!.qnumber);
+    clientQuoteclientName =
+        TextEditingController(text: widget.data!.clientname);
+    clientQuoteAmount =
+        TextEditingController(text: widget.data!.qamount.toString());
+    clientQuoteclientApproval =
+        TextEditingController(text: widget.data!.clientApproval);
+    clientQuotedateIssued = TextEditingController(
+        text: widget.data!.dateIssued.toString().substring(0, 10));
+    clientQuoteDesciption =
+        TextEditingController(text: widget.data!.description);
+    clientQuoteApprovalStatus =
+        TextEditingController(text: widget.data!.approvalStatus);
+    clientQuoteCCMTicketNumber =
+        TextEditingController(text: widget.data!.ccmTicketNumber);
+    clientQuoteJobCompletionDate = TextEditingController(
+      text: widget.data!.jobcompletionDate.toString().substring(0, 10),
+    );
+    clientQuoteOverallStatus =
+        TextEditingController(text: widget.data!.overallstatus);
+    clientInvoiceNo = TextEditingController(text: clientInvoiceinit.number);
+    clientInvoiceAmount =
+        TextEditingController(text: clientInvoiceinit.amount.toString());
+    clientInvoiceIssueDate = TextEditingController(
+      text: clientInvoiceinit.issueDate.toString().substring(0, 10),
+    );
+    contractorQuotationPONumber =
+        TextEditingController(text: contractorpo.poNumber);
+    contractorQuotationPOAmount =
+        TextEditingController(text: contractorpo.poAmount.toString());
+    contractorQuotationPOIssueDate = TextEditingController(
+      text: contractorpo.issueDate.toString().substring(0, 10),
+    );
+    contractorQuotationNo =
+        TextEditingController(text: contractorpo.quotationNumber);
+    contractorQuotationAmount =
+        TextEditingController(text: contractorpo.quotationAmount.toString());
+    contractorQuotationWorkCommence = TextEditingController(
+      text: contractorpo.workCommenceDate.toString().substring(0, 10),
+    );
+    contractorQuotationWorkComplete = TextEditingController(
+      text: contractorpo.workCompleteDate.toString().substring(0, 10),
+    );
+    contractorInvoiceNo =
+        TextEditingController(text: contractorInvoiceinit.number);
+    contractorInvoiceAmount =
+        TextEditingController(text: contractorInvoiceinit.amount.toString());
+    contractorInvoiceRecievedDate = TextEditingController(
+      text: contractorInvoiceinit.receivedDate.toString().substring(0, 10),
+    );
+    contractorInvoiceTaxInvoiceNo =
+        TextEditingController(text: contractorInvoiceinit.taxNumber);
+    contractorInvoicePaidAmount = TextEditingController(
+        text: contractorInvoiceinit.paidamount.toString());
+    contractorInvoiceLastPaidDate = TextEditingController(
+      text: contractorInvoiceinit.paidDate.toString().substring(0, 10),
+    );
+    clientInvoiceLastRecieveDate = TextEditingController(
+      text: clientInvoiceinit.receivedDate.toString().substring(0, 10),
+    );
+    clientinvoices = widget.data!.clientInvoices;
+    contractorInvoice = widget.data!.contractorPurchaseOrders.first.invoices;
+    contractorPO = widget.data!.contractorPurchaseOrders;
+    comments = widget.data!.comment!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -791,6 +794,8 @@ class _QuotationViewState extends State<QuotationView> {
                                                               if (v.number ==
                                                                   data) {
                                                                 setState(() {
+                                                                  clientinvoiceuid =
+                                                                      v.uid;
                                                                   clientInvoiceNo
                                                                           .text =
                                                                       v.number;
@@ -820,72 +825,10 @@ class _QuotationViewState extends State<QuotationView> {
                                                     controller: clientInvoiceNo,
                                                     suggestions:
                                                         clientinvoices.map((e) {
-                                                      print(clientinvoices);
-                                                      print(e.number);
                                                       return e.number;
                                                     }).toList(),
                                                     key: clientkey,
-                                                  )
-                                                  //     DropdownButtonFormField(
-                                                  //   items: clientinvoices
-                                                  //       .map(
-                                                  //         (e) =>
-                                                  //             DropdownMenuItem(
-                                                  //           child:
-                                                  //               Text(e.number),
-                                                  //           value: e.number,
-                                                  //         ),
-                                                  //       )
-                                                  //       .toList(),
-                                                  //   onChanged: (String? value) {
-                                                  //     setState(() {
-                                                  //       clientInvoiceNo.text =
-                                                  //           value!;
-                                                  //     });
-                                                  //   },
-                                                  //   decoration: InputDecoration(
-                                                  //     hintText:
-                                                  //         "Client Invoice No",
-                                                  //     border:
-                                                  //         OutlineInputBorder(
-                                                  //             borderSide:
-                                                  //                 BorderSide
-                                                  //                     .none),
-                                                  //   ),
-                                                  //   value: clientInvoiceNo.text,
-                                                  //   hint: Text(
-                                                  //       "Client Invoice No"),
-                                                  // )
-                                                  //     DropdownButtonHideUnderline(
-                                                  //   child: Padding(
-                                                  //     padding: const EdgeInsets
-                                                  //             .symmetric(
-                                                  //         horizontal: 8.0),
-                                                  //     child: DropdownButton(
-                                                  // value: clientInvoiceNo
-                                                  //     .text,
-                                                  // items: clientinvoices
-                                                  //     .map(
-                                                  //       (e) =>
-                                                  //           DropdownMenuItem(
-                                                  //         child: Text(
-                                                  //             e.number),
-                                                  //         value: e.number,
-                                                  //       ),
-                                                  //     )
-                                                  //     .toList(),
-                                                  //         onChanged:
-                                                  //             (String? value) {
-                                                  //           setState(() {
-                                                  //             clientInvoiceNo
-                                                  //                 .text = value!;
-                                                  //           });
-                                                  //         },
-                                                  // hint: Text(
-                                                  //     "Client Invoice No")),
-                                                  //   ),
-                                                  // ),
-                                                  ),
+                                                  )),
                                             ),
                                           ],
                                         ),
@@ -981,9 +924,11 @@ class _QuotationViewState extends State<QuotationView> {
                                       height: 45.0,
                                       child: ElevatedButton(
                                         onPressed: () {
+                                          var uid = UniqueKey().toString();
                                           setState(() {
                                             clientinvoices.add(
                                               ClientInvoice(
+                                                uid: uid,
                                                 clientcredits: clientcredits,
                                                 clientinvoicepayments:
                                                     clientinvoicepayment,
@@ -1039,6 +984,7 @@ class _QuotationViewState extends State<QuotationView> {
                                       child: ElevatedButton(
                                         onPressed: () {
                                           var invoice = ClientInvoice(
+                                            uid: clientinvoiceuid,
                                             number: clientInvoiceNo.text,
                                             receivedDate: DateTime.parse(
                                                 clientInvoiceLastRecieveDate
@@ -1049,9 +995,33 @@ class _QuotationViewState extends State<QuotationView> {
                                             issueDate: DateTime.parse(
                                                 clientInvoiceIssueDate.text),
                                           );
-                                          // clientinvoices.remove(value)
+                                          clientinvoices.forEach((element) {
+                                            if (element.uid ==
+                                                clientinvoiceuid) {
+                                              setState(() {
+                                                clientinvoices.remove(element);
+                                                clientinvoices.add(invoice);
+                                                clientInvoiceNo.clear();
+                                                clientInvoiceLastRecieveDate
+                                                    .clear();
+                                                clientInvoiceAmount.clear();
+                                                clientInvoiceIssueDate.clear();
+                                                CoolAlert.show(
+                                                    context: context,
+                                                    type: CoolAlertType.success,
+                                                    text: 'Quotation Updated');
+                                                clientkey.currentState!
+                                                    .updateSuggestions(
+                                                  clientinvoices
+                                                      .map((e) => e.number)
+                                                      .toList(),
+                                                );
+                                              });
+                                            }
+                                          });
+                                          // var f =clientinvoices.indexWhere((element) => element.uid == clientinvoiceuid);
                                         },
-                                        child: Text('Edit'),
+                                        child: Text('Update'),
                                       ),
                                     )),
                               ),
@@ -1295,14 +1265,8 @@ class _QuotationViewState extends State<QuotationView> {
                           ),
                           Row(
                             children: [
-                              contractorPO.isEmpty
-                                  ? CardInputField(
-                                      readonly: false,
-                                      text: 'PO Number',
-                                      hinttext: 'PO Number',
-                                      controller: contractorQuotationPONumber,
-                                    )
-                                  : Expanded(
+                              contractorPO.isNotEmpty
+                                  ? Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16.0, vertical: 8.0),
@@ -1323,84 +1287,187 @@ class _QuotationViewState extends State<QuotationView> {
                                             SizedBox(
                                               width: double.infinity,
                                               child: Card(
-                                                color: Colors.white,
-                                                elevation: 5,
-                                                shadowColor: Colors.grey,
-                                                child:
-                                                    SimpleAutoCompleteTextField(
-                                                  clearOnSubmit: false,
-                                                  textSubmitted: (data) {
-                                                    contractorPO.isNotEmpty
-                                                        ? contractorPO
-                                                            .forEach((v) {
-                                                            if (v.poNumber ==
-                                                                data) {
-                                                              setState(() {
-                                                                contractorQuotationPONumber
-                                                                        .text =
-                                                                    v.poNumber;
+                                                  color: Colors.white,
+                                                  elevation: 5,
+                                                  shadowColor: Colors.grey,
+                                                  child:
+                                                      SimpleAutoCompleteTextField(
+                                                    clearOnSubmit: false,
+                                                    textSubmitted: (data) {
+                                                      contractorPO.isNotEmpty
+                                                          ? contractorPO
+                                                              .forEach((v) {
+                                                              if (v.poNumber ==
+                                                                  data) {
+                                                                setState(() {
+                                                                  contractorpouid =
+                                                                      v.uid;
+                                                                  contractorQuotationPONumber
+                                                                          .text =
+                                                                      v.poNumber;
 
-                                                                contractorQuotationPOAmount
-                                                                        .text =
-                                                                    v.poAmount
-                                                                        .toString();
+                                                                  contractorQuotationPOAmount
+                                                                          .text =
+                                                                      v.poAmount
+                                                                          .toString();
 
-                                                                contractorQuotationContractorName
-                                                                        .text =
-                                                                    v.name;
+                                                                  contractorQuotationContractorName
+                                                                          .text =
+                                                                      v.name;
 
-                                                                contractorQuotationPOIssueDate
-                                                                        .text =
-                                                                    v.issueDate
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            10);
+                                                                  contractorQuotationPOIssueDate.text = v
+                                                                      .issueDate
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10);
 
-                                                                contractorQuotationNo
-                                                                        .text =
-                                                                    v.quotationNumber!;
+                                                                  contractorQuotationNo
+                                                                          .text =
+                                                                      v.quotationNumber!;
 
-                                                                contractorQuotationAmount
-                                                                        .text =
-                                                                    v.quotationAmount
-                                                                        .toString();
+                                                                  contractorQuotationAmount
+                                                                          .text =
+                                                                      v.quotationAmount
+                                                                          .toString();
 
-                                                                contractorQuotationWorkCommence
-                                                                        .text =
-                                                                    v.workCommenceDate
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            10);
-                                                                contractorQuotationWorkComplete
-                                                                        .text =
-                                                                    v.workCompleteDate
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            10);
-                                                              });
-                                                            }
-                                                          })
-                                                        : print('Null Value');
-                                                  },
-                                                  decoration: InputDecoration(
-                                                      hintText: 'PO No'),
-                                                  controller:
-                                                      contractorQuotationPONumber,
-                                                  suggestions:
-                                                      contractorPO.map((e) {
-                                                    return e.poNumber;
-                                                  }).toList(),
-                                                  key: contractorkey,
-                                                ),
-                                              ),
+                                                                  contractorQuotationWorkCommence.text = v
+                                                                      .workCommenceDate
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10);
+                                                                  contractorQuotationWorkComplete.text = v
+                                                                      .workCompleteDate
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10);
+                                                                });
+                                                              }
+                                                            })
+                                                          : print('Null Value');
+                                                    },
+                                                    decoration: InputDecoration(
+                                                        hintText: 'Invoice No'),
+                                                    controller:
+                                                        contractorQuotationPONumber,
+                                                    suggestions:
+                                                        contractorPO.map((e) {
+                                                      return e.poNumber;
+                                                    }).toList(),
+                                                    key: contractorkey,
+                                                  )),
                                             ),
                                           ],
                                         ),
                                       ),
+                                    )
+                                  : CardInputField(
+                                      readonly: false,
+                                      text: 'PO Number',
+                                      hinttext: 'PO Number',
+                                      controller: contractorQuotationPONumber,
                                     ),
+                              // Expanded(
+                              //     child: Padding(
+                              //       padding: const EdgeInsets.symmetric(
+                              //           horizontal: 16.0, vertical: 8.0),
+                              //       child: Column(
+                              //         crossAxisAlignment:
+                              //             CrossAxisAlignment.start,
+                              //         children: [
+                              //           Text(
+                              //             'PO Number',
+                              //             style: TextStyle(
+                              //               fontWeight: FontWeight.bold,
+                              //               fontSize: 17,
+                              //             ),
+                              //           ),
+                              //           SizedBox(
+                              //             height: 10,
+                              //           ),
+                              //           SizedBox(
+                              //             width: double.infinity,
+                              //             child: Card(
+                              //               color: Colors.white,
+                              //               elevation: 5,
+                              //               shadowColor: Colors.grey,
+                              //               child:
+                              //                   SimpleAutoCompleteTextField(
+                              //                 clearOnSubmit: false,
+                              //                 textSubmitted: (data) {
+                              // contractorPO.isNotEmpty
+                              //     ? contractorPO
+                              //         .forEach((v) {
+                              //         if (v.poNumber ==
+                              //             data) {
+                              //           setState(() {
+                              //             contractorQuotationPONumber
+                              //                     .text =
+                              //                 v.poNumber;
+
+                              //             contractorQuotationPOAmount
+                              //                     .text =
+                              //                 v.poAmount
+                              //                     .toString();
+
+                              //             contractorQuotationContractorName
+                              //                     .text =
+                              //                 v.name;
+
+                              //             contractorQuotationPOIssueDate
+                              //                     .text =
+                              //                 v.issueDate
+                              //                     .toString()
+                              //                     .substring(
+                              //                         0,
+                              //                         10);
+
+                              //             contractorQuotationNo
+                              //                     .text =
+                              //                 v.quotationNumber!;
+
+                              //             contractorQuotationAmount
+                              //                     .text =
+                              //                 v.quotationAmount
+                              //                     .toString();
+
+                              //             contractorQuotationWorkCommence
+                              //                     .text =
+                              //                 v.workCommenceDate
+                              //                     .toString()
+                              //                     .substring(
+                              //                         0,
+                              //                         10);
+                              //             contractorQuotationWorkComplete
+                              //                     .text =
+                              //                 v.workCompleteDate
+                              //                     .toString()
+                              //                     .substring(
+                              //                         0,
+                              //                         10);
+                              //           });
+                              //         }
+                              //       })
+                              //     : print('Null Value');
+                              //                 },
+                              //                 decoration: InputDecoration(
+                              //                     hintText: 'PO No'),
+                              //                 controller:
+                              //                     contractorQuotationPONumber,
+                              // suggestions:
+                              //     contractorPO.map((e) {
+                              //   return e.poNumber;
+                              // }).toList(),
+                              // key: contractorkey,
+                              //               ),
+                              //             ),
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ),
 
                               Expanded(
                                 child: Column(
@@ -1562,7 +1629,9 @@ class _QuotationViewState extends State<QuotationView> {
                                       child: ElevatedButton(
                                         onPressed: () {
                                           setState(() {
+                                            var uid = UniqueKey().toString();
                                             contractorPO.add(ContractorPurchaseOrder(
+                                                uid: uid,
                                                 name: contractorQuotationContractorName
                                                     .text,
                                                 poNumber: contractorQuotationPONumber
@@ -1582,52 +1651,29 @@ class _QuotationViewState extends State<QuotationView> {
                                                     contractorQuotationWorkCommence.text),
                                                 workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
                                                 invoices: contractorInvoice));
-                                            // clientinvoices.forEach((element) {
-                                            //   if (element.number ==
-                                            //       clientInvoiceNo.text) {
-                                            //     element.contractorpo =
-                                            //         contractorPO;
-                                            //   }
-                                            // });
-
-                                            // contractorQuotationContractorName
-                                            //     .clear();
-                                            contractorQuotationPONumber.clear();
-                                            contractorQuotationAmount.clear();
-                                            contractorQuotationNo.clear();
-                                            contractorQuotationPOIssueDate
-                                                .clear();
-                                            contractorQuotationPOAmount.clear();
-                                            contractorQuotationWorkCommence
-                                                .clear();
-                                            contractorQuotationWorkComplete
-                                                .clear();
-                                            contractorPO.isNotEmpty
-                                                ? contractorkey.currentState!
-                                                    .updateSuggestions(
-                                                    contractorPO
-                                                        .map((e) => e.poNumber)
-                                                        .toList(),
-                                                  )
-                                                : null;
                                           });
+                                          contractorQuotationPONumber.clear();
+                                          contractorQuotationAmount.clear();
+                                          contractorQuotationNo.clear();
+                                          contractorQuotationPOIssueDate
+                                              .clear();
+                                          contractorQuotationPOAmount.clear();
+                                          contractorQuotationWorkCommence
+                                              .clear();
+                                          contractorQuotationWorkComplete
+                                              .clear();
 
                                           CoolAlert.show(
                                               context: context,
                                               type: CoolAlertType.success,
                                               text:
                                                   'Contractor Quotation Added');
-
-                                          // print(
-                                          //   clientinvoices.map(
-                                          //     (e) => e.contractorpo!
-                                          //         .map((e) => e.name),
-                                          //   ),
-                                          // );
-                                          // Get.rawSnackbar(
-                                          //     message:
-                                          //         'Contractor Quotation Added',
-                                          //     snackPosition: SnackPosition.TOP);
+                                          contractorkey.currentState!
+                                              .updateSuggestions(
+                                            contractorPO
+                                                .map((e) => e.poNumber)
+                                                .toList(),
+                                          );
                                         },
                                         child: Text('Add'),
                                       ),
@@ -1640,8 +1686,65 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Text('Edit'),
+                                        onPressed: () {
+                                          contractorPO.forEach((element) {
+                                            if (element.uid ==
+                                                contractorpouid) {
+                                              contractorPO.remove(element);
+                                              print(contractorPO);
+                                              print('Element Removed');
+                                              contractorPO.add(ContractorPurchaseOrder(
+                                                  uid: contractorpouid,
+                                                  name: contractorQuotationContractorName
+                                                      .text,
+                                                  poNumber:
+                                                      contractorQuotationPONumber
+                                                          .text,
+                                                  quotationAmount: double.parse(
+                                                      contractorQuotationAmount
+                                                          .text),
+                                                  quotationNumber:
+                                                      contractorQuotationNo
+                                                          .text,
+                                                  issueDate: DateTime.parse(
+                                                      contractorQuotationPOIssueDate
+                                                          .text),
+                                                  poAmount: double.parse(
+                                                      contractorQuotationPOAmount
+                                                          .text),
+                                                  workCommenceDate:
+                                                      DateTime.parse(contractorQuotationWorkCommence.text),
+                                                  workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
+                                                  invoices: contractorInvoice));
+
+                                              contractorQuotationPONumber
+                                                  .clear();
+                                              contractorQuotationAmount.clear();
+                                              contractorQuotationNo.clear();
+                                              contractorQuotationPOIssueDate
+                                                  .clear();
+                                              contractorQuotationPOAmount
+                                                  .clear();
+                                              contractorQuotationWorkCommence
+                                                  .clear();
+                                              contractorQuotationWorkComplete
+                                                  .clear();
+
+                                              CoolAlert.show(
+                                                  context: context,
+                                                  type: CoolAlertType.success,
+                                                  text:
+                                                      'Contractor Quotation Updated');
+                                              contractorkey.currentState!
+                                                  .updateSuggestions(
+                                                contractorPO
+                                                    .map((e) => e.poNumber)
+                                                    .toList(),
+                                              );
+                                            }
+                                          });
+                                        },
+                                        child: Text('Update'),
                                       ),
                                     )),
                               ),
@@ -1933,6 +2036,8 @@ class _QuotationViewState extends State<QuotationView> {
                                                             if (v.number ==
                                                                 data) {
                                                               setState(() {
+                                                                constractorinvoiceuid =
+                                                                    v.uid;
                                                                 contractorInvoiceNo
                                                                         .text =
                                                                     v.number;
@@ -1977,7 +2082,7 @@ class _QuotationViewState extends State<QuotationView> {
                                                       hintText:
                                                           'Contractor Invoice Number'),
                                                   controller:
-                                                      contractorQuotationPONumber,
+                                                      contractorInvoiceNo,
                                                   suggestions: contractorInvoice
                                                       .map((e) {
                                                     return e.number;
@@ -2059,9 +2164,11 @@ class _QuotationViewState extends State<QuotationView> {
                                       height: 45.0,
                                       child: ElevatedButton(
                                         onPressed: () {
+                                          var uid = UniqueKey().toString();
                                           setState(() {
                                             contractorInvoice.add(
                                               ContractorInvoice(
+                                                uid: uid,
                                                 // payments: [],
                                                 contractorinvoicepayments:
                                                     contractorinvoicepayment,
@@ -2093,40 +2200,27 @@ class _QuotationViewState extends State<QuotationView> {
                                                 cpo.invoices =
                                                     contractorInvoice;
                                               }
-                                              contractorInvoice.isNotEmpty
-                                                  ? contractinvoiceorkey
-                                                      .currentState!
-                                                      .updateSuggestions(
-                                                      contractorInvoice
-                                                          .map((e) => e.number)
-                                                          .toList(),
-                                                    )
-                                                  : null;
                                             });
-                                            // clientinvoices.forEach((ci) {
-                                            //   if (ci.number ==
-                                            //       clientInvoiceNo.text) {
-                                            //     ci.contractorpo = contractorPO;
-                                            //   }
-                                            // });
-                                            contractorInvoiceNo.clear();
-                                            contractorInvoiceAmount.clear();
-                                            contractorInvoiceLastPaidDate
-                                                .clear();
-                                            contractorInvoiceTaxInvoiceNo
-                                                .clear();
-                                            contractorInvoicePaidAmount.clear();
                                           });
+                                          contractorInvoiceNo.clear();
+                                          contractorInvoiceAmount.clear();
+                                          contractorInvoiceLastPaidDate.clear();
+                                          contractorInvoiceTaxInvoiceNo.clear();
+                                          contractorInvoicePaidAmount.clear();
 
                                           CoolAlert.show(
                                               context: context,
                                               type: CoolAlertType.success,
-                                              text:
-                                                  'Contractor Quotation Added');
-
-                                          Get.rawSnackbar(
-                                              message: 'Invoice Added',
-                                              snackPosition: SnackPosition.TOP);
+                                              text: 'Contractor Invoice Added');
+                                          contractorInvoice.isNotEmpty
+                                              ? contractinvoiceorkey
+                                                  .currentState!
+                                                  .updateSuggestions(
+                                                  contractorInvoice
+                                                      .map((e) => e.number)
+                                                      .toList(),
+                                                )
+                                              : null;
                                         },
                                         child: Text('Add'),
                                       ),
@@ -2139,8 +2233,71 @@ class _QuotationViewState extends State<QuotationView> {
                                     child: SizedBox(
                                       height: 45.0,
                                       child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Text('Edit'),
+                                        onPressed: () {
+                                          contractorInvoice.forEach((element) {
+                                            if (element.uid ==
+                                                constractorinvoiceuid) {
+                                              contractorInvoice.remove(element);
+                                              contractorInvoice.add(
+                                                ContractorInvoice(
+                                                  uid: constractorinvoiceuid,
+                                                  // payments: [],
+                                                  contractorinvoicepayments:
+                                                      contractorinvoicepayment,
+                                                  contractorcredits:
+                                                      contractorcredits,
+                                                  number:
+                                                      contractorInvoiceNo.text,
+                                                  receivedDate: DateTime.parse(
+                                                      contractorInvoiceRecievedDate
+                                                          .text),
+                                                  amount: double.parse(
+                                                      contractorInvoiceAmount
+                                                          .text),
+                                                  paidDate: DateTime.parse(
+                                                      contractorInvoiceLastPaidDate
+                                                          .text),
+                                                  taxNumber:
+                                                      contractorInvoiceTaxInvoiceNo
+                                                          .text,
+                                                  paidamount: double.parse(
+                                                      contractorInvoicePaidAmount
+                                                          .text),
+                                                ),
+                                              );
+                                              contractorPO.forEach((cpo) {
+                                                if (cpo.poNumber ==
+                                                    contractorQuotationPONumber
+                                                        .text) {
+                                                  cpo.invoices =
+                                                      contractorInvoice;
+                                                }
+                                              });
+
+                                              contractorInvoiceNo.clear();
+                                              contractorInvoiceAmount.clear();
+                                              contractorInvoiceLastPaidDate
+                                                  .clear();
+                                              contractorInvoiceTaxInvoiceNo
+                                                  .clear();
+                                              contractorInvoicePaidAmount
+                                                  .clear();
+
+                                              CoolAlert.show(
+                                                  context: context,
+                                                  type: CoolAlertType.success,
+                                                  text:
+                                                      'Contractor Invoice Updated');
+                                              contractinvoiceorkey.currentState!
+                                                  .updateSuggestions(
+                                                contractorInvoice
+                                                    .map((e) => e.number)
+                                                    .toList(),
+                                              );
+                                            }
+                                          });
+                                        },
+                                        child: Text('Update'),
                                       ),
                                     )),
                               ),
@@ -2588,13 +2745,8 @@ class _QuotationViewState extends State<QuotationView> {
                                       templist.add(element2.invoiceamount!);
                                     });
                                   });
-                                  // .fold(
-                                  //     clientinvoices
-                                  //         .first.clientinvoicepayments,
-                                  //     (List<InvoicePaymentModel>? previousValue,
-                                  //             element) =>
-                                  //         previousValue +
-                                  //         element.clientinvoicepayments);
+                                  // print(templist);
+                                  // print(clientQuoteAmount.text)
                                   firestore
                                       .collection('payments')
                                       .doc('clienttotals')
@@ -2611,12 +2763,18 @@ class _QuotationViewState extends State<QuotationView> {
                                             (previousValue, element) =>
                                                 previousValue + element),
                                       ),
-                                      DateTime.now().month.toString():
-                                          FieldValue.increment(
-                                        double.parse(
-                                          clientQuoteAmount.text,
+                                      DateTime.now().month.toString(): {
+                                        "recieved": FieldValue.increment(
+                                          double.parse(
+                                            clientrecievedamount.text,
+                                          ),
                                         ),
-                                      ),
+                                        "total": FieldValue.increment(
+                                          double.parse(
+                                            clientQuoteAmount.text,
+                                          ),
+                                        ),
+                                      }
                                     },
                                   );
                                   CoolAlert.show(

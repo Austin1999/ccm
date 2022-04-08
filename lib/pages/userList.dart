@@ -6,6 +6,8 @@ import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'countries_list.dart';
@@ -49,16 +51,17 @@ class _UsersListState extends State<UsersList> {
               backgroundColor: Color(0xFFE8F3FA),
               child: Padding(
                 padding: const EdgeInsets.all(18.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset('assets/logo.png'),
-                    ),
-                    Expanded(
-                      child: Form(
-                        key: formkey,
+                child: Form(
+                  key: formkey,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset('assets/logo.png'),
+                      ),
+                      Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -171,254 +174,284 @@ class _UsersListState extends State<UsersList> {
                           ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                        child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
+                      Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Email',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                shadowColor: Colors.grey,
-                                child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (val) =>
-                                      RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                                              .hasMatch(val!)
-                                          ? null
-                                          : 'Invalid Email',
-                                  controller: email,
-                                  decoration: InputDecoration(
-                                    hintText: 'Email',
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none),
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Email',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Phone Number',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
+                                SizedBox(
+                                  height: 10,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                shadowColor: Colors.grey,
-                                child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (val) => val!.length == 10
-                                      ? null
-                                      : 'Enter Valid Phone Number',
-                                  controller: phone,
-                                  decoration: InputDecoration(
-                                    hintText: 'Phone Number',
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
+                                  child: TextFormField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    validator: (val) => val!.isEmpty
+                                        ? 'Email Cannot be Empty'
+                                        : RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
+                                                .hasMatch(val)
+                                            ? null
+                                            : 'Invalid Email',
+                                    controller: email,
+                                    decoration: InputDecoration(
+                                      hintText: 'Email',
+                                      border: OutlineInputBorder(
+                                          borderSide: BorderSide.none),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Role',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Phone Number',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                shadowColor: Colors.grey,
-                                child: DropdownButtonHideUnderline(
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0),
-                                    child: DropdownButton(
-                                        value: role,
-                                        items: [
-                                          DropdownMenuItem(
-                                            child: Text(
-                                              "Role",
-                                              style: TextStyle(
-                                                color: Colors.grey[300],
-                                              ),
-                                            ),
-                                            value: 'N/A',
-                                          ),
-                                          DropdownMenuItem(
-                                            child: Text("Admin"),
-                                            value: 'Admin',
-                                          ),
-                                          DropdownMenuItem(
-                                            child: Text("User"),
-                                            value: 'User',
-                                          ),
-                                        ],
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            role = value!;
-                                          });
-                                        },
-                                        hint: Text("Select item")),
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IntlPhoneField(
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'[0-9]'),
+                                        ),
+                                      ],
+                                      autofocus: true,
+                                      validator: (val) => val!.isEmpty
+                                          ? 'Phone number should not be empty'
+                                          : null,
+                                      controller: phone,
+                                      decoration: InputDecoration(
+                                        labelText: 'Phone Number',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(),
+                                        ),
+                                      ),
+                                      initialCountryCode: 'SG',
+                                      onChanged: (phone) {
+                                        // print(mobile.text);
+                                      },
+                                    ),
                                   ),
+                                  // child: TextFormField(
+                                  //   autovalidateMode:
+                                  //       AutovalidateMode.onUserInteraction,
+                                  //   validator: (val) => val!.length == 10
+                                  //       ? null
+                                  //       : 'Enter Valid Phone Number',
+                                  //   controller: phone,
+                                  //   decoration: InputDecoration(
+                                  //     hintText: 'Phone Number',
+                                  //     border: OutlineInputBorder(
+                                  //         borderSide: BorderSide.none),
+                                  //   ),
+                                  // ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Role',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  shadowColor: Colors.grey,
+                                  child: DropdownButtonHideUnderline(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: DropdownButton(
+                                          value: role,
+                                          items: [
+                                            DropdownMenuItem(
+                                              child: Text(
+                                                "Role",
+                                                style: TextStyle(
+                                                  color: Colors.grey[300],
+                                                ),
+                                              ),
+                                              value: 'N/A',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("Admin"),
+                                              value: 'Admin',
+                                            ),
+                                            DropdownMenuItem(
+                                              child: Text("User"),
+                                              value: 'User',
+                                            ),
+                                          ],
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              role = value!;
+                                            });
+                                          },
+                                          hint: Text("Select item")),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15.0,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                clipBehavior: Clip.antiAlias,
+                                style: ButtonStyle(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          EdgeInsets.all(15)),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              ElevatedButton(
+                                clipBehavior: Clip.antiAlias,
+                                style: ButtonStyle(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          EdgeInsets.all(15)),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  var currentstate = formkey.currentState;
+                                  if (currentstate!.validate()) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Row(
+                                              children: [
+                                                CircularProgressIndicator(),
+                                                SizedBox(width: 10.0),
+                                                Text(isEdit
+                                                    ? 'Updating User...'
+                                                    : 'Adding User...')
+                                              ],
+                                            ),
+                                          );
+                                        });
+
+                                    isEdit
+                                        ? userscollection.doc(doc_id).update(
+                                            {
+                                              "name": name.text,
+                                              "address": address.text,
+                                              "email": email.text,
+                                              "phone": phone.text,
+                                              "role": role,
+                                              "fullname": fullname.text
+                                            },
+                                          ).then((value) {
+                                            name.clear();
+                                            address.clear();
+                                            fullname.clear();
+                                            email.clear();
+                                            phone.clear();
+
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                            role = '';
+                                          })
+                                        : await userscollection.add(
+                                            {
+                                              "name": name.text,
+                                              "address": address.text,
+                                              "email": email.text,
+                                              "phone": phone.text,
+                                              "role": role,
+                                              "fullname": fullname.text
+                                            },
+                                          ).then((value) {
+                                            name.clear();
+                                            address.clear();
+                                            fullname.clear();
+                                            email.clear();
+                                            phone.clear();
+
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                            role = '';
+                                          });
+                                  }
+                                },
+                                child: Text(
+                                  isEdit ? 'Update' : 'Add',
+                                  style: TextStyle(fontSize: 18.0),
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              clipBehavior: Clip.antiAlias,
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    EdgeInsets.all(15)),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                'Cancel',
-                                style: TextStyle(fontSize: 18.0),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            ElevatedButton(
-                              clipBehavior: Clip.antiAlias,
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    EdgeInsets.all(15)),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () async {
-                                var currentstate = formkey.currentState;
-                                if (currentstate!.validate()) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          content: Row(
-                                            children: [
-                                              CircularProgressIndicator(),
-                                              SizedBox(width: 10.0),
-                                              Text(isEdit
-                                                  ? 'Updating User...'
-                                                  : 'Adding User...')
-                                            ],
-                                          ),
-                                        );
-                                      });
-
-                                  isEdit
-                                      ? userscollection.doc(doc_id).update(
-                                          {
-                                            "name": name.text,
-                                            "address": address.text,
-                                            "email": email.text,
-                                            "phone": phone.text,
-                                            "role": role,
-                                            "fullname": fullname.text
-                                          },
-                                        ).then((value) {
-                                          name.clear();
-                                          address.clear();
-                                          fullname.clear();
-                                          email.clear();
-                                          phone.clear();
-                                          role = '';
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        })
-                                      : await userscollection.add(
-                                          {
-                                            "name": name.text,
-                                            "address": address.text,
-                                            "email": email.text,
-                                            "phone": phone.text,
-                                            "role": role,
-                                            "fullname": fullname.text
-                                          },
-                                        ).then((value) {
-                                          name.clear();
-                                          address.clear();
-                                          fullname.clear();
-                                          email.clear();
-                                          phone.clear();
-                                          role = '';
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        });
-                                }
-                              },
-                              child: Text(
-                                'Add / Update',
-                                style: TextStyle(fontSize: 18.0),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    )),
-                  ],
+                          )
+                        ],
+                      )),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -622,7 +655,12 @@ class _UsersListState extends State<UsersList> {
                                                         onConfirmBtnTap: () {
                                                           userscollection
                                                               .doc(e.docid)
-                                                              .delete();
+                                                              .delete()
+                                                              .then(
+                                                                (value) =>
+                                                                    Navigator.pop(
+                                                                        context),
+                                                              );
                                                         },
                                                       );
                                                     },
