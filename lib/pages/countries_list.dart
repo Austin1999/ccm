@@ -18,6 +18,7 @@ class CountriesList extends StatefulWidget {
 
 class _CountriesListState extends State<CountriesList> {
   TextEditingController searchcon = TextEditingController();
+  RxList _tempCountries = RxList([]);
   String search = '';
   late String _selectedCountry;
   @override
@@ -121,138 +122,145 @@ class _CountriesListState extends State<CountriesList> {
                             SizedBox(
                               height: 20,
                             ),
-                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                                stream: countries
-                                    .where('name',
-                                        isGreaterThanOrEqualTo:
-                                            search.toTitleCase())
-                                    .where('name',
-                                        isLessThan: search.toTitleCase() + 'z')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  print(snapshot.hasData);
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.active &&
-                                      snapshot.hasData) {
-                                    List<Country> _tempCountries = [];
-                                    _tempCountries = snapshot.data!.docs
-                                        .map(
-                                          (e) => Country.fromJson(
-                                            e.data(),
-                                          ),
-                                        )
-                                        .toList();
-                                    session.countries = _tempCountries;
-                                    _tempCountries.isEmpty
-                                        ? null
-                                        : session.country =
-                                            session.countries.first;
-                                    // print(session.country);
-                                    return _tempCountries.isEmpty
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(16.0),
-                                            child: Center(
-                                              child: Text(
-                                                'No Countries found',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline4,
-                                              ),
-                                            ),
-                                          )
-                                        : GridView.count(
-                                            shrinkWrap: true,
-                                            crossAxisCount: 5,
-                                            childAspectRatio: 4,
-                                            children: _tempCountries
-                                                .map((e) => InkWell(
-                                                    onTap: () {
-                                                      // showDialog(
-                                                      //     context: context,
-                                                      //     builder: (context) {
-                                                      //       return AlertDialog(
-                                                      //         content: Row(
-                                                      //           children: [
-                                                      //             CircularProgressIndicator(),
-                                                      //             SizedBox(
-                                                      //               width: 10,
-                                                      //             ),
-                                                      //             Text(
-                                                      //                 'Please Wait, Loading...')
-                                                      //           ],
-                                                      //         ),
-                                                      //       );
-                                                      //     });
-                                                      session.country = e;
-                                                      Get.put(
-                                                          ClientController());
-                                                      Get.put(
-                                                          ContractorController());
-                                                      Get.to(
-                                                          () => CwrSummary());
-                                                    },
-                                                    child: CountryCard(
-                                                        text: e.name,
-                                                        code: e.code
-                                                            .toLowerCase())))
-                                                .toList(),
-                                          );
-                                  } else {
-                                    //   return Center(
-                                    //     child: CircularProgressIndicator(),
-                                    //   );
-                                    // }
-                                    return Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      // enabled: _enabled,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.55,
-                                              child: Card(
-                                                  color: Colors.white,
-                                                  elevation: 5,
-                                                  child: TextFormField(
-                                                    decoration: InputDecoration(
-                                                        suffixIcon:
-                                                            Icon(Icons.search),
-                                                        border:
-                                                            OutlineInputBorder(
-                                                                borderSide:
-                                                                    BorderSide
-                                                                        .none)),
-                                                  )),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          GridView.builder(
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 5,
-                                              childAspectRatio: 4,
-                                            ),
-                                            itemCount: 35,
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index) {
-                                              return CountryCard(
-                                                  text: "", code: "");
-                                            }, // crossAxisCount: 5,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                }),
+                            // StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                            //     stream: countries
+                            //         .where('name',
+                            //             isGreaterThanOrEqualTo:
+                            //                 search.toTitleCase())
+                            //         .where('name',
+                            //             isLessThan: search.toTitleCase() + 'z')
+                            //         .snapshots(),
+                            //     builder: (context, snapshot) {
+                            // print(snapshot.hasData);
+                            // if (snapshot.connectionState ==
+                            //         ConnectionState.active &&
+                            //     snapshot.hasData) {
+                            // List<Country> _tempCountries = [];
+                            // _tempCountries = snapshot.data!.docs
+                            //     .map(
+                            //       (e) => Country.fromJson(
+                            //         e.data(),
+                            //       ),
+                            //     )
+                            //     .toList();
+                            // session.countries = _tempCountries;
+                            // _tempCountries.isEmpty
+                            //     ? null
+                            //     : session.country =
+                            //         session.countries.first;
+                            // // print(session.country);
+                            // return
+                            Obx(() {
+                              if (countryController.countrylist.isEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Center(
+                                    child: Text(
+                                      'No Countries found',
+                                      style:
+                                          Theme.of(context).textTheme.headline4,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                _tempCountries = countryController.countrylist
+                                    .where((element) => element.name
+                                        .toLowerCase()
+                                        .contains(search.toLowerCase()))
+                                    .toList()
+                                    .obs;
+                                return GridView.count(
+                                  shrinkWrap: true,
+                                  crossAxisCount: 5,
+                                  childAspectRatio: 4,
+                                  children: _tempCountries
+                                      .map((e) => InkWell(
+                                          onTap: () {
+                                            // showDialog(
+                                            //     context: context,
+                                            //     builder: (context) {
+                                            //       return AlertDialog(
+                                            //         content: Row(
+                                            //           children: [
+                                            //             CircularProgressIndicator(),
+                                            //             SizedBox(
+                                            //               width: 10,
+                                            //             ),
+                                            //             Text(
+                                            //                 'Please Wait, Loading...')
+                                            //           ],
+                                            //         ),
+                                            //       );
+                                            //     });
+                                            session.country = e;
+                                            Get.put(ClientController());
+                                            // Get.put(ContractorController());
+                                            Get.to(() => CwrSummary());
+                                          },
+                                          child: CountryCard(
+                                              text: e.name,
+                                              code: e.code.toLowerCase())))
+                                      .toList(),
+                                  //         );
+                                  // } else {
+                                  //   return Center(
+                                  //     child: CircularProgressIndicator(),
+                                  //   );
+                                  // }
+                                  // return Shimmer.fromColors(
+                                  //   baseColor: Colors.grey[300]!,
+                                  //   highlightColor: Colors.grey[100]!,
+                                  //   // enabled: _enabled,
+                                  //   child: Column(
+                                  //     crossAxisAlignment:
+                                  //         CrossAxisAlignment.start,
+                                  //     children: [
+                                  //       Padding(
+                                  //         padding: const EdgeInsets.all(8.0),
+                                  //         child: SizedBox(
+                                  //           width: MediaQuery.of(context)
+                                  //                   .size
+                                  //                   .width *
+                                  //               0.55,
+                                  //           child: Card(
+                                  //               color: Colors.white,
+                                  //               elevation: 5,
+                                  //               child: TextFormField(
+                                  //                 decoration: InputDecoration(
+                                  //                     suffixIcon:
+                                  //                         Icon(Icons.search),
+                                  //                     border:
+                                  //                         OutlineInputBorder(
+                                  //                             borderSide:
+                                  //                                 BorderSide
+                                  //                                     .none)),
+                                  //               )),
+                                  //         ),
+                                  //       ),
+                                  //       SizedBox(
+                                  //         height: 20,
+                                  //       ),
+                                  //       GridView.builder(
+                                  //         gridDelegate:
+                                  //             SliverGridDelegateWithFixedCrossAxisCount(
+                                  //           crossAxisCount: 5,
+                                  //           childAspectRatio: 4,
+                                  //         ),
+                                  //         itemCount: 35,
+                                  //         shrinkWrap: true,
+                                  //         itemBuilder: (context, index) {
+                                  //           return CountryCard(
+                                  //               text: "", code: "");
+                                  //         }, // crossAxisCount: 5,
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // );
+                                  // }
+                                  // }
+                                );
+                              }
+                            }),
                           ],
                         ),
                       ),

@@ -280,7 +280,7 @@ class _ContractorListState extends State<ContractorList> {
                                           borderSide: BorderSide(),
                                         ),
                                       ),
-                                      initialCountryCode: 'SG',
+                                      initialCountryCode: searchcountry,
                                       onChanged: (phone) {
                                         // print(mobile.text);
                                       },

@@ -209,46 +209,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                         ],
                                       );
                                     }
-                                    // RowStyle rowStyle = RowStyle()
-                                    // for (int i = 1;
-                                    //     i == filtereddocs.length;
-                                    //     i++) {
-                                    //   var cell1 = sheetObject.cell(
-                                    //       CellIndex.indexByString('A${i + 1}'));
-                                    //   var cell2 = sheetObject.cell(
-                                    //       CellIndex.indexByString('B${i + 1}'));
-                                    //   var cell3 = sheetObject.cell(
-                                    //       CellIndex.indexByString('C${i + 1}'));
-                                    //   var cell4 = sheetObject.cell(
-                                    //       CellIndex.indexByString('D${i + 1}'));
-                                    //   var cell5 = sheetObject.cell(
-                                    //       CellIndex.indexByString('E${i + 1}'));
-                                    //   var cell6 = sheetObject.cell(
-                                    //       CellIndex.indexByString('F${i + 1}'));
-                                    //   var cell7 = sheetObject.cell(
-                                    //       CellIndex.indexByString('G${i + 1}'));
-                                    //   var cell8 = sheetObject.cell(
-                                    //       CellIndex.indexByString('H${i + 1}'));
-                                    //   cell1.value =
-                                    //       int.parse(filtereddocs[i].qnumber);
-                                    //   cell2.value = filtereddocs[i]
-                                    //       .dateIssued
-                                    //       .toIso8601String()
-                                    //       .substring(0, 10);
-                                    //   cell3.value = filtereddocs[i].clientname;
-                                    //   cell4.value = filtereddocs[i].description;
-                                    //   cell5.value =
-                                    //       filtereddocs[i].qamount.toString();
-                                    //   cell6.value =
-                                    //       filtereddocs[i].approvalStatus;
-                                    // cell7.value = filtereddocs[i]
-                                    //     .ccmTicketNumber
-                                    //       .toString();
-                                    // cell8.value = filtereddocs[i]
-                                    //     .jobcompletionDate
-                                    //     .toIso8601String()
-                                    //     .substring(0, 10);
-                                    // }
+
                                     excel.setDefaultSheet('CWR-Summary');
                                     // File file = File(excel.encode()!, 'CWR');
                                     var fileBytes = excel.save(

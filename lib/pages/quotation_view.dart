@@ -44,6 +44,7 @@ class _QuotationViewState extends State<QuotationView> {
   TextEditingController clientInvoiceNo = TextEditingController();
   TextEditingController clientInvoiceAmount = TextEditingController();
   TextEditingController clientInvoiceIssueDate = TextEditingController();
+  TextEditingController clientInvoiceTotalRecieved = TextEditingController();
   TextEditingController contractorQuotationPONumber = TextEditingController();
   TextEditingController contractorQuotationContractorName =
       TextEditingController(
@@ -131,6 +132,13 @@ class _QuotationViewState extends State<QuotationView> {
   }
 
   getData() {
+    List<double> templist = [];
+    widget.data!.clientInvoices.forEach((element1) {
+      element1.clientinvoicepayments!.forEach((element2) {
+        templist.add(element2.invoiceamount!);
+      });
+    });
+
     ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
     ContractorInvoice contractorInvoiceinit =
         widget.data!.contractorPurchaseOrders.first.invoices.first;
@@ -152,6 +160,10 @@ class _QuotationViewState extends State<QuotationView> {
         TextEditingController(text: widget.data!.description);
     clientQuoteApprovalStatus =
         TextEditingController(text: widget.data!.approvalStatus);
+    clientInvoiceTotalRecieved = TextEditingController(
+        text: (templist.fold(0.0,
+                (double previousValue, element) => previousValue + element))
+            .toString());
     clientQuoteCCMTicketNumber =
         TextEditingController(text: widget.data!.ccmTicketNumber);
     clientQuoteJobCompletionDate = TextEditingController(
@@ -858,20 +870,20 @@ class _QuotationViewState extends State<QuotationView> {
                                 },
                               ),
                               CardInputField(
-                                readonly: false,
+                                readonly: true,
                                 text: 'Last Recieved Date',
                                 hinttext: 'dd-mm-yyyy',
-                                onTap: () {
-                                  _selectDate(
-                                    context,
-                                    DateTime.now(),
-                                  ).then((value) {
-                                    setState(() {
-                                      clientInvoiceLastRecieveDate.text =
-                                          value.toString().substring(0, 10);
-                                    });
-                                  });
-                                },
+                                // onTap: () {
+                                //   _selectDate(
+                                //     context,
+                                //     DateTime.now(),
+                                //   ).then((value) {
+                                //     setState(() {
+                                //       clientInvoiceLastRecieveDate.text =
+                                //           value.toString().substring(0, 10);
+                                //     });
+                                // });
+                                // },
                                 controller: clientInvoiceLastRecieveDate,
                               ),
                             ],
@@ -889,7 +901,7 @@ class _QuotationViewState extends State<QuotationView> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Date Issued',
+                                        'Recieved Amount',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 17,
@@ -904,9 +916,10 @@ class _QuotationViewState extends State<QuotationView> {
                                         shadowColor: Colors.grey,
                                         child: TextFormField(
                                           readOnly: true,
-                                          controller: clientInvoiceIssueDate,
+                                          controller:
+                                              clientInvoiceTotalRecieved,
                                           decoration: InputDecoration(
-                                            hintText: 'dd-mm-yyyy',
+                                            hintText: 'Recieved Amount',
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide.none),
                                           ),
@@ -1294,59 +1307,88 @@ class _QuotationViewState extends State<QuotationView> {
                                                       SimpleAutoCompleteTextField(
                                                     clearOnSubmit: false,
                                                     textSubmitted: (data) {
-                                                      contractorPO.isNotEmpty
-                                                          ? contractorPO
-                                                              .forEach((v) {
-                                                              if (v.poNumber ==
-                                                                  data) {
-                                                                setState(() {
-                                                                  contractorpouid =
-                                                                      v.uid;
-                                                                  contractorQuotationPONumber
-                                                                          .text =
-                                                                      v.poNumber;
+                                                      if (contractorPO
+                                                          .isNotEmpty) {
+                                                        contractorInvoice
+                                                            .clear();
+                                                        for (int i = 0;
+                                                            i <
+                                                                contractorPO
+                                                                    .length;
+                                                            i++) {
+                                                          var v =
+                                                              contractorPO[i];
+                                                          if (v.poNumber ==
+                                                              data) {
+                                                            print(
+                                                                'Invoice : ${v.invoices}');
+                                                            setState(() {
+                                                              // contractorInvoice =
+                                                              //     v.invoices;
+                                                              // contractorInvoice
+                                                              //     .clear();
+                                                              v.invoices.isEmpty
+                                                                  ? null
+                                                                  : v.invoices
+                                                                      .forEach(
+                                                                          (element) {
+                                                                      contractorInvoice
+                                                                          .add(
+                                                                              element);
+                                                                    });
+                                                              contractorpouid =
+                                                                  v.uid;
+                                                              contractorQuotationPONumber
+                                                                      .text =
+                                                                  v.poNumber;
 
-                                                                  contractorQuotationPOAmount
-                                                                          .text =
-                                                                      v.poAmount
-                                                                          .toString();
+                                                              contractorQuotationPOAmount
+                                                                      .text =
+                                                                  v.poAmount
+                                                                      .toString();
 
-                                                                  contractorQuotationContractorName
-                                                                          .text =
-                                                                      v.name;
+                                                              contractorQuotationContractorName
+                                                                      .text =
+                                                                  v.name;
 
-                                                                  contractorQuotationPOIssueDate.text = v
-                                                                      .issueDate
+                                                              contractorQuotationPOIssueDate
+                                                                      .text =
+                                                                  v.issueDate
                                                                       .toString()
                                                                       .substring(
                                                                           0,
                                                                           10);
 
-                                                                  contractorQuotationNo
-                                                                          .text =
-                                                                      v.quotationNumber!;
+                                                              contractorQuotationNo
+                                                                      .text =
+                                                                  v.quotationNumber!;
 
-                                                                  contractorQuotationAmount
-                                                                          .text =
-                                                                      v.quotationAmount
-                                                                          .toString();
+                                                              contractorQuotationAmount
+                                                                      .text =
+                                                                  v.quotationAmount
+                                                                      .toString();
 
-                                                                  contractorQuotationWorkCommence.text = v
-                                                                      .workCommenceDate
+                                                              contractorQuotationWorkCommence
+                                                                      .text =
+                                                                  v.workCommenceDate
                                                                       .toString()
                                                                       .substring(
                                                                           0,
                                                                           10);
-                                                                  contractorQuotationWorkComplete.text = v
-                                                                      .workCompleteDate
+                                                              contractorQuotationWorkComplete
+                                                                      .text =
+                                                                  v.workCompleteDate
                                                                       .toString()
                                                                       .substring(
                                                                           0,
                                                                           10);
-                                                                });
-                                                              }
-                                                            })
-                                                          : print('Null Value');
+                                                            });
+                                                          }
+                                                          break;
+
+                                                          // else{ print('Null Value');
+                                                        }
+                                                      }
                                                     },
                                                     decoration: InputDecoration(
                                                         hintText: 'Invoice No'),
@@ -1369,106 +1411,6 @@ class _QuotationViewState extends State<QuotationView> {
                                       hinttext: 'PO Number',
                                       controller: contractorQuotationPONumber,
                                     ),
-                              // Expanded(
-                              //     child: Padding(
-                              //       padding: const EdgeInsets.symmetric(
-                              //           horizontal: 16.0, vertical: 8.0),
-                              //       child: Column(
-                              //         crossAxisAlignment:
-                              //             CrossAxisAlignment.start,
-                              //         children: [
-                              //           Text(
-                              //             'PO Number',
-                              //             style: TextStyle(
-                              //               fontWeight: FontWeight.bold,
-                              //               fontSize: 17,
-                              //             ),
-                              //           ),
-                              //           SizedBox(
-                              //             height: 10,
-                              //           ),
-                              //           SizedBox(
-                              //             width: double.infinity,
-                              //             child: Card(
-                              //               color: Colors.white,
-                              //               elevation: 5,
-                              //               shadowColor: Colors.grey,
-                              //               child:
-                              //                   SimpleAutoCompleteTextField(
-                              //                 clearOnSubmit: false,
-                              //                 textSubmitted: (data) {
-                              // contractorPO.isNotEmpty
-                              //     ? contractorPO
-                              //         .forEach((v) {
-                              //         if (v.poNumber ==
-                              //             data) {
-                              //           setState(() {
-                              //             contractorQuotationPONumber
-                              //                     .text =
-                              //                 v.poNumber;
-
-                              //             contractorQuotationPOAmount
-                              //                     .text =
-                              //                 v.poAmount
-                              //                     .toString();
-
-                              //             contractorQuotationContractorName
-                              //                     .text =
-                              //                 v.name;
-
-                              //             contractorQuotationPOIssueDate
-                              //                     .text =
-                              //                 v.issueDate
-                              //                     .toString()
-                              //                     .substring(
-                              //                         0,
-                              //                         10);
-
-                              //             contractorQuotationNo
-                              //                     .text =
-                              //                 v.quotationNumber!;
-
-                              //             contractorQuotationAmount
-                              //                     .text =
-                              //                 v.quotationAmount
-                              //                     .toString();
-
-                              //             contractorQuotationWorkCommence
-                              //                     .text =
-                              //                 v.workCommenceDate
-                              //                     .toString()
-                              //                     .substring(
-                              //                         0,
-                              //                         10);
-                              //             contractorQuotationWorkComplete
-                              //                     .text =
-                              //                 v.workCompleteDate
-                              //                     .toString()
-                              //                     .substring(
-                              //                         0,
-                              //                         10);
-                              //           });
-                              //         }
-                              //       })
-                              //     : print('Null Value');
-                              //                 },
-                              //                 decoration: InputDecoration(
-                              //                     hintText: 'PO No'),
-                              //                 controller:
-                              //                     contractorQuotationPONumber,
-                              // suggestions:
-                              //     contractorPO.map((e) {
-                              //   return e.poNumber;
-                              // }).toList(),
-                              // key: contractorkey,
-                              //               ),
-                              //             ),
-                              //           ),
-                              //         ],
-                              //       ),
-                              //     ),
-                              //   ),
-
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -3064,11 +3006,11 @@ class _QuotationViewState extends State<QuotationView> {
                                       controller: recievedamount,
                                       hinttext: 'Recieved Amount',
                                       text: 'Recieved Amount'),
-                                  CardInputField(
-                                      readonly: false,
-                                      controller: paymentdate,
-                                      hinttext: 'Payment Date',
-                                      text: 'Payment Date'),
+                                  // CardInputField(
+                                  //     readonly: false,
+                                  //     controller: paymentdate,
+                                  //     hinttext: 'Payment Date',
+                                  //     text: 'Payment Date'),
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         right: 16.0, left: 16.0, top: 10.0),
@@ -3077,46 +3019,74 @@ class _QuotationViewState extends State<QuotationView> {
                                       width: 100,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          setState(
-                                            () => name == 'Client'
-                                                ? clientinvoicepayment.add(
-                                                    InvoicePaymentModel(
-                                                        invoiceamount:
-                                                            double.parse(
-                                                                clientInvoiceAmount
-                                                                    .text),
-                                                        invoicenumber:
-                                                            clientInvoiceNo
-                                                                .text,
-                                                        issueddate:
-                                                            clientInvoiceIssueDate
-                                                                .text,
-                                                        recievedamount:
-                                                            double.parse(
-                                                                recievedamount
-                                                                    .text),
-                                                        paymentdate:
-                                                            paymentdate.text),
-                                                  )
-                                                : contractorinvoicepayment.add(
-                                                    InvoicePaymentModel(
-                                                        invoiceamount: double
-                                                            .parse(
-                                                                clientInvoiceAmount
-                                                                    .text),
-                                                        invoicenumber:
-                                                            clientInvoiceNo
-                                                                .text,
-                                                        issueddate:
-                                                            clientInvoiceIssueDate
-                                                                .text,
-                                                        recievedamount:
-                                                            double.parse(
-                                                                recievedamount
-                                                                    .text),
-                                                        paymentdate:
-                                                            paymentdate.text)),
-                                          );
+                                          setState(() {
+                                            if (name == 'Client') {
+                                              clientinvoicepayment.add(
+                                                InvoicePaymentModel(
+                                                    invoiceamount: double.parse(
+                                                        clientInvoiceAmount
+                                                            .text),
+                                                    invoicenumber:
+                                                        clientInvoiceNo.text,
+                                                    issueddate:
+                                                        clientInvoiceIssueDate
+                                                            .text,
+                                                    recievedamount:
+                                                        double.parse(
+                                                            recievedamount
+                                                                .text),
+                                                    paymentdate:
+                                                        paymentdate.text),
+                                              );
+                                              // List<double> templist = [];
+                                              // clientinvoices
+                                              //     .forEach((element1) {
+                                              //   element1.clientinvoicepayments!
+                                              //       .forEach((element2) {
+                                              //     templist.add(
+                                              //         element2.invoiceamount!);
+                                              //   });
+                                              // });
+                                              clientInvoiceTotalRecieved =
+                                                  TextEditingController(
+                                                      text:
+                                                          (clientinvoicepayment
+                                                              .fold(
+                                                0.0,
+                                                (double previousValue,
+                                                        element) =>
+                                                    previousValue +
+                                                    double.parse(
+                                                      element.recievedamount
+                                                          .toString(),
+                                                    ),
+                                              )).toString());
+                                              clientInvoiceLastRecieveDate =
+                                                  TextEditingController(
+                                                text: DateTime.now()
+                                                    .toIso8601String()
+                                                    .substring(0, 10),
+                                              );
+                                            } else {
+                                              contractorinvoicepayment.add(
+                                                  InvoicePaymentModel(
+                                                      invoiceamount:
+                                                          double.parse(
+                                                              clientInvoiceAmount
+                                                                  .text),
+                                                      invoicenumber:
+                                                          clientInvoiceNo.text,
+                                                      issueddate:
+                                                          clientInvoiceIssueDate
+                                                              .text,
+                                                      recievedamount:
+                                                          double.parse(
+                                                              recievedamount
+                                                                  .text),
+                                                      paymentdate:
+                                                          paymentdate.text));
+                                            }
+                                          });
                                         },
                                         child: Text('Add'),
                                       ),

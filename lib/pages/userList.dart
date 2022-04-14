@@ -258,7 +258,7 @@ class _UsersListState extends State<UsersList> {
                                           borderSide: BorderSide(),
                                         ),
                                       ),
-                                      initialCountryCode: 'SG',
+                                      initialCountryCode: _selectedCountry.code,
                                       onChanged: (phone) {
                                         // print(mobile.text);
                                       },

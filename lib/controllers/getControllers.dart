@@ -35,8 +35,12 @@ class CountryController extends GetxController {
     countrylist.bindStream(getCountries());
   }
 
-  Stream<List<Country>> getCountries() => countries.snapshots().map(
-      (query) => query.docs.map((e) => Country.fromJson(e.data())).toList());
+  Stream<List<Country>> getCountries() {
+    var countrieslist = countries.snapshots().map(
+        (query) => query.docs.map((e) => Country.fromJson(e.data())).toList());
+    session.countries = countrylist;
+    return countrieslist;
+  }
 }
 
 class ClientController extends GetxController {

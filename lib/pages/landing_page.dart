@@ -177,6 +177,7 @@
 //   }
 // }
 
+import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/pages/profile.dart';
 import 'package:ccm/pages/userList.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
@@ -201,8 +202,29 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
+        backgroundColor: Color(0xFF3A5F85),
+        title: Text(
+            'In a world of gray, CCM provides clarity to all construction & facility projects'),
         centerTitle: true,
+        actions: [
+          TextButton.icon(
+            onPressed: () async {
+              await authController.auth.signOut();
+            },
+            icon: Icon(
+              Icons.exit_to_app_rounded,
+              color: Colors.white,
+            ),
+            label: Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.start,

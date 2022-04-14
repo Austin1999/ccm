@@ -267,7 +267,7 @@ class _ClientListState extends State<ClientList> {
                                           borderSide: BorderSide(),
                                         ),
                                       ),
-                                      initialCountryCode: 'SG',
+                                      initialCountryCode: searchcountry,
                                       onChanged: (phone) {
                                         // print(mobile.text);
                                       },
