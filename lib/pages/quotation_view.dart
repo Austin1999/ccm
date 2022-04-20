@@ -1,4 +1,4 @@
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+// import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/client.dart';
@@ -10,8 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class QuotationView extends StatefulWidget {
-  QuotationView({Key? key, this.data, required this.isEdit, this.id})
-      : super(key: key);
+  QuotationView({Key? key, this.data, required this.isEdit, this.id}) : super(key: key);
   Quotation? data;
   var id;
   bool isEdit;
@@ -23,43 +22,32 @@ class QuotationView extends StatefulWidget {
 class _QuotationViewState extends State<QuotationView> {
   TextEditingController currency = TextEditingController();
   TextEditingController clientQuotequotationNumber = TextEditingController();
-  TextEditingController clientQuoteclientName = TextEditingController(
-      text: clientController.clientlist.isEmpty
-          ? "N/A"
-          : clientController.clientlist.first.name);
+  TextEditingController clientQuoteclientName =
+      TextEditingController(text: clientController.clientlist.isEmpty ? "N/A" : clientController.clientlist.first.name);
   TextEditingController clientQuoteAmount = TextEditingController();
-  GlobalKey<AutoCompleteTextFieldState<String>> clientkey = new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<String>> contractorkey = new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<String>> contractinvoiceorkey =
-      new GlobalKey();
+  // GlobalKey<AutoCompleteTextFieldState<String>> clientkey = new GlobalKey();
+  // GlobalKey<AutoCompleteTextFieldState<String>> contractorkey = new GlobalKey();
+  // GlobalKey<AutoCompleteTextFieldState<String>> contractinvoiceorkey = new GlobalKey();
   TextEditingController clientQuoteclientApproval = TextEditingController();
   TextEditingController clientQuotedateIssued = TextEditingController();
   TextEditingController clientQuoteDesciption = TextEditingController();
-  TextEditingController clientQuoteApprovalStatus =
-      TextEditingController(text: 'Approved');
+  TextEditingController clientQuoteApprovalStatus = TextEditingController(text: 'Approved');
   TextEditingController clientQuoteCCMTicketNumber = TextEditingController();
   TextEditingController clientQuoteJobCompletionDate = TextEditingController();
-  TextEditingController clientQuoteOverallStatus =
-      TextEditingController(text: 'Pending');
+  TextEditingController clientQuoteOverallStatus = TextEditingController(text: 'Pending');
   TextEditingController clientInvoiceNo = TextEditingController();
   TextEditingController clientInvoiceAmount = TextEditingController();
   TextEditingController clientInvoiceIssueDate = TextEditingController();
   TextEditingController clientInvoiceTotalRecieved = TextEditingController();
   TextEditingController contractorQuotationPONumber = TextEditingController();
   TextEditingController contractorQuotationContractorName =
-      TextEditingController(
-          text: contractorController.contractorlist.isEmpty
-              ? 'N/A'
-              : contractorController.contractorlist.first.name);
+      TextEditingController(text: contractorController.contractorlist.isEmpty ? 'N/A' : contractorController.contractorlist.first.name);
   TextEditingController contractorQuotationPOAmount = TextEditingController();
-  TextEditingController contractorQuotationPOIssueDate =
-      TextEditingController();
+  TextEditingController contractorQuotationPOIssueDate = TextEditingController();
   TextEditingController contractorQuotationNo = TextEditingController();
   TextEditingController contractorQuotationAmount = TextEditingController();
-  TextEditingController contractorQuotationWorkCommence =
-      TextEditingController();
-  TextEditingController contractorQuotationWorkComplete =
-      TextEditingController();
+  TextEditingController contractorQuotationWorkCommence = TextEditingController();
+  TextEditingController contractorQuotationWorkComplete = TextEditingController();
   TextEditingController contractorInvoiceNo = TextEditingController();
   TextEditingController contractorInvoiceAmount = TextEditingController();
   TextEditingController contractorInvoiceRecievedDate = TextEditingController();
@@ -87,13 +75,9 @@ class _QuotationViewState extends State<QuotationView> {
   var clientinvoiceuid;
   var constractorinvoiceuid;
   var contractorpouid;
-  Future<DateTime> _selectDate(
-      BuildContext context, DateTime selectedDate) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2000, 8),
-        lastDate: DateTime.now());
+  Future<DateTime> _selectDate(BuildContext context, DateTime selectedDate) async {
+    final DateTime? picked =
+        await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(2000, 8), lastDate: DateTime.now());
     if (picked != null && picked != selectedDate) return picked;
     return picked!;
   }
@@ -120,9 +104,7 @@ class _QuotationViewState extends State<QuotationView> {
   List<ContractorPurchaseOrder> contractorPO = [];
   List<String> comments = [];
   String? category = "FM Contract";
-  String parentQuote = quotationController.quotionlist.isEmpty
-      ? 'N/A'
-      : quotationController.quotionlist.first.qnumber;
+  String parentQuote = quotationController.quotionlist.isEmpty ? 'N/A' : quotationController.quotionlist.first.qnumber;
 
   @override
   void initState() {
@@ -140,71 +122,48 @@ class _QuotationViewState extends State<QuotationView> {
     });
 
     ClientInvoice clientInvoiceinit = widget.data!.clientInvoices.first;
-    ContractorInvoice contractorInvoiceinit =
-        widget.data!.contractorPurchaseOrders.first.invoices.first;
-    ContractorPurchaseOrder contractorpo =
-        widget.data!.contractorPurchaseOrders.first;
-    contractorQuotationContractorName =
-        TextEditingController(text: contractorpo.name);
-    clientQuotequotationNumber =
-        TextEditingController(text: widget.data!.qnumber);
-    clientQuoteclientName =
-        TextEditingController(text: widget.data!.clientname);
-    clientQuoteAmount =
-        TextEditingController(text: widget.data!.qamount.toString());
-    clientQuoteclientApproval =
-        TextEditingController(text: widget.data!.clientApproval);
-    clientQuotedateIssued = TextEditingController(
-        text: widget.data!.dateIssued.toString().substring(0, 10));
-    clientQuoteDesciption =
-        TextEditingController(text: widget.data!.description);
-    clientQuoteApprovalStatus =
-        TextEditingController(text: widget.data!.approvalStatus);
-    clientInvoiceTotalRecieved = TextEditingController(
-        text: (templist.fold(0.0,
-                (double previousValue, element) => previousValue + element))
-            .toString());
-    clientQuoteCCMTicketNumber =
-        TextEditingController(text: widget.data!.ccmTicketNumber);
+    ContractorInvoice contractorInvoiceinit = widget.data!.contractorPurchaseOrders.first.invoices.first;
+    ContractorPurchaseOrder contractorpo = widget.data!.contractorPurchaseOrders.first;
+    contractorQuotationContractorName = TextEditingController(text: contractorpo.name);
+    clientQuotequotationNumber = TextEditingController(text: widget.data!.qnumber);
+    clientQuoteclientName = TextEditingController(text: widget.data!.clientname);
+    clientQuoteAmount = TextEditingController(text: widget.data!.qamount.toString());
+    clientQuoteclientApproval = TextEditingController(text: widget.data!.clientApproval);
+    clientQuotedateIssued = TextEditingController(text: widget.data!.dateIssued.toString().substring(0, 10));
+    clientQuoteDesciption = TextEditingController(text: widget.data!.description);
+    clientQuoteApprovalStatus = TextEditingController(text: widget.data!.approvalStatus);
+    clientInvoiceTotalRecieved =
+        TextEditingController(text: (templist.fold(0.0, (double previousValue, element) => previousValue + element)).toString());
+    clientQuoteCCMTicketNumber = TextEditingController(text: widget.data!.ccmTicketNumber);
     clientQuoteJobCompletionDate = TextEditingController(
       text: widget.data!.jobcompletionDate.toString().substring(0, 10),
     );
-    clientQuoteOverallStatus =
-        TextEditingController(text: widget.data!.overallstatus);
+    clientQuoteOverallStatus = TextEditingController(text: widget.data!.overallstatus);
     clientInvoiceNo = TextEditingController(text: clientInvoiceinit.number);
-    clientInvoiceAmount =
-        TextEditingController(text: clientInvoiceinit.amount.toString());
+    clientInvoiceAmount = TextEditingController(text: clientInvoiceinit.amount.toString());
     clientInvoiceIssueDate = TextEditingController(
       text: clientInvoiceinit.issueDate.toString().substring(0, 10),
     );
-    contractorQuotationPONumber =
-        TextEditingController(text: contractorpo.poNumber);
-    contractorQuotationPOAmount =
-        TextEditingController(text: contractorpo.poAmount.toString());
+    contractorQuotationPONumber = TextEditingController(text: contractorpo.poNumber);
+    contractorQuotationPOAmount = TextEditingController(text: contractorpo.poAmount.toString());
     contractorQuotationPOIssueDate = TextEditingController(
       text: contractorpo.issueDate.toString().substring(0, 10),
     );
-    contractorQuotationNo =
-        TextEditingController(text: contractorpo.quotationNumber);
-    contractorQuotationAmount =
-        TextEditingController(text: contractorpo.quotationAmount.toString());
+    contractorQuotationNo = TextEditingController(text: contractorpo.quotationNumber);
+    contractorQuotationAmount = TextEditingController(text: contractorpo.quotationAmount.toString());
     contractorQuotationWorkCommence = TextEditingController(
       text: contractorpo.workCommenceDate.toString().substring(0, 10),
     );
     contractorQuotationWorkComplete = TextEditingController(
       text: contractorpo.workCompleteDate.toString().substring(0, 10),
     );
-    contractorInvoiceNo =
-        TextEditingController(text: contractorInvoiceinit.number);
-    contractorInvoiceAmount =
-        TextEditingController(text: contractorInvoiceinit.amount.toString());
+    contractorInvoiceNo = TextEditingController(text: contractorInvoiceinit.number);
+    contractorInvoiceAmount = TextEditingController(text: contractorInvoiceinit.amount.toString());
     contractorInvoiceRecievedDate = TextEditingController(
       text: contractorInvoiceinit.receivedDate.toString().substring(0, 10),
     );
-    contractorInvoiceTaxInvoiceNo =
-        TextEditingController(text: contractorInvoiceinit.taxNumber);
-    contractorInvoicePaidAmount = TextEditingController(
-        text: contractorInvoiceinit.paidamount.toString());
+    contractorInvoiceTaxInvoiceNo = TextEditingController(text: contractorInvoiceinit.taxNumber);
+    contractorInvoicePaidAmount = TextEditingController(text: contractorInvoiceinit.paidamount.toString());
     contractorInvoiceLastPaidDate = TextEditingController(
       text: contractorInvoiceinit.paidDate.toString().substring(0, 10),
     );
@@ -223,8 +182,7 @@ class _QuotationViewState extends State<QuotationView> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFF3A5F85),
-          title: Text(
-              'In a world of gray, CCM provides clarity to all construction & facility projects'),
+          title: Text('In a world of gray, CCM provides clarity to all construction & facility projects'),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -237,8 +195,7 @@ class _QuotationViewState extends State<QuotationView> {
                 children: [
                   Expanded(
                     child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: SizedBox(
                           height: 45.0,
                           child: ElevatedButton(
@@ -271,8 +228,7 @@ class _QuotationViewState extends State<QuotationView> {
                         },
                         decoration: InputDecoration(
                           hintText: 'INR',
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none),
+                          border: OutlineInputBorder(borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -297,8 +253,7 @@ class _QuotationViewState extends State<QuotationView> {
                                       )
                                     ]
                                   : quotationController.quotionlist
-                                      .where((Quotation val) =>
-                                          val.isTrash == false)
+                                      .where((Quotation val) => val.isTrash == false)
                                       .toSet()
                                       .map((e) => DropdownMenuItem(
                                             child: Text(e.qnumber),
@@ -365,8 +320,7 @@ class _QuotationViewState extends State<QuotationView> {
                       children: [
                         Text(
                           'Client Quotation',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20.0),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
@@ -405,12 +359,10 @@ class _QuotationViewState extends State<QuotationView> {
                                       shadowColor: Colors.grey,
                                       child: DropdownButtonHideUnderline(
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                           child: DropdownButton<String>(
                                               value: clientQuoteclientName.text,
-                                              items: clientController
-                                                      .clientlist.isEmpty
+                                              items: clientController.clientlist.isEmpty
                                                   ? [
                                                       DropdownMenuItem(
                                                         value: "N/A",
@@ -421,16 +373,14 @@ class _QuotationViewState extends State<QuotationView> {
                                                     ]
                                                   : clientController.clientlist
                                                       .toSet()
-                                                      .map((e) =>
-                                                          DropdownMenuItem(
+                                                      .map((e) => DropdownMenuItem(
                                                             child: Text(e.name),
                                                             value: e.name,
                                                           ))
                                                       .toList(),
                                               onChanged: (String? value) {
                                                 setState(() {
-                                                  clientQuoteclientName.text =
-                                                      value!;
+                                                  clientQuoteclientName.text = value!;
                                                 });
                                               },
                                               hint: Text("Client Name")),
@@ -468,8 +418,7 @@ class _QuotationViewState extends State<QuotationView> {
                           children: [
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -495,16 +444,13 @@ class _QuotationViewState extends State<QuotationView> {
                                             DateTime.now(),
                                           ).then((value) {
                                             setState(() {
-                                              clientQuotedateIssued.text = value
-                                                  .toString()
-                                                  .substring(0, 10);
+                                              clientQuotedateIssued.text = value.toString().substring(0, 10);
                                             });
                                           });
                                         },
                                         decoration: InputDecoration(
                                           hintText: 'dd-mm-yyyy',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
+                                          border: OutlineInputBorder(borderSide: BorderSide.none),
                                         ),
                                       ),
                                     ),
@@ -520,8 +466,7 @@ class _QuotationViewState extends State<QuotationView> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -543,11 +488,9 @@ class _QuotationViewState extends State<QuotationView> {
                                         shadowColor: Colors.grey,
                                         child: DropdownButtonHideUnderline(
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                             child: DropdownButton(
-                                                value: clientQuoteApprovalStatus
-                                                    .text,
+                                                value: clientQuoteApprovalStatus.text,
                                                 items: [
                                                   DropdownMenuItem(
                                                     child: Text("Approved"),
@@ -568,8 +511,7 @@ class _QuotationViewState extends State<QuotationView> {
                                                 ],
                                                 onChanged: (String? value) {
                                                   setState(() {
-                                                    clientQuoteApprovalStatus
-                                                        .text = value!;
+                                                    clientQuoteApprovalStatus.text = value!;
                                                   });
                                                 },
                                                 hint: Text("Select item")),
@@ -583,8 +525,7 @@ class _QuotationViewState extends State<QuotationView> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -611,9 +552,7 @@ class _QuotationViewState extends State<QuotationView> {
                                               // controller: contactPerson,
                                               decoration: InputDecoration(
                                                 hintText: '%',
-                                                border: OutlineInputBorder(
-                                                    borderSide:
-                                                        BorderSide.none),
+                                                border: OutlineInputBorder(borderSide: BorderSide.none),
                                               ),
                                             ),
                                           ),
@@ -628,9 +567,7 @@ class _QuotationViewState extends State<QuotationView> {
                                               // controller: contactPerson,
                                               decoration: InputDecoration(
                                                 hintText: 'Amount',
-                                                border: OutlineInputBorder(
-                                                    borderSide:
-                                                        BorderSide.none),
+                                                border: OutlineInputBorder(borderSide: BorderSide.none),
                                               ),
                                             ),
                                           ),
@@ -664,8 +601,7 @@ class _QuotationViewState extends State<QuotationView> {
                                   DateTime.now(),
                                 ).then((value) {
                                   setState(() {
-                                    clientQuoteJobCompletionDate.text =
-                                        value.toString().substring(0, 10);
+                                    clientQuoteJobCompletionDate.text = value.toString().substring(0, 10);
                                   });
                                 });
                               },
@@ -674,8 +610,7 @@ class _QuotationViewState extends State<QuotationView> {
                             Spacer(),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -697,11 +632,9 @@ class _QuotationViewState extends State<QuotationView> {
                                         shadowColor: Colors.grey,
                                         child: DropdownButtonHideUnderline(
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                             child: DropdownButton(
-                                                value: clientQuoteOverallStatus
-                                                    .text,
+                                                value: clientQuoteOverallStatus.text,
                                                 items: [
                                                   DropdownMenuItem(
                                                     child: Text("Pending"),
@@ -718,8 +651,7 @@ class _QuotationViewState extends State<QuotationView> {
                                                 ],
                                                 onChanged: (String? value) {
                                                   setState(() {
-                                                    clientQuoteOverallStatus
-                                                        .text = value!;
+                                                    clientQuoteOverallStatus.text = value!;
                                                   });
                                                 },
                                                 hint: Text("Select item")),
@@ -748,1714 +680,1278 @@ class _QuotationViewState extends State<QuotationView> {
                   color: Color(0xFFE8F3FA),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(
+                        'Client Invoice',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Divider(),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
                         children: [
-                          Text(
-                            'Client Invoice',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: Divider(),
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Row(
-                            children: [
-                              clientinvoices.isEmpty
-                                  ? CardInputField(
-                                      readonly: false,
-                                      text: 'Client Invoice No',
-                                      hinttext: 'Invoice No',
-                                      controller: clientInvoiceNo,
-                                    )
-                                  : Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Client Invoice No',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 17,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: Card(
-                                                  color: Colors.white,
-                                                  elevation: 5,
-                                                  shadowColor: Colors.grey,
-                                                  child:
-                                                      SimpleAutoCompleteTextField(
-                                                    clearOnSubmit: false,
-                                                    textSubmitted: (data) {
-                                                      clientinvoices.isNotEmpty
-                                                          ? clientinvoices
-                                                              .forEach((v) {
-                                                              if (v.number ==
-                                                                  data) {
-                                                                setState(() {
-                                                                  clientinvoiceuid =
-                                                                      v.uid;
-                                                                  clientInvoiceNo
-                                                                          .text =
-                                                                      v.number;
-                                                                  clientInvoiceAmount
-                                                                          .text =
-                                                                      v.amount
-                                                                          .toString();
-                                                                  clientInvoiceIssueDate.text = v
-                                                                      .issueDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-                                                                  clientInvoiceLastRecieveDate.text = v
-                                                                      .receivedDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-                                                                });
-                                                              }
-                                                            })
-                                                          : print('Null Value');
-                                                    },
-                                                    decoration: InputDecoration(
-                                                        hintText: 'Invoice No'),
-                                                    controller: clientInvoiceNo,
-                                                    suggestions:
-                                                        clientinvoices.map((e) {
-                                                      return e.number;
-                                                    }).toList(),
-                                                    key: clientkey,
-                                                  )),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Client Invoice Amount',
-                                hinttext: 'Client Invoice Amount',
-                                controller: clientInvoiceAmount,
-                              ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Invoice Issue Date',
-                                hinttext: 'dd-mm-yyyy',
-                                controller: clientInvoiceIssueDate,
-                                onTap: () {
-                                  _selectDate(
-                                    context,
-                                    DateTime.now(),
-                                  ).then((value) {
-                                    setState(() {
-                                      clientInvoiceIssueDate.text =
-                                          value.toString().substring(0, 10);
-                                    });
-                                  });
-                                },
-                              ),
-                              CardInputField(
-                                readonly: true,
-                                text: 'Last Recieved Date',
-                                hinttext: 'dd-mm-yyyy',
-                                // onTap: () {
-                                //   _selectDate(
-                                //     context,
-                                //     DateTime.now(),
-                                //   ).then((value) {
-                                //     setState(() {
-                                //       clientInvoiceLastRecieveDate.text =
-                                //           value.toString().substring(0, 10);
-                                //     });
-                                // });
-                                // },
-                                controller: clientInvoiceLastRecieveDate,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.25,
-                            child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Recieved Amount',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.grey[200],
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          readOnly: true,
-                                          controller:
-                                              clientInvoiceTotalRecieved,
-                                          decoration: InputDecoration(
-                                            hintText: 'Recieved Amount',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
+                          clientinvoices.isEmpty
+                              ? CardInputField(
+                                  readonly: false,
+                                  text: 'Client Invoice No',
+                                  hinttext: 'Invoice No',
+                                  controller: clientInvoiceNo,
+                                )
+                              : Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Client Invoice No',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
                                           ),
                                         ),
-                                      ),
-                                    ])),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        // SizedBox(
+                                        //   width: double.infinity,
+                                        //   child: Card(
+                                        //       color: Colors.white,
+                                        //       elevation: 5,
+                                        //       shadowColor: Colors.grey,
+                                        //       child: SimpleAutoCompleteTextField(
+                                        //         clearOnSubmit: false,
+                                        //         textSubmitted: (data) {
+                                        //           clientinvoices.isNotEmpty
+                                        //               ? clientinvoices.forEach((v) {
+                                        //                   if (v.number == data) {
+                                        //                     setState(() {
+                                        //                       clientinvoiceuid = v.uid;
+                                        //                       clientInvoiceNo.text = v.number;
+                                        //                       clientInvoiceAmount.text = v.amount.toString();
+                                        //                       clientInvoiceIssueDate.text = v.issueDate.toString().substring(0, 10);
+                                        //                       clientInvoiceLastRecieveDate.text = v.receivedDate.toString().substring(0, 10);
+                                        //                     });
+                                        //                   }
+                                        //                 })
+                                        //               : print('Null Value');
+                                        //         },
+                                        //         decoration: InputDecoration(hintText: 'Invoice No'),
+                                        //         controller: clientInvoiceNo,
+                                        //         suggestions: clientinvoices.map((e) {
+                                        //           return e.number;
+                                        //         }).toList(),
+                                        //         key: clientkey,
+                                        //       )),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'Client Invoice Amount',
+                            hinttext: 'Client Invoice Amount',
+                            controller: clientInvoiceAmount,
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          var uid = UniqueKey().toString();
+                          CardInputField(
+                            readonly: false,
+                            text: 'Invoice Issue Date',
+                            hinttext: 'dd-mm-yyyy',
+                            controller: clientInvoiceIssueDate,
+                            onTap: () {
+                              _selectDate(
+                                context,
+                                DateTime.now(),
+                              ).then((value) {
+                                setState(() {
+                                  clientInvoiceIssueDate.text = value.toString().substring(0, 10);
+                                });
+                              });
+                            },
+                          ),
+                          CardInputField(
+                            readonly: true,
+                            text: 'Last Recieved Date',
+                            hinttext: 'dd-mm-yyyy',
+                            // onTap: () {
+                            //   _selectDate(
+                            //     context,
+                            //     DateTime.now(),
+                            //   ).then((value) {
+                            //     setState(() {
+                            //       clientInvoiceLastRecieveDate.text =
+                            //           value.toString().substring(0, 10);
+                            //     });
+                            // });
+                            // },
+                            controller: clientInvoiceLastRecieveDate,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(
+                                'Recieved Amount',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Card(
+                                color: Colors.grey[200],
+                                elevation: 5,
+                                shadowColor: Colors.grey,
+                                child: TextFormField(
+                                  readOnly: true,
+                                  controller: clientInvoiceTotalRecieved,
+                                  decoration: InputDecoration(
+                                    hintText: 'Recieved Amount',
+                                    border: OutlineInputBorder(borderSide: BorderSide.none),
+                                  ),
+                                ),
+                              ),
+                            ])),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      var uid = UniqueKey().toString();
+                                      setState(() {
+                                        clientinvoices.add(
+                                          ClientInvoice(
+                                            uid: uid,
+                                            clientcredits: clientcredits,
+                                            clientinvoicepayments: clientinvoicepayment,
+                                            number: clientInvoiceNo.text,
+                                            receivedDate: DateTime.parse(clientInvoiceLastRecieveDate.text),
+                                            recievedamount: 0.00,
+                                            amount: double.parse(clientInvoiceAmount.text),
+                                            issueDate: DateTime.parse(clientInvoiceIssueDate.text),
+                                          ),
+                                        );
+                                      });
+
+                                      clientInvoiceNo.clear();
+                                      clientInvoiceLastRecieveDate.clear();
+                                      clientInvoiceAmount.clear();
+                                      clientInvoiceIssueDate.clear();
+                                      CoolAlert.show(context: context, type: CoolAlertType.success, text: 'Quotation Added');
+                                      // clientinvoices.isNotEmpty
+                                      //     ? clientkey.currentState!.updateSuggestions(
+                                      //         clientinvoices.map((e) => e.number).toList(),
+                                      //       )
+                                      //     : null;
+                                      // showDialog(
+                                      //     context: context,
+                                      //     builder: (context) {
+                                      //       return AlertDialog(
+                                      //         title:
+                                      //             Text('Quotation Added'),
+                                      //       );
+                                      //     });
+                                    },
+                                    child: Text('Add'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      var invoice = ClientInvoice(
+                                        uid: clientinvoiceuid,
+                                        number: clientInvoiceNo.text,
+                                        receivedDate: DateTime.parse(clientInvoiceLastRecieveDate.text),
+                                        recievedamount: 0.00,
+                                        amount: double.parse(clientInvoiceAmount.text),
+                                        issueDate: DateTime.parse(clientInvoiceIssueDate.text),
+                                      );
+                                      clientinvoices.forEach((element) {
+                                        if (element.uid == clientinvoiceuid) {
                                           setState(() {
-                                            clientinvoices.add(
-                                              ClientInvoice(
-                                                uid: uid,
-                                                clientcredits: clientcredits,
-                                                clientinvoicepayments:
-                                                    clientinvoicepayment,
-                                                number: clientInvoiceNo.text,
-                                                receivedDate: DateTime.parse(
-                                                    clientInvoiceLastRecieveDate
-                                                        .text),
-                                                recievedamount: 0.00,
-                                                amount: double.parse(
-                                                    clientInvoiceAmount.text),
-                                                issueDate: DateTime.parse(
-                                                    clientInvoiceIssueDate
-                                                        .text),
+                                            clientinvoices.remove(element);
+                                            clientinvoices.add(invoice);
+                                            clientInvoiceNo.clear();
+                                            clientInvoiceLastRecieveDate.clear();
+                                            clientInvoiceAmount.clear();
+                                            clientInvoiceIssueDate.clear();
+                                            CoolAlert.show(context: context, type: CoolAlertType.success, text: 'Quotation Updated');
+                                            // clientkey.currentState!.updateSuggestions(
+                                            //   clientinvoices.map((e) => e.number).toList(),
+                                            // );
+                                          });
+                                        }
+                                      });
+                                      // var f =clientinvoices.indexWhere((element) => element.uid == clientinvoiceuid);
+                                    },
+                                    child: Text('Update'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                      'Client Invoice List',
+                                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 15.0,
+                                                  ),
+                                                  Divider(),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(12.0),
+                                                    child: ElevatedButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: Text('Back'),
+                                                    ),
+                                                  ),
+                                                  DataTable(
+                                                      columns: [
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Invoice No',
+                                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Invoice Amount',
+                                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Issued Date',
+                                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Last Recieved Date',
+                                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Recieved Amount',
+                                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Delete',
+                                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                      rows: clientinvoices
+                                                          .map<DataRow>(
+                                                            (e) => DataRow(
+                                                              cells: [
+                                                                DataCell(
+                                                                  Text(e.number),
+                                                                ),
+                                                                DataCell(
+                                                                  Text(e.amount.toString()),
+                                                                ),
+                                                                DataCell(
+                                                                  Text(e.issueDate.toString()),
+                                                                ),
+                                                                DataCell(
+                                                                  Text(e.receivedDate.toString()),
+                                                                ),
+                                                                DataCell(
+                                                                  Text(e.recievedamount.toString()),
+                                                                ),
+                                                                DataCell(
+                                                                  Icon(
+                                                                    Icons.delete,
+                                                                    color: Colors.red,
+                                                                  ),
+                                                                  onTap: () => CoolAlert.show(
+                                                                    width: MediaQuery.of(context).size.width > 500
+                                                                        ? MediaQuery.of(context).size.width / 2
+                                                                        : MediaQuery.of(context).size.width * 0.85,
+                                                                    showCancelBtn: true,
+                                                                    onCancelBtnTap: () => Navigator.pop(context),
+                                                                    onConfirmBtnTap: () {
+                                                                      clientinvoices.remove(e);
+                                                                      Navigator.pop(context);
+                                                                      Navigator.pop(context);
+                                                                      setState(() {});
+                                                                    },
+                                                                    context: context,
+                                                                    type: CoolAlertType.confirm,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                          .toList()),
+                                                ],
                                               ),
                                             );
                                           });
+                                    },
+                                    child: Text('List Invoice'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showcredits(
+                                          name: 'Client',
+                                          invoiceNo: clientInvoiceNo,
+                                          invoiceAmount: clientInvoiceAmount,
+                                          invoiceIssueDate: clientInvoiceIssueDate,
+                                          creditamount: clientcreditamount,
+                                          clientInvoiceNo: clientInvoiceNo,
+                                          creditRecieveDate: clientcreditRecieveDate,
+                                          creditnoteno: clientcreditnoteno,
+                                          recievedamount: clientrecievedamount,
+                                          paymentdate: clientpaymentdate);
+                                    },
+                                    child: Text('Payments/Credits'),
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  elevation: 5,
+                  color: Color(0xFFE8F3FA),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(
+                        'Contractor Quotation',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Divider(),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        children: [
+                          contractorPO.isNotEmpty
+                              ? Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'PO Number',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        // SizedBox(
+                                        //   width: double.infinity,
+                                        //   child: Card(
+                                        //       color: Colors.white,
+                                        //       elevation: 5,
+                                        //       shadowColor: Colors.grey,
+                                        //       child: SimpleAutoCompleteTextField(
+                                        //         clearOnSubmit: false,
+                                        //         textSubmitted: (data) {
+                                        //           if (contractorPO.isNotEmpty) {
+                                        //             contractorInvoice.clear();
+                                        //             for (int i = 0; i < contractorPO.length; i++) {
+                                        //               var v = contractorPO[i];
+                                        //               if (v.poNumber == data) {
+                                        //                 print('Invoice : ${v.invoices}');
+                                        //                 setState(() {
+                                        //                   // contractorInvoice =
+                                        //                   //     v.invoices;
+                                        //                   // contractorInvoice
+                                        //                   //     .clear();
+                                        //                   v.invoices.isEmpty
+                                        //                       ? null
+                                        //                       : v.invoices.forEach((element) {
+                                        //                           contractorInvoice.add(element);
+                                        //                         });
+                                        //                   contractorpouid = v.uid;
+                                        //                   contractorQuotationPONumber.text = v.poNumber;
 
-                                          clientInvoiceNo.clear();
-                                          clientInvoiceLastRecieveDate.clear();
-                                          clientInvoiceAmount.clear();
-                                          clientInvoiceIssueDate.clear();
-                                          CoolAlert.show(
-                                              context: context,
-                                              type: CoolAlertType.success,
-                                              text: 'Quotation Added');
-                                          clientinvoices.isNotEmpty
-                                              ? clientkey.currentState!
-                                                  .updateSuggestions(
-                                                  clientinvoices
-                                                      .map((e) => e.number)
-                                                      .toList(),
-                                                )
-                                              : null;
-                                          // showDialog(
-                                          //     context: context,
-                                          //     builder: (context) {
-                                          //       return AlertDialog(
-                                          //         title:
-                                          //             Text('Quotation Added'),
-                                          //       );
-                                          //     });
-                                        },
-                                        child: Text('Add'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          var invoice = ClientInvoice(
-                                            uid: clientinvoiceuid,
-                                            number: clientInvoiceNo.text,
-                                            receivedDate: DateTime.parse(
-                                                clientInvoiceLastRecieveDate
-                                                    .text),
-                                            recievedamount: 0.00,
-                                            amount: double.parse(
-                                                clientInvoiceAmount.text),
-                                            issueDate: DateTime.parse(
-                                                clientInvoiceIssueDate.text),
-                                          );
-                                          clientinvoices.forEach((element) {
-                                            if (element.uid ==
-                                                clientinvoiceuid) {
+                                        //                   contractorQuotationPOAmount.text = v.poAmount.toString();
+
+                                        //                   contractorQuotationContractorName.text = v.name;
+
+                                        //                   contractorQuotationPOIssueDate.text = v.issueDate.toString().substring(0, 10);
+
+                                        //                   contractorQuotationNo.text = v.quotationNumber!;
+
+                                        //                   contractorQuotationAmount.text = v.quotationAmount.toString();
+
+                                        //                   contractorQuotationWorkCommence.text = v.workCommenceDate.toString().substring(0, 10);
+                                        //                   contractorQuotationWorkComplete.text = v.workCompleteDate.toString().substring(0, 10);
+                                        //                 });
+                                        //               }
+                                        //               break;
+
+                                        //               // else{ print('Null Value');
+                                        //             }
+                                        //           }
+                                        //         },
+                                        //         decoration: InputDecoration(hintText: 'Invoice No'),
+                                        //         controller: contractorQuotationPONumber,
+                                        //         suggestions: contractorPO.map((e) {
+                                        //           return e.poNumber;
+                                        //         }).toList(),
+                                        //         key: contractorkey,
+                                        //       )),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : CardInputField(
+                                  readonly: false,
+                                  text: 'PO Number',
+                                  hinttext: 'PO Number',
+                                  controller: contractorQuotationPONumber,
+                                ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Contractor Name",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Card(
+                                    color: Colors.white,
+                                    elevation: 5,
+                                    shadowColor: Colors.grey,
+                                    child: DropdownButtonHideUnderline(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: DropdownButton<String>(
+                                            value: contractorQuotationContractorName.text,
+                                            items: contractorController.contractorlist.isEmpty
+                                                ? [
+                                                    DropdownMenuItem(
+                                                      value: "N/A",
+                                                      child: Text(
+                                                        "N/A",
+                                                      ),
+                                                    )
+                                                  ]
+                                                : contractorController.contractorlist
+                                                    .toSet()
+                                                    .map((e) => DropdownMenuItem(
+                                                          child: Text(e.name),
+                                                          value: e.name,
+                                                        ))
+                                                    .toList(),
+                                            onChanged: (String? value) {
                                               setState(() {
-                                                clientinvoices.remove(element);
-                                                clientinvoices.add(invoice);
-                                                clientInvoiceNo.clear();
-                                                clientInvoiceLastRecieveDate
-                                                    .clear();
-                                                clientInvoiceAmount.clear();
-                                                clientInvoiceIssueDate.clear();
-                                                CoolAlert.show(
-                                                    context: context,
-                                                    type: CoolAlertType.success,
-                                                    text: 'Quotation Updated');
-                                                clientkey.currentState!
-                                                    .updateSuggestions(
-                                                  clientinvoices
-                                                      .map((e) => e.number)
-                                                      .toList(),
-                                                );
+                                                contractorQuotationContractorName.text = value!;
                                               });
-                                            }
-                                          });
-                                          // var f =clientinvoices.indexWhere((element) => element.uid == clientinvoiceuid);
-                                        },
-                                        child: Text('Update'),
+                                            },
+                                            hint: Text("Contractor Name")),
                                       ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(
-                                                          'Client Invoice List',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 20.0),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 15.0,
-                                                      ),
-                                                      Divider(),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: ElevatedButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context),
-                                                          child: Text('Back'),
-                                                        ),
-                                                      ),
-                                                      DataTable(
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // CardInputField(
+                          //   readonly: false,
+                          //   text: 'Contractor Name',
+                          //   hinttext: 'Contractor Name',
+                          //   controller: contractorQuotationContractorName,
+                          // ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'PO Amount',
+                            hinttext: 'PO Amount',
+                            controller: contractorQuotationPOAmount,
+                          ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'PO Issued Date',
+                            onTap: () {
+                              _selectDate(
+                                context,
+                                DateTime.now(),
+                              ).then((value) {
+                                setState(() {
+                                  contractorQuotationPOIssueDate.text = value.toString().substring(0, 10);
+                                });
+                              });
+                            },
+                            hinttext: 'dd-mm-yyyy',
+                            controller: contractorQuotationPOIssueDate,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        children: [
+                          CardInputField(
+                            readonly: false,
+                            text: 'Quotation No',
+                            hinttext: 'Quotation No',
+                            controller: contractorQuotationNo,
+                          ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'Quote Amount',
+                            hinttext: 'Quote Amount',
+                            controller: contractorQuotationAmount,
+                          ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'Work Commence',
+                            hinttext: 'dd-mm-yyyy',
+                            onTap: () {
+                              _selectDate(
+                                context,
+                                DateTime.now(),
+                              ).then((value) {
+                                setState(() {
+                                  contractorQuotationWorkCommence.text = value.toString().substring(0, 10);
+                                });
+                              });
+                            },
+                            controller: contractorQuotationWorkCommence,
+                          ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'Work Complete',
+                            hinttext: 'dd-mm-yyyy',
+                            onTap: () {
+                              _selectDate(
+                                context,
+                                DateTime.now(),
+                              ).then((value) {
+                                setState(() {
+                                  contractorQuotationWorkComplete.text = value.toString().substring(0, 10);
+                                });
+                              });
+                            },
+                            controller: contractorQuotationWorkComplete,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        var uid = UniqueKey().toString();
+                                        contractorPO.add(ContractorPurchaseOrder(
+                                            uid: uid,
+                                            name: contractorQuotationContractorName.text,
+                                            poNumber: contractorQuotationPONumber.text,
+                                            quotationAmount: double.parse(contractorQuotationAmount.text),
+                                            quotationNumber: contractorQuotationNo.text,
+                                            issueDate: DateTime.parse(contractorQuotationPOIssueDate.text),
+                                            poAmount: double.parse(contractorQuotationPOAmount.text),
+                                            workCommenceDate: DateTime.parse(contractorQuotationWorkCommence.text),
+                                            workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
+                                            invoices: contractorInvoice));
+                                      });
+                                      contractorQuotationPONumber.clear();
+                                      contractorQuotationAmount.clear();
+                                      contractorQuotationNo.clear();
+                                      contractorQuotationPOIssueDate.clear();
+                                      contractorQuotationPOAmount.clear();
+                                      contractorQuotationWorkCommence.clear();
+                                      contractorQuotationWorkComplete.clear();
+
+                                      CoolAlert.show(context: context, type: CoolAlertType.success, text: 'Contractor Quotation Added');
+                                      // contractorkey.currentState!.updateSuggestions(
+                                      //   contractorPO.map((e) => e.poNumber).toList(),
+                                      // );
+                                    },
+                                    child: Text('Add'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      contractorPO.forEach((element) {
+                                        if (element.uid == contractorpouid) {
+                                          contractorPO.remove(element);
+                                          print(contractorPO);
+                                          print('Element Removed');
+                                          contractorPO.add(ContractorPurchaseOrder(
+                                              uid: contractorpouid,
+                                              name: contractorQuotationContractorName.text,
+                                              poNumber: contractorQuotationPONumber.text,
+                                              quotationAmount: double.parse(contractorQuotationAmount.text),
+                                              quotationNumber: contractorQuotationNo.text,
+                                              issueDate: DateTime.parse(contractorQuotationPOIssueDate.text),
+                                              poAmount: double.parse(contractorQuotationPOAmount.text),
+                                              workCommenceDate: DateTime.parse(contractorQuotationWorkCommence.text),
+                                              workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
+                                              invoices: contractorInvoice));
+
+                                          contractorQuotationPONumber.clear();
+                                          contractorQuotationAmount.clear();
+                                          contractorQuotationNo.clear();
+                                          contractorQuotationPOIssueDate.clear();
+                                          contractorQuotationPOAmount.clear();
+                                          contractorQuotationWorkCommence.clear();
+                                          contractorQuotationWorkComplete.clear();
+
+                                          CoolAlert.show(context: context, type: CoolAlertType.success, text: 'Contractor Quotation Updated');
+                                          // contractorkey.currentState!.updateSuggestions(
+                                          //   contractorPO.map((e) => e.poNumber).toList(),
+                                          // );
+                                        }
+                                      });
+                                    },
+                                    child: Text('Update'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                      'Contractor PO List',
+                                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 15.0,
+                                                  ),
+                                                  Divider(),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(12.0),
+                                                    child: ElevatedButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: Text('Back'),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(12.0),
+                                                    child: Card(
+                                                      elevation: 5.0,
+                                                      child: DataTable(
+                                                          columnSpacing: 52.0,
                                                           columns: [
                                                             DataColumn(
                                                               label: Text(
-                                                                'Invoice No',
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                'Contractor Name',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
                                                             DataColumn(
                                                               label: Text(
-                                                                'Invoice Amount',
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                'Po Number',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
                                                             DataColumn(
                                                               label: Text(
-                                                                'Issued Date',
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                'Po Amount',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
                                                             DataColumn(
                                                               label: Text(
-                                                                'Last Recieved Date',
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                'Po Issued Date',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
                                                             DataColumn(
                                                               label: Text(
-                                                                'Recieved Amount',
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                'Quotation No',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Quotation Amount',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Work Commence',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Work Complete',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
                                                             DataColumn(
                                                               label: Text(
                                                                 'Delete',
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
                                                           ],
-                                                          rows: clientinvoices
+                                                          rows: contractorPO
                                                               .map<DataRow>(
                                                                 (e) => DataRow(
                                                                   cells: [
                                                                     DataCell(
-                                                                      Text(e
-                                                                          .number),
+                                                                      Text(e.name),
                                                                     ),
                                                                     DataCell(
-                                                                      Text(e
-                                                                          .amount
-                                                                          .toString()),
+                                                                      Text(e.poNumber.toString()),
                                                                     ),
                                                                     DataCell(
-                                                                      Text(e
-                                                                          .issueDate
-                                                                          .toString()),
+                                                                      Text(e.poAmount.toString()),
                                                                     ),
                                                                     DataCell(
-                                                                      Text(e
-                                                                          .receivedDate
-                                                                          .toString()),
+                                                                      Text(e.issueDate.toString()),
                                                                     ),
                                                                     DataCell(
-                                                                      Text(e
-                                                                          .recievedamount
-                                                                          .toString()),
+                                                                      Text(e.quotationNumber.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.quotationAmount.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.workCommenceDate.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.workCompleteDate.toString()),
                                                                     ),
                                                                     DataCell(
                                                                       Icon(
-                                                                        Icons
-                                                                            .delete,
-                                                                        color: Colors
-                                                                            .red,
+                                                                        Icons.delete,
+                                                                        color: Colors.red,
                                                                       ),
-                                                                      onTap: () =>
-                                                                          CoolAlert
-                                                                              .show(
+                                                                      onTap: () => CoolAlert.show(
                                                                         width: MediaQuery.of(context).size.width > 500
-                                                                            ? MediaQuery.of(context).size.width /
-                                                                                2
-                                                                            : MediaQuery.of(context).size.width *
-                                                                                0.85,
-                                                                        showCancelBtn:
-                                                                            true,
-                                                                        onCancelBtnTap:
-                                                                            () =>
-                                                                                Navigator.pop(context),
-                                                                        onConfirmBtnTap:
-                                                                            () {
-                                                                          clientinvoices
-                                                                              .remove(e);
-                                                                          Navigator.pop(
-                                                                              context);
-                                                                          Navigator.pop(
-                                                                              context);
-                                                                          setState(
-                                                                              () {});
+                                                                            ? MediaQuery.of(context).size.width / 2
+                                                                            : MediaQuery.of(context).size.width * 0.85,
+                                                                        showCancelBtn: true,
+                                                                        onCancelBtnTap: () => Navigator.pop(context),
+                                                                        onConfirmBtnTap: () {
+                                                                          contractorPO.remove(e);
+                                                                          Navigator.pop(context);
+                                                                          Navigator.pop(context);
+                                                                          setState(() {});
                                                                         },
-                                                                        context:
-                                                                            context,
-                                                                        type: CoolAlertType
-                                                                            .confirm,
+                                                                        context: context,
+                                                                        type: CoolAlertType.confirm,
                                                                       ),
                                                                     ),
                                                                   ],
                                                                 ),
                                                               )
                                                               .toList()),
-                                                    ],
+                                                    ),
                                                   ),
-                                                );
-                                              });
-                                        },
-                                        child: Text('List Invoice'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showcredits(
-                                              name: 'Client',
-                                              invoiceNo: clientInvoiceNo,
-                                              invoiceAmount:
-                                                  clientInvoiceAmount,
-                                              invoiceIssueDate:
-                                                  clientInvoiceIssueDate,
-                                              creditamount: clientcreditamount,
-                                              clientInvoiceNo: clientInvoiceNo,
-                                              creditRecieveDate:
-                                                  clientcreditRecieveDate,
-                                              creditnoteno: clientcreditnoteno,
-                                              recievedamount:
-                                                  clientrecievedamount,
-                                              paymentdate: clientpaymentdate);
-                                        },
-                                        child: Text('Payments/Credits'),
-                                      ),
-                                    )),
-                              ),
-                            ],
-                          ),
-                        ]),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 5,
-                  color: Color(0xFFE8F3FA),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Contractor Quotation',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: Divider(),
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Row(
-                            children: [
-                              contractorPO.isNotEmpty
-                                  ? Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'PO Number',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 17,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: Card(
-                                                  color: Colors.white,
-                                                  elevation: 5,
-                                                  shadowColor: Colors.grey,
-                                                  child:
-                                                      SimpleAutoCompleteTextField(
-                                                    clearOnSubmit: false,
-                                                    textSubmitted: (data) {
-                                                      if (contractorPO
-                                                          .isNotEmpty) {
-                                                        contractorInvoice
-                                                            .clear();
-                                                        for (int i = 0;
-                                                            i <
-                                                                contractorPO
-                                                                    .length;
-                                                            i++) {
-                                                          var v =
-                                                              contractorPO[i];
-                                                          if (v.poNumber ==
-                                                              data) {
-                                                            print(
-                                                                'Invoice : ${v.invoices}');
-                                                            setState(() {
-                                                              // contractorInvoice =
-                                                              //     v.invoices;
-                                                              // contractorInvoice
-                                                              //     .clear();
-                                                              v.invoices.isEmpty
-                                                                  ? null
-                                                                  : v.invoices
-                                                                      .forEach(
-                                                                          (element) {
-                                                                      contractorInvoice
-                                                                          .add(
-                                                                              element);
-                                                                    });
-                                                              contractorpouid =
-                                                                  v.uid;
-                                                              contractorQuotationPONumber
-                                                                      .text =
-                                                                  v.poNumber;
-
-                                                              contractorQuotationPOAmount
-                                                                      .text =
-                                                                  v.poAmount
-                                                                      .toString();
-
-                                                              contractorQuotationContractorName
-                                                                      .text =
-                                                                  v.name;
-
-                                                              contractorQuotationPOIssueDate
-                                                                      .text =
-                                                                  v.issueDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-
-                                                              contractorQuotationNo
-                                                                      .text =
-                                                                  v.quotationNumber!;
-
-                                                              contractorQuotationAmount
-                                                                      .text =
-                                                                  v.quotationAmount
-                                                                      .toString();
-
-                                                              contractorQuotationWorkCommence
-                                                                      .text =
-                                                                  v.workCommenceDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-                                                              contractorQuotationWorkComplete
-                                                                      .text =
-                                                                  v.workCompleteDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-                                                            });
-                                                          }
-                                                          break;
-
-                                                          // else{ print('Null Value');
-                                                        }
-                                                      }
-                                                    },
-                                                    decoration: InputDecoration(
-                                                        hintText: 'Invoice No'),
-                                                    controller:
-                                                        contractorQuotationPONumber,
-                                                    suggestions:
-                                                        contractorPO.map((e) {
-                                                      return e.poNumber;
-                                                    }).toList(),
-                                                    key: contractorkey,
-                                                  )),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  : CardInputField(
-                                      readonly: false,
-                                      text: 'PO Number',
-                                      hinttext: 'PO Number',
-                                      controller: contractorQuotationPONumber,
-                                    ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Contractor Name",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: Card(
-                                        color: Colors.white,
-                                        elevation: 5,
-                                        shadowColor: Colors.grey,
-                                        child: DropdownButtonHideUnderline(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: DropdownButton<String>(
-                                                value:
-                                                    contractorQuotationContractorName
-                                                        .text,
-                                                items: contractorController
-                                                        .contractorlist.isEmpty
-                                                    ? [
-                                                        DropdownMenuItem(
-                                                          value: "N/A",
-                                                          child: Text(
-                                                            "N/A",
-                                                          ),
-                                                        )
-                                                      ]
-                                                    : contractorController
-                                                        .contractorlist
-                                                        .toSet()
-                                                        .map((e) =>
-                                                            DropdownMenuItem(
-                                                              child:
-                                                                  Text(e.name),
-                                                              value: e.name,
-                                                            ))
-                                                        .toList(),
-                                                onChanged: (String? value) {
-                                                  setState(() {
-                                                    contractorQuotationContractorName
-                                                        .text = value!;
-                                                  });
-                                                },
-                                                hint: Text("Contractor Name")),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // CardInputField(
-                              //   readonly: false,
-                              //   text: 'Contractor Name',
-                              //   hinttext: 'Contractor Name',
-                              //   controller: contractorQuotationContractorName,
-                              // ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'PO Amount',
-                                hinttext: 'PO Amount',
-                                controller: contractorQuotationPOAmount,
-                              ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'PO Issued Date',
-                                onTap: () {
-                                  _selectDate(
-                                    context,
-                                    DateTime.now(),
-                                  ).then((value) {
-                                    setState(() {
-                                      contractorQuotationPOIssueDate.text =
-                                          value.toString().substring(0, 10);
-                                    });
-                                  });
-                                },
-                                hinttext: 'dd-mm-yyyy',
-                                controller: contractorQuotationPOIssueDate,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Row(
-                            children: [
-                              CardInputField(
-                                readonly: false,
-                                text: 'Quotation No',
-                                hinttext: 'Quotation No',
-                                controller: contractorQuotationNo,
-                              ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Quote Amount',
-                                hinttext: 'Quote Amount',
-                                controller: contractorQuotationAmount,
-                              ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Work Commence',
-                                hinttext: 'dd-mm-yyyy',
-                                onTap: () {
-                                  _selectDate(
-                                    context,
-                                    DateTime.now(),
-                                  ).then((value) {
-                                    setState(() {
-                                      contractorQuotationWorkCommence.text =
-                                          value.toString().substring(0, 10);
-                                    });
-                                  });
-                                },
-                                controller: contractorQuotationWorkCommence,
-                              ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Work Complete',
-                                hinttext: 'dd-mm-yyyy',
-                                onTap: () {
-                                  _selectDate(
-                                    context,
-                                    DateTime.now(),
-                                  ).then((value) {
-                                    setState(() {
-                                      contractorQuotationWorkComplete.text =
-                                          value.toString().substring(0, 10);
-                                    });
-                                  });
-                                },
-                                controller: contractorQuotationWorkComplete,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 15.0,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            var uid = UniqueKey().toString();
-                                            contractorPO.add(ContractorPurchaseOrder(
-                                                uid: uid,
-                                                name: contractorQuotationContractorName
-                                                    .text,
-                                                poNumber: contractorQuotationPONumber
-                                                    .text,
-                                                quotationAmount: double.parse(
-                                                    contractorQuotationAmount
-                                                        .text),
-                                                quotationNumber:
-                                                    contractorQuotationNo.text,
-                                                issueDate: DateTime.parse(
-                                                    contractorQuotationPOIssueDate
-                                                        .text),
-                                                poAmount: double.parse(
-                                                    contractorQuotationPOAmount
-                                                        .text),
-                                                workCommenceDate: DateTime.parse(
-                                                    contractorQuotationWorkCommence.text),
-                                                workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
-                                                invoices: contractorInvoice));
-                                          });
-                                          contractorQuotationPONumber.clear();
-                                          contractorQuotationAmount.clear();
-                                          contractorQuotationNo.clear();
-                                          contractorQuotationPOIssueDate
-                                              .clear();
-                                          contractorQuotationPOAmount.clear();
-                                          contractorQuotationWorkCommence
-                                              .clear();
-                                          contractorQuotationWorkComplete
-                                              .clear();
-
-                                          CoolAlert.show(
-                                              context: context,
-                                              type: CoolAlertType.success,
-                                              text:
-                                                  'Contractor Quotation Added');
-                                          contractorkey.currentState!
-                                              .updateSuggestions(
-                                            contractorPO
-                                                .map((e) => e.poNumber)
-                                                .toList(),
-                                          );
-                                        },
-                                        child: Text('Add'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          contractorPO.forEach((element) {
-                                            if (element.uid ==
-                                                contractorpouid) {
-                                              contractorPO.remove(element);
-                                              print(contractorPO);
-                                              print('Element Removed');
-                                              contractorPO.add(ContractorPurchaseOrder(
-                                                  uid: contractorpouid,
-                                                  name: contractorQuotationContractorName
-                                                      .text,
-                                                  poNumber:
-                                                      contractorQuotationPONumber
-                                                          .text,
-                                                  quotationAmount: double.parse(
-                                                      contractorQuotationAmount
-                                                          .text),
-                                                  quotationNumber:
-                                                      contractorQuotationNo
-                                                          .text,
-                                                  issueDate: DateTime.parse(
-                                                      contractorQuotationPOIssueDate
-                                                          .text),
-                                                  poAmount: double.parse(
-                                                      contractorQuotationPOAmount
-                                                          .text),
-                                                  workCommenceDate:
-                                                      DateTime.parse(contractorQuotationWorkCommence.text),
-                                                  workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
-                                                  invoices: contractorInvoice));
-
-                                              contractorQuotationPONumber
-                                                  .clear();
-                                              contractorQuotationAmount.clear();
-                                              contractorQuotationNo.clear();
-                                              contractorQuotationPOIssueDate
-                                                  .clear();
-                                              contractorQuotationPOAmount
-                                                  .clear();
-                                              contractorQuotationWorkCommence
-                                                  .clear();
-                                              contractorQuotationWorkComplete
-                                                  .clear();
-
-                                              CoolAlert.show(
-                                                  context: context,
-                                                  type: CoolAlertType.success,
-                                                  text:
-                                                      'Contractor Quotation Updated');
-                                              contractorkey.currentState!
-                                                  .updateSuggestions(
-                                                contractorPO
-                                                    .map((e) => e.poNumber)
-                                                    .toList(),
-                                              );
-                                            }
-                                          });
-                                        },
-                                        child: Text('Update'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(
-                                                          'Contractor PO List',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 20.0),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 15.0,
-                                                      ),
-                                                      Divider(),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: ElevatedButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context),
-                                                          child: Text('Back'),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: Card(
-                                                          elevation: 5.0,
-                                                          child: DataTable(
-                                                              columnSpacing:
-                                                                  52.0,
-                                                              columns: [
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Contractor Name',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Po Number',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Po Amount',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Po Issued Date',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Quotation No',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Quotation Amount',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Work Commence',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Work Complete',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Delete',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                              rows: contractorPO
-                                                                  .map<DataRow>(
-                                                                    (e) =>
-                                                                        DataRow(
-                                                                      cells: [
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .name),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .poNumber
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .poAmount
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .issueDate
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .quotationNumber
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .quotationAmount
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .workCommenceDate
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .workCompleteDate
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Icon(
-                                                                            Icons.delete,
-                                                                            color:
-                                                                                Colors.red,
-                                                                          ),
-                                                                          onTap: () =>
-                                                                              CoolAlert.show(
-                                                                            width: MediaQuery.of(context).size.width > 500
-                                                                                ? MediaQuery.of(context).size.width / 2
-                                                                                : MediaQuery.of(context).size.width * 0.85,
-                                                                            showCancelBtn:
-                                                                                true,
-                                                                            onCancelBtnTap: () =>
-                                                                                Navigator.pop(context),
-                                                                            onConfirmBtnTap:
-                                                                                () {
-                                                                              contractorPO.remove(e);
-                                                                              Navigator.pop(context);
-                                                                              Navigator.pop(context);
-                                                                              setState(() {});
-                                                                            },
-                                                                            context:
-                                                                                context,
-                                                                            type:
-                                                                                CoolAlertType.confirm,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                  .toList()),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              });
-                                        },
-                                        child: Text('List Contractors'),
-                                      ),
-                                    )),
-                              ),
-                            ],
-                          ),
-                        ]),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 5,
-                  color: Color(0xFFE8F3FA),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Contractor Invoice',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: Divider(),
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Row(
-                            children: [
-                              contractorInvoice.isEmpty
-                                  ? CardInputField(
-                                      readonly: false,
-                                      text: 'Contractor Invoice No',
-                                      hinttext: 'Contractor Invoice No',
-                                      controller: contractorInvoiceNo,
-                                    )
-                                  : Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Contractor Invoice No',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 17,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: Card(
-                                                color: Colors.white,
-                                                elevation: 5,
-                                                shadowColor: Colors.grey,
-                                                child:
-                                                    SimpleAutoCompleteTextField(
-                                                  clearOnSubmit: false,
-                                                  textSubmitted: (data) {
-                                                    contractorInvoice.isNotEmpty
-                                                        ? contractorInvoice
-                                                            .forEach((v) {
-                                                            if (v.number ==
-                                                                data) {
-                                                              setState(() {
-                                                                constractorinvoiceuid =
-                                                                    v.uid;
-                                                                contractorInvoiceNo
-                                                                        .text =
-                                                                    v.number;
-
-                                                                contractorInvoiceAmount
-                                                                        .text =
-                                                                    v.amount
-                                                                        .toString();
-
-                                                                contractorInvoiceRecievedDate
-                                                                        .text =
-                                                                    v.receivedDate
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            10);
-
-                                                                contractorInvoiceTaxInvoiceNo
-                                                                        .text =
-                                                                    v.taxNumber
-                                                                        .toString();
-
-                                                                contractorInvoicePaidAmount
-                                                                        .text =
-                                                                    v.paidamount
-                                                                        .toString()
-                                                                        .toString();
-
-                                                                contractorInvoiceLastPaidDate
-                                                                        .text =
-                                                                    v.paidDate
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            10);
-                                                              });
-                                                            }
-                                                          })
-                                                        : print('Null Value');
-                                                  },
-                                                  decoration: InputDecoration(
-                                                      hintText:
-                                                          'Contractor Invoice Number'),
-                                                  controller:
-                                                      contractorInvoiceNo,
-                                                  suggestions: contractorInvoice
-                                                      .map((e) {
-                                                    return e.number;
-                                                  }).toList(),
-                                                  key: contractinvoiceorkey,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Contractor Invoice Amount',
-                                hinttext: 'Contractor Invoice Amount',
-                                controller: contractorInvoiceAmount,
-                              ),
-                              CardInputField(
-                                  readonly: false,
-                                  text: 'Invoice Recieved Date',
-                                  hinttext: 'dd-mm-yyyy',
-                                  controller: contractorInvoiceRecievedDate,
-                                  onTap: () {
-                                    _selectDate(
-                                      context,
-                                      DateTime.now(),
-                                    ).then((value) {
-                                      setState(() {
-                                        contractorInvoiceRecievedDate.text =
-                                            value.toString().substring(0, 10);
-                                      });
-                                    });
-                                  }),
-                              CardInputField(
-                                readonly: false,
-                                text: 'Tax Invoice No',
-                                hinttext: 'Tax Invoice No',
-                                controller: contractorInvoiceTaxInvoiceNo,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Row(
-                            children: [
-                              CardInputField(
-                                readonly: false,
-                                text: 'Paid Amount',
-                                hinttext: 'Paid Amount',
-                                controller: contractorInvoicePaidAmount,
-                              ),
-                              CardInputField(
-                                  readonly: false,
-                                  text: 'Last Paid Date',
-                                  hinttext: 'dd-mm-yyyy',
-                                  controller: contractorInvoiceLastPaidDate,
-                                  onTap: () {
-                                    _selectDate(
-                                      context,
-                                      DateTime.now(),
-                                    ).then((value) {
-                                      setState(() {
-                                        contractorInvoiceLastPaidDate.text =
-                                            value.toString().substring(0, 10);
-                                      });
-                                    });
-                                  }),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          var uid = UniqueKey().toString();
-                                          setState(() {
-                                            contractorInvoice.add(
-                                              ContractorInvoice(
-                                                uid: uid,
-                                                // payments: [],
-                                                contractorinvoicepayments:
-                                                    contractorinvoicepayment,
-                                                contractorcredits:
-                                                    contractorcredits,
-                                                number:
-                                                    contractorInvoiceNo.text,
-                                                receivedDate: DateTime.parse(
-                                                    contractorInvoiceRecievedDate
-                                                        .text),
-                                                amount: double.parse(
-                                                    contractorInvoiceAmount
-                                                        .text),
-                                                paidDate: DateTime.parse(
-                                                    contractorInvoiceLastPaidDate
-                                                        .text),
-                                                taxNumber:
-                                                    contractorInvoiceTaxInvoiceNo
-                                                        .text,
-                                                paidamount: double.parse(
-                                                    contractorInvoicePaidAmount
-                                                        .text),
+                                                ],
                                               ),
                                             );
-                                            contractorPO.forEach((cpo) {
-                                              if (cpo.poNumber ==
-                                                  contractorQuotationPONumber
-                                                      .text) {
-                                                cpo.invoices =
-                                                    contractorInvoice;
-                                              }
-                                            });
                                           });
+                                    },
+                                    child: Text('List Contractors'),
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  elevation: 5,
+                  color: Color(0xFFE8F3FA),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(
+                        'Contractor Invoice',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Divider(),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        children: [
+                          contractorInvoice.isEmpty
+                              ? CardInputField(
+                                  readonly: false,
+                                  text: 'Contractor Invoice No',
+                                  hinttext: 'Contractor Invoice No',
+                                  controller: contractorInvoiceNo,
+                                )
+                              : Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Contractor Invoice No',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        // SizedBox(
+                                        //   width: double.infinity,
+                                        //   child: Card(
+                                        //     color: Colors.white,
+                                        //     elevation: 5,
+                                        //     shadowColor: Colors.grey,
+                                        //     child: SimpleAutoCompleteTextField(
+                                        //       clearOnSubmit: false,
+                                        //       textSubmitted: (data) {
+                                        //         contractorInvoice.isNotEmpty
+                                        //             ? contractorInvoice.forEach((v) {
+                                        //                 if (v.number == data) {
+                                        //                   setState(() {
+                                        //                     constractorinvoiceuid = v.uid;
+                                        //                     contractorInvoiceNo.text = v.number;
+
+                                        //                     contractorInvoiceAmount.text = v.amount.toString();
+
+                                        //                     contractorInvoiceRecievedDate.text = v.receivedDate.toString().substring(0, 10);
+
+                                        //                     contractorInvoiceTaxInvoiceNo.text = v.taxNumber.toString();
+
+                                        //                     contractorInvoicePaidAmount.text = v.paidamount.toString().toString();
+
+                                        //                     contractorInvoiceLastPaidDate.text = v.paidDate.toString().substring(0, 10);
+                                        //                   });
+                                        //                 }
+                                        //               })
+                                        //             : print('Null Value');
+                                        //       },
+                                        //       decoration: InputDecoration(hintText: 'Contractor Invoice Number'),
+                                        //       controller: contractorInvoiceNo,
+                                        //       suggestions: contractorInvoice.map((e) {
+                                        //         return e.number;
+                                        //       }).toList(),
+                                        //       key: contractinvoiceorkey,
+                                        //     ),
+                                        //   ),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                          CardInputField(
+                            readonly: false,
+                            text: 'Contractor Invoice Amount',
+                            hinttext: 'Contractor Invoice Amount',
+                            controller: contractorInvoiceAmount,
+                          ),
+                          CardInputField(
+                              readonly: false,
+                              text: 'Invoice Recieved Date',
+                              hinttext: 'dd-mm-yyyy',
+                              controller: contractorInvoiceRecievedDate,
+                              onTap: () {
+                                _selectDate(
+                                  context,
+                                  DateTime.now(),
+                                ).then((value) {
+                                  setState(() {
+                                    contractorInvoiceRecievedDate.text = value.toString().substring(0, 10);
+                                  });
+                                });
+                              }),
+                          CardInputField(
+                            readonly: false,
+                            text: 'Tax Invoice No',
+                            hinttext: 'Tax Invoice No',
+                            controller: contractorInvoiceTaxInvoiceNo,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        children: [
+                          CardInputField(
+                            readonly: false,
+                            text: 'Paid Amount',
+                            hinttext: 'Paid Amount',
+                            controller: contractorInvoicePaidAmount,
+                          ),
+                          CardInputField(
+                              readonly: false,
+                              text: 'Last Paid Date',
+                              hinttext: 'dd-mm-yyyy',
+                              controller: contractorInvoiceLastPaidDate,
+                              onTap: () {
+                                _selectDate(
+                                  context,
+                                  DateTime.now(),
+                                ).then((value) {
+                                  setState(() {
+                                    contractorInvoiceLastPaidDate.text = value.toString().substring(0, 10);
+                                  });
+                                });
+                              }),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      var uid = UniqueKey().toString();
+                                      setState(() {
+                                        contractorInvoice.add(
+                                          ContractorInvoice(
+                                            uid: uid,
+                                            // payments: [],
+                                            contractorinvoicepayments: contractorinvoicepayment,
+                                            contractorcredits: contractorcredits,
+                                            number: contractorInvoiceNo.text,
+                                            receivedDate: DateTime.parse(contractorInvoiceRecievedDate.text),
+                                            amount: double.parse(contractorInvoiceAmount.text),
+                                            paidDate: DateTime.parse(contractorInvoiceLastPaidDate.text),
+                                            taxNumber: contractorInvoiceTaxInvoiceNo.text,
+                                            paidamount: double.parse(contractorInvoicePaidAmount.text),
+                                          ),
+                                        );
+                                        contractorPO.forEach((cpo) {
+                                          if (cpo.poNumber == contractorQuotationPONumber.text) {
+                                            cpo.invoices = contractorInvoice;
+                                          }
+                                        });
+                                      });
+                                      contractorInvoiceNo.clear();
+                                      contractorInvoiceAmount.clear();
+                                      contractorInvoiceLastPaidDate.clear();
+                                      contractorInvoiceTaxInvoiceNo.clear();
+                                      contractorInvoicePaidAmount.clear();
+
+                                      CoolAlert.show(context: context, type: CoolAlertType.success, text: 'Contractor Invoice Added');
+                                      // contractorInvoice.isNotEmpty
+                                      //     ? contractinvoiceorkey.currentState!.updateSuggestions(
+                                      //         contractorInvoice.map((e) => e.number).toList(),
+                                      //       )
+                                      //     : null;
+                                    },
+                                    child: Text('Add'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      contractorInvoice.forEach((element) {
+                                        if (element.uid == constractorinvoiceuid) {
+                                          contractorInvoice.remove(element);
+                                          contractorInvoice.add(
+                                            ContractorInvoice(
+                                              uid: constractorinvoiceuid,
+                                              // payments: [],
+                                              contractorinvoicepayments: contractorinvoicepayment,
+                                              contractorcredits: contractorcredits,
+                                              number: contractorInvoiceNo.text,
+                                              receivedDate: DateTime.parse(contractorInvoiceRecievedDate.text),
+                                              amount: double.parse(contractorInvoiceAmount.text),
+                                              paidDate: DateTime.parse(contractorInvoiceLastPaidDate.text),
+                                              taxNumber: contractorInvoiceTaxInvoiceNo.text,
+                                              paidamount: double.parse(contractorInvoicePaidAmount.text),
+                                            ),
+                                          );
+                                          contractorPO.forEach((cpo) {
+                                            if (cpo.poNumber == contractorQuotationPONumber.text) {
+                                              cpo.invoices = contractorInvoice;
+                                            }
+                                          });
+
                                           contractorInvoiceNo.clear();
                                           contractorInvoiceAmount.clear();
                                           contractorInvoiceLastPaidDate.clear();
                                           contractorInvoiceTaxInvoiceNo.clear();
                                           contractorInvoicePaidAmount.clear();
 
-                                          CoolAlert.show(
-                                              context: context,
-                                              type: CoolAlertType.success,
-                                              text: 'Contractor Invoice Added');
-                                          contractorInvoice.isNotEmpty
-                                              ? contractinvoiceorkey
-                                                  .currentState!
-                                                  .updateSuggestions(
-                                                  contractorInvoice
-                                                      .map((e) => e.number)
-                                                      .toList(),
-                                                )
-                                              : null;
-                                        },
-                                        child: Text('Add'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          contractorInvoice.forEach((element) {
-                                            if (element.uid ==
-                                                constractorinvoiceuid) {
-                                              contractorInvoice.remove(element);
-                                              contractorInvoice.add(
-                                                ContractorInvoice(
-                                                  uid: constractorinvoiceuid,
-                                                  // payments: [],
-                                                  contractorinvoicepayments:
-                                                      contractorinvoicepayment,
-                                                  contractorcredits:
-                                                      contractorcredits,
-                                                  number:
-                                                      contractorInvoiceNo.text,
-                                                  receivedDate: DateTime.parse(
-                                                      contractorInvoiceRecievedDate
-                                                          .text),
-                                                  amount: double.parse(
-                                                      contractorInvoiceAmount
-                                                          .text),
-                                                  paidDate: DateTime.parse(
-                                                      contractorInvoiceLastPaidDate
-                                                          .text),
-                                                  taxNumber:
-                                                      contractorInvoiceTaxInvoiceNo
-                                                          .text,
-                                                  paidamount: double.parse(
-                                                      contractorInvoicePaidAmount
-                                                          .text),
-                                                ),
-                                              );
-                                              contractorPO.forEach((cpo) {
-                                                if (cpo.poNumber ==
-                                                    contractorQuotationPONumber
-                                                        .text) {
-                                                  cpo.invoices =
-                                                      contractorInvoice;
-                                                }
-                                              });
-
-                                              contractorInvoiceNo.clear();
-                                              contractorInvoiceAmount.clear();
-                                              contractorInvoiceLastPaidDate
-                                                  .clear();
-                                              contractorInvoiceTaxInvoiceNo
-                                                  .clear();
-                                              contractorInvoicePaidAmount
-                                                  .clear();
-
-                                              CoolAlert.show(
-                                                  context: context,
-                                                  type: CoolAlertType.success,
-                                                  text:
-                                                      'Contractor Invoice Updated');
-                                              contractinvoiceorkey.currentState!
-                                                  .updateSuggestions(
-                                                contractorInvoice
-                                                    .map((e) => e.number)
-                                                    .toList(),
-                                              );
-                                            }
-                                          });
-                                        },
-                                        child: Text('Update'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(
-                                                          'Contractor Invoice List',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 20.0),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 15.0,
-                                                      ),
-                                                      Divider(),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: ElevatedButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context),
-                                                          child: Text('Back'),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: Card(
-                                                          elevation: 5.0,
-                                                          child: DataTable(
-                                                              columnSpacing:
-                                                                  52.0,
-                                                              columns: [
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Invoice No',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Invoice Amount',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Invoice Received Date',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Last Paid Date',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Paid Amount',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                                DataColumn(
-                                                                  label: Text(
-                                                                    'Delete',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                              rows: contractorInvoice
-                                                                  .map<DataRow>(
-                                                                    (e) =>
-                                                                        DataRow(
-                                                                      cells: [
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .number),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .amount
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .receivedDate
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .paidDate
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(e
-                                                                              .paidamount
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Icon(
-                                                                            Icons.delete,
-                                                                            color:
-                                                                                Colors.red,
-                                                                          ),
-                                                                          onTap: () =>
-                                                                              CoolAlert.show(
-                                                                            width: MediaQuery.of(context).size.width > 500
-                                                                                ? MediaQuery.of(context).size.width / 2
-                                                                                : MediaQuery.of(context).size.width * 0.85,
-                                                                            showCancelBtn:
-                                                                                true,
-                                                                            onCancelBtnTap: () =>
-                                                                                Navigator.pop(context),
-                                                                            onConfirmBtnTap:
-                                                                                () {
-                                                                              contractorInvoice.remove(e);
-                                                                              Navigator.pop(context);
-                                                                              Navigator.pop(context);
-                                                                              setState(() {});
-                                                                            },
-                                                                            context:
-                                                                                context,
-                                                                            type:
-                                                                                CoolAlertType.confirm,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                  .toList()),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              });
-                                        },
-                                        child: Text('List Invoice'),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0, vertical: 8.0),
-                                    child: SizedBox(
-                                      height: 45.0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showcredits(
-                                              name: 'Contrator',
-                                              invoiceNo: contractorInvoiceNo,
-                                              invoiceAmount:
-                                                  contractorInvoiceAmount,
-                                              invoiceIssueDate:
-                                                  contractorInvoiceLastPaidDate,
-                                              creditamount:
-                                                  contractorcreditamount,
-                                              clientInvoiceNo:
-                                                  contractorInvoiceNo,
-                                              creditRecieveDate:
-                                                  contractorcreditRecieveDate,
-                                              creditnoteno:
-                                                  contractorcreditnoteno,
-                                              recievedamount:
-                                                  contractorrecievedamount,
-                                              paymentdate:
-                                                  contractorpaymentdate);
-                                        },
-                                        child: Text('Payments/Credits'),
-                                      ),
-                                    )),
-                              ),
-                            ],
+                                          CoolAlert.show(context: context, type: CoolAlertType.success, text: 'Contractor Invoice Updated');
+                                          // contractinvoiceorkey.currentState!.updateSuggestions(
+                                          //   contractorInvoice.map((e) => e.number).toList(),
+                                          // );
+                                        }
+                                      });
+                                    },
+                                    child: Text('Update'),
+                                  ),
+                                )),
                           ),
-                        ]),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                      'Contractor Invoice List',
+                                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 15.0,
+                                                  ),
+                                                  Divider(),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(12.0),
+                                                    child: ElevatedButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: Text('Back'),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(12.0),
+                                                    child: Card(
+                                                      elevation: 5.0,
+                                                      child: DataTable(
+                                                          columnSpacing: 52.0,
+                                                          columns: [
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Invoice No',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Invoice Amount',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Invoice Received Date',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Last Paid Date',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Paid Amount',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                            DataColumn(
+                                                              label: Text(
+                                                                'Delete',
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          rows: contractorInvoice
+                                                              .map<DataRow>(
+                                                                (e) => DataRow(
+                                                                  cells: [
+                                                                    DataCell(
+                                                                      Text(e.number),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.amount.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.receivedDate.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.paidDate.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(e.paidamount.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Icon(
+                                                                        Icons.delete,
+                                                                        color: Colors.red,
+                                                                      ),
+                                                                      onTap: () => CoolAlert.show(
+                                                                        width: MediaQuery.of(context).size.width > 500
+                                                                            ? MediaQuery.of(context).size.width / 2
+                                                                            : MediaQuery.of(context).size.width * 0.85,
+                                                                        showCancelBtn: true,
+                                                                        onCancelBtnTap: () => Navigator.pop(context),
+                                                                        onConfirmBtnTap: () {
+                                                                          contractorInvoice.remove(e);
+                                                                          Navigator.pop(context);
+                                                                          Navigator.pop(context);
+                                                                          setState(() {});
+                                                                        },
+                                                                        context: context,
+                                                                        type: CoolAlertType.confirm,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                              .toList()),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    },
+                                    child: Text('List Invoice'),
+                                  ),
+                                )),
+                          ),
+                          Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                child: SizedBox(
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      showcredits(
+                                          name: 'Contrator',
+                                          invoiceNo: contractorInvoiceNo,
+                                          invoiceAmount: contractorInvoiceAmount,
+                                          invoiceIssueDate: contractorInvoiceLastPaidDate,
+                                          creditamount: contractorcreditamount,
+                                          clientInvoiceNo: contractorInvoiceNo,
+                                          creditRecieveDate: contractorcreditRecieveDate,
+                                          creditnoteno: contractorcreditnoteno,
+                                          recievedamount: contractorrecievedamount,
+                                          paymentdate: contractorpaymentdate);
+                                    },
+                                    child: Text('Payments/Credits'),
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ]),
                   ),
                 ),
               ),
@@ -2466,134 +1962,114 @@ class _QuotationViewState extends State<QuotationView> {
                   color: Color(0xFFE8F3FA),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Comments',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      SizedBox(
-                                        height: 250,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.60,
-                                        child: Card(
-                                            color: Colors.grey[200],
-                                            elevation: 5,
-                                            shadowColor: Colors.grey,
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                children: comments
-                                                    .map(
-                                                      (e) => ListTile(
-                                                        leading: Text(
-                                                          '->',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 22,
-                                                              color:
-                                                                  Colors.black),
-                                                        ),
-                                                        title: Text(e),
-                                                      ),
-                                                    )
-                                                    .toList(),
-                                              ),
-                                            )),
-                                      ),
-                                    ],
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Comments',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
                                   ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Add Comment',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Card(
-                                        color: Colors.white,
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  SizedBox(
+                                    height: 250,
+                                    width: MediaQuery.of(context).size.width * 0.60,
+                                    child: Card(
+                                        color: Colors.grey[200],
                                         elevation: 5,
                                         shadowColor: Colors.grey,
-                                        child: TextFormField(
-                                          controller: comment,
-                                          decoration: InputDecoration(
-                                            hintText: 'Comment Something ....',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            children: comments
+                                                .map(
+                                                  (e) => ListTile(
+                                                    leading: Text(
+                                                      '->',
+                                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),
+                                                    ),
+                                                    title: Text(e),
+                                                  ),
+                                                )
+                                                .toList(),
                                           ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16.0, vertical: 8.0),
-                                          child: SizedBox(
-                                            height: 45.0,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  comments.add(comment.text);
-                                                });
-                                                comment.clear();
-                                              },
-                                              child: Text('Add'),
-                                            ),
-                                          )),
-                                    ],
+                                        )),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ]),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Add Comment',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Card(
+                                    color: Colors.white,
+                                    elevation: 5,
+                                    shadowColor: Colors.grey,
+                                    child: TextFormField(
+                                      controller: comment,
+                                      decoration: InputDecoration(
+                                        hintText: 'Comment Something ....',
+                                        border: OutlineInputBorder(borderSide: BorderSide.none),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                      child: SizedBox(
+                                        height: 45.0,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              comments.add(comment.text);
+                                            });
+                                            comment.clear();
+                                          },
+                                          child: Text('Add'),
+                                        ),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ]),
                   ),
                 ),
               ),
               Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: SizedBox(
                     height: 35,
                     child: ElevatedButton(
                       onPressed: () async {
-                        CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.loading,
-                            text: 'Loading');
+                        CoolAlert.show(context: context, type: CoolAlertType.loading, text: 'Loading');
                         Quotation quotationval = Quotation(
                             search: [
                               clientQuotequotationNumber.text,
@@ -2611,13 +2087,11 @@ class _QuotationViewState extends State<QuotationView> {
                             clientname: clientQuoteclientName.text,
                             qamount: double.parse(clientQuoteAmount.text),
                             clientApproval: clientQuoteclientApproval.text,
-                            dateIssued:
-                                DateTime.parse(clientQuotedateIssued.text),
+                            dateIssued: DateTime.parse(clientQuotedateIssued.text),
                             description: clientQuoteDesciption.text,
                             approvalStatus: clientQuoteApprovalStatus.text,
                             ccmTicketNumber: clientQuoteCCMTicketNumber.text,
-                            jobcompletionDate: DateTime.parse(
-                                clientQuoteJobCompletionDate.text),
+                            jobcompletionDate: DateTime.parse(clientQuoteJobCompletionDate.text),
                             overallstatus: clientQuoteOverallStatus.text,
                             clientInvoices: clientinvoices,
                             contractorPurchaseOrders: contractorPO);
@@ -2632,18 +2106,15 @@ class _QuotationViewState extends State<QuotationView> {
                                 )
                                 .whenComplete(() {
                                 var condocid;
-                                contractorController.contractorlist
-                                    .forEach((v) {
-                                  if (v.name ==
-                                      contractorQuotationContractorName.text) {
+                                contractorController.contractorlist.forEach((v) {
+                                  if (v.name == contractorQuotationContractorName.text) {
                                     condocid = v.docid;
                                     print(condocid);
                                   }
                                 });
                                 contractors.doc(condocid).update(
                                   {
-                                    "payable": int.parse(
-                                        contractorQuotationPOAmount.text),
+                                    "payable": int.parse(contractorQuotationPOAmount.text),
                                   },
                                 ).then((value) {
                                   CoolAlert.show(
@@ -2666,33 +2137,26 @@ class _QuotationViewState extends State<QuotationView> {
                                 )
                                 .whenComplete(() {
                                 var condocid;
-                                contractorController.contractorlist
-                                    .forEach((v) {
-                                  if (v.name ==
-                                      contractorQuotationContractorName.text) {
+                                contractorController.contractorlist.forEach((v) {
+                                  if (v.name == contractorQuotationContractorName.text) {
                                     condocid = v.docid;
                                     print(condocid);
                                   }
                                 });
                                 contractors.doc(condocid).update(
                                   {
-                                    "payable": int.parse(
-                                        contractorQuotationPOAmount.text),
+                                    "payable": int.parse(contractorQuotationPOAmount.text),
                                   },
                                 ).then((v) {
                                   List<double> templist = [];
                                   clientinvoices.forEach((element1) {
-                                    element1.clientinvoicepayments!
-                                        .forEach((element2) {
+                                    element1.clientinvoicepayments!.forEach((element2) {
                                       templist.add(element2.invoiceamount!);
                                     });
                                   });
                                   // print(templist);
                                   // print(clientQuoteAmount.text)
-                                  firestore
-                                      .collection('payments')
-                                      .doc('clienttotals')
-                                      .update(
+                                  firestore.collection('payments').doc('clienttotals').update(
                                     {
                                       'totalamount': FieldValue.increment(
                                         double.parse(
@@ -2700,10 +2164,7 @@ class _QuotationViewState extends State<QuotationView> {
                                         ),
                                       ),
                                       'totalrecieved': FieldValue.increment(
-                                        templist.fold(
-                                            0,
-                                            (previousValue, element) =>
-                                                previousValue + element),
+                                        templist.fold(0, (previousValue, element) => previousValue + element),
                                       ),
                                       DateTime.now().month.toString(): {
                                         "recieved": FieldValue.increment(
@@ -2787,10 +2248,8 @@ class _QuotationViewState extends State<QuotationView> {
                             width: 25.0,
                           ),
                           ElevatedButton(
-                            onPressed: () =>
-                                setState(() => isCredit = !isCredit),
-                            child:
-                                Text(isCredit ? 'Add Invoice' : 'Add Credit'),
+                            onPressed: () => setState(() => isCredit = !isCredit),
+                            child: Text(isCredit ? 'Add Invoice' : 'Add Credit'),
                           ),
                         ],
                       ),
@@ -2804,43 +2263,19 @@ class _QuotationViewState extends State<QuotationView> {
                             children: [
                               Row(
                                 children: [
-                                  CardInputField(
-                                      readonly: true,
-                                      controller: invoiceNo,
-                                      hinttext: 'Invoice Number',
-                                      text: 'Invoice Number'),
-                                  CardInputField(
-                                      readonly: true,
-                                      controller: invoiceAmount,
-                                      hinttext: 'Invoice Amount',
-                                      text: 'Invoice Amount'),
-                                  CardInputField(
-                                      readonly: true,
-                                      controller: invoiceIssueDate,
-                                      hinttext: 'Issued Date',
-                                      text: 'Issued Date'),
+                                  CardInputField(readonly: true, controller: invoiceNo, hinttext: 'Invoice Number', text: 'Invoice Number'),
+                                  CardInputField(readonly: true, controller: invoiceAmount, hinttext: 'Invoice Amount', text: 'Invoice Amount'),
+                                  CardInputField(readonly: true, controller: invoiceIssueDate, hinttext: 'Issued Date', text: 'Issued Date'),
                                 ],
                               ),
                               Row(
                                 children: [
+                                  CardInputField(readonly: false, controller: creditamount, hinttext: 'Credit Amount', text: 'Credit Amount'),
                                   CardInputField(
-                                      readonly: false,
-                                      controller: creditamount,
-                                      hinttext: 'Credit Amount',
-                                      text: 'Credit Amount'),
-                                  CardInputField(
-                                      readonly: false,
-                                      controller: creditRecieveDate,
-                                      hinttext: 'Client Recieved Date',
-                                      text: 'Client Recieved Date'),
-                                  CardInputField(
-                                      readonly: false,
-                                      controller: creditnoteno,
-                                      hinttext: 'Client Note No',
-                                      text: 'Client Note No'),
+                                      readonly: false, controller: creditRecieveDate, hinttext: 'Client Recieved Date', text: 'Client Recieved Date'),
+                                  CardInputField(readonly: false, controller: creditnoteno, hinttext: 'Client Note No', text: 'Client Note No'),
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 16.0, left: 16.0, top: 10.0),
+                                    padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 10.0),
                                     child: SizedBox(
                                       height: 50,
                                       width: 100,
@@ -2850,42 +2285,20 @@ class _QuotationViewState extends State<QuotationView> {
                                             () => name == 'Client'
                                                 ? clientcredits.add(
                                                     CreditModel(
-                                                      invoiceamount:
-                                                          double.parse(
-                                                              clientInvoiceAmount
-                                                                  .text),
-                                                      invoicenumber:
-                                                          clientInvoiceNo.text,
-                                                      issueddate:
-                                                          clientInvoiceIssueDate
-                                                              .text,
-                                                      creditRecieveDate:
-                                                          creditRecieveDate
-                                                              .text,
-                                                      creditamount:
-                                                          double.parse(
-                                                              creditamount
-                                                                  .text),
+                                                      invoiceamount: double.parse(clientInvoiceAmount.text),
+                                                      invoicenumber: clientInvoiceNo.text,
+                                                      issueddate: clientInvoiceIssueDate.text,
+                                                      creditRecieveDate: creditRecieveDate.text,
+                                                      creditamount: double.parse(creditamount.text),
                                                     ),
                                                   )
                                                 : contractorcredits.add(
                                                     CreditModel(
-                                                      invoiceamount:
-                                                          double.parse(
-                                                              clientInvoiceAmount
-                                                                  .text),
-                                                      invoicenumber:
-                                                          clientInvoiceNo.text,
-                                                      issueddate:
-                                                          clientInvoiceIssueDate
-                                                              .text,
-                                                      creditRecieveDate:
-                                                          creditRecieveDate
-                                                              .text,
-                                                      creditamount:
-                                                          double.parse(
-                                                              creditamount
-                                                                  .text),
+                                                      invoiceamount: double.parse(clientInvoiceAmount.text),
+                                                      invoicenumber: clientInvoiceNo.text,
+                                                      issueddate: clientInvoiceIssueDate.text,
+                                                      creditRecieveDate: creditRecieveDate.text,
+                                                      creditamount: double.parse(creditamount.text),
                                                     ),
                                                   ),
                                           );
@@ -2902,13 +2315,7 @@ class _QuotationViewState extends State<QuotationView> {
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: DataTable(
-                                    columns: [
-                                      'Credit Note Amount',
-                                      'Client Note Recieved Date',
-                                      'Client Note Number',
-                                      'Edit',
-                                      'Delete'
-                                    ]
+                                    columns: ['Credit Note Amount', 'Client Note Recieved Date', 'Client Note Number', 'Edit', 'Delete']
                                         .map<DataColumn>(
                                           (e) => DataColumn(
                                             label: Text(e),
@@ -2932,38 +2339,20 @@ class _QuotationViewState extends State<QuotationView> {
                                                   e.creditnoteno!,
                                                 ),
                                               ),
-                                              DataCell(IconButton(
-                                                  onPressed: () {},
-                                                  icon: Icon(Icons.edit))),
+                                              DataCell(IconButton(onPressed: () {}, icon: Icon(Icons.edit))),
                                               DataCell(
                                                 IconButton(
                                                   onPressed: () {
                                                     CoolAlert.show(
-                                                        type: CoolAlertType
-                                                            .confirm,
+                                                        type: CoolAlertType.confirm,
                                                         context: context,
-                                                        width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width >
-                                                                500
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width /
-                                                                2
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.85,
+                                                        width: MediaQuery.of(context).size.width > 500
+                                                            ? MediaQuery.of(context).size.width / 2
+                                                            : MediaQuery.of(context).size.width * 0.85,
                                                         showCancelBtn: true,
-                                                        onCancelBtnTap: () =>
-                                                            Navigator.pop(
-                                                                context),
+                                                        onCancelBtnTap: () => Navigator.pop(context),
                                                         onConfirmBtnTap: () {
-                                                          clientcredits
-                                                              .remove(e);
+                                                          clientcredits.remove(e);
                                                         });
                                                   },
                                                   icon: Icon(
@@ -2982,38 +2371,21 @@ class _QuotationViewState extends State<QuotationView> {
                             children: [
                               Row(
                                 children: [
-                                  CardInputField(
-                                      readonly: true,
-                                      controller: clientInvoiceNo,
-                                      hinttext: 'Invoice Number',
-                                      text: 'Invoice Number'),
-                                  CardInputField(
-                                      readonly: true,
-                                      controller: clientInvoiceAmount,
-                                      hinttext: 'Invoice Amount',
-                                      text: 'Invoice Amount'),
-                                  CardInputField(
-                                      readonly: true,
-                                      controller: clientInvoiceIssueDate,
-                                      hinttext: 'Issued Date',
-                                      text: 'Issued Date'),
+                                  CardInputField(readonly: true, controller: clientInvoiceNo, hinttext: 'Invoice Number', text: 'Invoice Number'),
+                                  CardInputField(readonly: true, controller: clientInvoiceAmount, hinttext: 'Invoice Amount', text: 'Invoice Amount'),
+                                  CardInputField(readonly: true, controller: clientInvoiceIssueDate, hinttext: 'Issued Date', text: 'Issued Date'),
                                 ],
                               ),
                               Row(
                                 children: [
-                                  CardInputField(
-                                      readonly: false,
-                                      controller: recievedamount,
-                                      hinttext: 'Recieved Amount',
-                                      text: 'Recieved Amount'),
+                                  CardInputField(readonly: false, controller: recievedamount, hinttext: 'Recieved Amount', text: 'Recieved Amount'),
                                   // CardInputField(
                                   //     readonly: false,
                                   //     controller: paymentdate,
                                   //     hinttext: 'Payment Date',
                                   //     text: 'Payment Date'),
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 16.0, left: 16.0, top: 10.0),
+                                    padding: const EdgeInsets.only(right: 16.0, left: 16.0, top: 10.0),
                                     child: SizedBox(
                                       height: 50,
                                       width: 100,
@@ -3023,20 +2395,11 @@ class _QuotationViewState extends State<QuotationView> {
                                             if (name == 'Client') {
                                               clientinvoicepayment.add(
                                                 InvoicePaymentModel(
-                                                    invoiceamount: double.parse(
-                                                        clientInvoiceAmount
-                                                            .text),
-                                                    invoicenumber:
-                                                        clientInvoiceNo.text,
-                                                    issueddate:
-                                                        clientInvoiceIssueDate
-                                                            .text,
-                                                    recievedamount:
-                                                        double.parse(
-                                                            recievedamount
-                                                                .text),
-                                                    paymentdate:
-                                                        paymentdate.text),
+                                                    invoiceamount: double.parse(clientInvoiceAmount.text),
+                                                    invoicenumber: clientInvoiceNo.text,
+                                                    issueddate: clientInvoiceIssueDate.text,
+                                                    recievedamount: double.parse(recievedamount.text),
+                                                    paymentdate: paymentdate.text),
                                               );
                                               // List<double> templist = [];
                                               // clientinvoices
@@ -3047,44 +2410,25 @@ class _QuotationViewState extends State<QuotationView> {
                                               //         element2.invoiceamount!);
                                               //   });
                                               // });
-                                              clientInvoiceTotalRecieved =
-                                                  TextEditingController(
-                                                      text:
-                                                          (clientinvoicepayment
-                                                              .fold(
+                                              clientInvoiceTotalRecieved = TextEditingController(
+                                                  text: (clientinvoicepayment.fold(
                                                 0.0,
-                                                (double previousValue,
-                                                        element) =>
+                                                (double previousValue, element) =>
                                                     previousValue +
                                                     double.parse(
-                                                      element.recievedamount
-                                                          .toString(),
+                                                      element.recievedamount.toString(),
                                                     ),
                                               )).toString());
-                                              clientInvoiceLastRecieveDate =
-                                                  TextEditingController(
-                                                text: DateTime.now()
-                                                    .toIso8601String()
-                                                    .substring(0, 10),
+                                              clientInvoiceLastRecieveDate = TextEditingController(
+                                                text: DateTime.now().toIso8601String().substring(0, 10),
                                               );
                                             } else {
-                                              contractorinvoicepayment.add(
-                                                  InvoicePaymentModel(
-                                                      invoiceamount:
-                                                          double.parse(
-                                                              clientInvoiceAmount
-                                                                  .text),
-                                                      invoicenumber:
-                                                          clientInvoiceNo.text,
-                                                      issueddate:
-                                                          clientInvoiceIssueDate
-                                                              .text,
-                                                      recievedamount:
-                                                          double.parse(
-                                                              recievedamount
-                                                                  .text),
-                                                      paymentdate:
-                                                          paymentdate.text));
+                                              contractorinvoicepayment.add(InvoicePaymentModel(
+                                                  invoiceamount: double.parse(clientInvoiceAmount.text),
+                                                  invoicenumber: clientInvoiceNo.text,
+                                                  issueddate: clientInvoiceIssueDate.text,
+                                                  recievedamount: double.parse(recievedamount.text),
+                                                  paymentdate: paymentdate.text));
                                             }
                                           });
                                         },
@@ -3100,15 +2444,7 @@ class _QuotationViewState extends State<QuotationView> {
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: DataTable(
-                                    columns: [
-                                      'Invoice No',
-                                      'Invoice Amount',
-                                      'Issue Date',
-                                      'Recieved Date',
-                                      'Recieved Amount',
-                                      'Edit',
-                                      'Delete'
-                                    ]
+                                    columns: ['Invoice No', 'Invoice Amount', 'Issue Date', 'Recieved Date', 'Recieved Amount', 'Edit', 'Delete']
                                         .map<DataColumn>(
                                           (e) => DataColumn(
                                             label: Text(e),
@@ -3142,38 +2478,20 @@ class _QuotationViewState extends State<QuotationView> {
                                                   e.recievedamount.toString(),
                                                 ),
                                               ),
-                                              DataCell(IconButton(
-                                                  onPressed: () {},
-                                                  icon: Icon(Icons.edit))),
+                                              DataCell(IconButton(onPressed: () {}, icon: Icon(Icons.edit))),
                                               DataCell(
                                                 IconButton(
                                                   onPressed: () {
                                                     CoolAlert.show(
-                                                        type: CoolAlertType
-                                                            .confirm,
+                                                        type: CoolAlertType.confirm,
                                                         context: context,
-                                                        width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width >
-                                                                500
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width /
-                                                                2
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.85,
+                                                        width: MediaQuery.of(context).size.width > 500
+                                                            ? MediaQuery.of(context).size.width / 2
+                                                            : MediaQuery.of(context).size.width * 0.85,
                                                         showCancelBtn: true,
-                                                        onCancelBtnTap: () =>
-                                                            Navigator.pop(
-                                                                context),
+                                                        onCancelBtnTap: () => Navigator.pop(context),
                                                         onConfirmBtnTap: () {
-                                                          clientinvoicepayment
-                                                              .remove(e);
+                                                          clientinvoicepayment.remove(e);
                                                         });
                                                   },
                                                   icon: Icon(
@@ -3284,13 +2602,7 @@ class AddCredit extends StatelessWidget {
 }
 
 class CardInputField extends StatelessWidget {
-  const CardInputField(
-      {Key? key,
-      this.onTap,
-      required this.readonly,
-      required this.controller,
-      required this.hinttext,
-      required this.text})
+  const CardInputField({Key? key, this.onTap, required this.readonly, required this.controller, required this.hinttext, required this.text})
       : super(key: key);
   final String text, hinttext;
   final onTap;

@@ -44,11 +44,12 @@ dependencies:
   country_picker: ^2.0.12
   cool_alert: ^1.1.0
   flutter_typeahead: ^3.2.4
-  autocomplete_textfield: ^1.7.3
+  # autocomplete_textfield: ^1.7.3
   syncfusion_flutter_charts: ^19.4.56
   easy_sidemenu: ^0.2.0
   intl_phone_field: ^2.1.0
   excel: ^2.0.0-null-safety-3
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

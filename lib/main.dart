@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'pages/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'pages/quotation_form.dart';
 import 'pages/quotation_view.dart';
 
 Future<void> main() async {
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         // elevatedButtonTheme : ElevatedButtonThemeData(style: ButtonStyle(backgroundColor: Color(0xFF29588C),))
       ),
       home: AuthRouter(),
-      // home: QuotationView(),
+      // home: QuotationForm(),
     );
   }
 }

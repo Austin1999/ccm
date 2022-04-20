@@ -11,26 +11,27 @@ import 'package:ccm/models/client.dart';
 // String quotationToJson(Quotation data) => json.encode(data.toJson());
 
 class Quotation {
-  Quotation(
-      {required this.qnumber,
-      required this.clientname,
-      required this.qamount,
-      required this.clientApproval,
-      required this.dateIssued,
-      required this.description,
-      required this.approvalStatus,
-      required this.ccmTicketNumber,
-      required this.jobcompletionDate,
-      required this.overallstatus,
-      this.parentQuoteId,
-      required this.clientInvoices,
-      required this.contractorPurchaseOrders,
-      required this.isTrash,
-      this.comment,
-      this.id,
-      required this.category,
-      required this.search,
-      required this.inr});
+  Quotation({
+    required this.qnumber,
+    required this.clientname,
+    required this.qamount,
+    required this.clientApproval,
+    required this.dateIssued,
+    required this.description,
+    required this.approvalStatus,
+    required this.ccmTicketNumber,
+    required this.jobcompletionDate,
+    required this.overallstatus,
+    this.parentQuoteId,
+    required this.clientInvoices,
+    required this.contractorPurchaseOrders,
+    required this.isTrash,
+    this.comment,
+    this.id,
+    required this.category,
+    required this.search,
+    required this.inr,
+  });
 
   String qnumber;
   String clientname;
@@ -102,11 +103,9 @@ class Quotation {
         "jobcompletionDate": jobcompletionDate,
         "overallstatus": overallstatus,
         "parentQuoteId": parentQuoteId ?? '',
-        "clientInvoices":
-            List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
+        "clientInvoices": List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
         "comment": comment,
-        "contractorPurchaseOrders":
-            List<dynamic>.from(contractorPurchaseOrders.map((x) => x.toJson())),
+        "contractorPurchaseOrders": List<dynamic>.from(contractorPurchaseOrders.map((x) => x.toJson())),
       };
 }
 
@@ -171,8 +170,7 @@ class ContractorInvoice {
   double paidamount;
   String? taxNumber;
 
-  factory ContractorInvoice.fromJson(Map<String, dynamic> json) =>
-      ContractorInvoice(
+  factory ContractorInvoice.fromJson(Map<String, dynamic> json) => ContractorInvoice(
         number: json["number"],
         receivedDate: json["received_date"].toDate(),
         amount: json["amount"].toDouble(),
@@ -197,10 +195,8 @@ class ContractorInvoice {
         "amount": amount,
         "paidDate": paidDate,
         "paidamount": paidamount,
-        "clientcredits":
-            List<dynamic>.from(contractorcredits!.map((x) => x.toJson())),
-        "clientinvoicepayments": List<dynamic>.from(
-            contractorinvoicepayments!.map((x) => x.toJson())),
+        "clientcredits": List<dynamic>.from(contractorcredits!.map((x) => x.toJson())),
+        "clientinvoicepayments": List<dynamic>.from(contractorinvoicepayments!.map((x) => x.toJson())),
         "tax_number": taxNumber,
       };
 }
@@ -256,10 +252,8 @@ class ClientInvoice {
         "received_date": receivedDate,
         "amount": amount,
         "issueDate": issueDate,
-        "clientcredits":
-            List<dynamic>.from(clientcredits!.map((x) => x.toJson())),
-        "clientinvoicepayments":
-            List<dynamic>.from(clientinvoicepayments!.map((x) => x.toJson())),
+        "clientcredits": List<dynamic>.from(clientcredits!.map((x) => x.toJson())),
+        "clientinvoicepayments": List<dynamic>.from(clientinvoicepayments!.map((x) => x.toJson())),
         // "contractorpo":
         //     List<dynamic>.from(contractorpo!.map((x) => x.toJson())),
         "recieved_amount": recievedamount
@@ -335,8 +329,7 @@ class ContractorPurchaseOrder {
   DateTime workCompleteDate;
   List<ContractorInvoice> invoices;
 
-  factory ContractorPurchaseOrder.fromJson(Map<String, dynamic> json) =>
-      ContractorPurchaseOrder(
+  factory ContractorPurchaseOrder.fromJson(Map<String, dynamic> json) => ContractorPurchaseOrder(
         name: json["name"],
         poNumber: json["poNumber"],
         issueDate: json["issueDate"].toDate(),

@@ -33,5 +33,4 @@ ClientController clientController = ClientController.instance;
 CountryController countryController = CountryController.instance;
 QuotationController quotationController = QuotationController.instance;
 ContractorController contractorController = ContractorController.instance;
-ClientDashboardController clientDashboardController =
-    ClientDashboardController.instance;
+ClientDashboardController clientDashboardController = ClientDashboardController.instance;

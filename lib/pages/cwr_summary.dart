@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quotation.dart';
+import 'package:ccm/pages/quotation_form.dart';
 import 'package:ccm/pages/quotation_view.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
@@ -21,8 +22,7 @@ class CwrSummary extends StatefulWidget {
   _CwrSummaryState createState() => _CwrSummaryState();
 }
 
-class _CwrSummaryState extends State<CwrSummary>
-    with SingleTickerProviderStateMixin {
+class _CwrSummaryState extends State<CwrSummary> with SingleTickerProviderStateMixin {
   String _statusvalue = 'Pending';
   String? _approvalvalue = 'Approved';
   TextEditingController clientQuoteclientName = TextEditingController();
@@ -62,13 +62,9 @@ class _CwrSummaryState extends State<CwrSummary>
     // }
   }
 
-  Future<DateTime> _selectDate(
-      BuildContext context, DateTime selectedDate) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2000, 8),
-        lastDate: DateTime.now());
+  Future<DateTime> _selectDate(BuildContext context, DateTime selectedDate) async {
+    final DateTime? picked =
+        await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(2000, 8), lastDate: DateTime.now());
     if (picked != null && picked != selectedDate) return picked;
     return picked!;
   }
@@ -81,10 +77,7 @@ class _CwrSummaryState extends State<CwrSummary>
     Get.put(QuotationController());
 
     setState(() {
-      clientQuoteclientName = TextEditingController(
-          text: clientController.clientlist.isEmpty
-              ? 'N/A'
-              : clientController.clientlist.first.name);
+      clientQuoteclientName = TextEditingController(text: clientController.clientlist.isEmpty ? 'N/A' : clientController.clientlist.first.name);
       // filtereddocs = quotationController.quotionlist;
       // tempdocs = filtereddocs;
       // print(filtereddocs);
@@ -104,11 +97,8 @@ class _CwrSummaryState extends State<CwrSummary>
             .where('search', arrayContains: searchcon.text)
             .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.active &&
-              snapshot.hasData) {
-            var docs = snapshot.data!.docs
-                .map((e) => Quotation.fromJson(e.data(), e.id))
-                .toList();
+          if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
+            var docs = snapshot.data!.docs.map((e) => Quotation.fromJson(e.data(), e.id)).toList();
             // print(docs);
             List<Quotation> filtereddocs = filter(docs);
             // print(filtereddocs);
@@ -126,9 +116,7 @@ class _CwrSummaryState extends State<CwrSummary>
                         //   child:
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Text(session.country!.name,
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold)),
+                          child: Text(session.country!.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                         ),
                         // ),
                         Row(
@@ -140,24 +128,25 @@ class _CwrSummaryState extends State<CwrSummary>
                                 child: ElevatedButton(
                                   // style: ButtonStyle(shape: BoxShape.rectangle),
                                   onPressed: () {
-                                    Get.to(
-                                      () => QuotationView(
-                                        // data: Quotation(
-                                        //     qnumber: '',
-                                        //     clientname: '',
-                                        //     qamount: 0.00,
-                                        //     clientApproval: '',
-                                        //     dateIssued: DateTime.now(),
-                                        //     description: '',
-                                        //     approvalStatus: '',
-                                        //     ccmTicketNumber: '',
-                                        //     jobcompletionDate: DateTime.now(),
-                                        //     overallstatus: '',
-                                        //     clientInvoices: [],
-                                        //     isTrash: false),
-                                        isEdit: false,
-                                      ),
-                                    );
+                                    Get.to(() => QuotationForm());
+                                    // Get.to(
+                                    //   () => QuotationView(
+                                    //     // data: Quotation(
+                                    //     //     qnumber: '',
+                                    //     //     clientname: '',
+                                    //     //     qamount: 0.00,
+                                    //     //     clientApproval: '',
+                                    //     //     dateIssued: DateTime.now(),
+                                    //     //     description: '',
+                                    //     //     approvalStatus: '',
+                                    //     //     ccmTicketNumber: '',
+                                    //     //     jobcompletionDate: DateTime.now(),
+                                    //     //     overallstatus: '',
+                                    //     //     clientInvoices: [],
+                                    //     //     isTrash: false),
+                                    //     isEdit: false,
+                                    //   ),
+                                    // );
                                   },
                                   child: AspectRatio(
                                       aspectRatio: 1,
@@ -187,33 +176,24 @@ class _CwrSummaryState extends State<CwrSummary>
                                       "Completion Date"
                                     ];
                                     sheetObject.insertRowIterables(dataList, 0);
-                                    for (int i = 0;
-                                        i < filtereddocs.length;
-                                        i++) {
+                                    for (int i = 0; i < filtereddocs.length; i++) {
                                       sheetObject.appendRow(
                                         [
                                           filtereddocs[i].qnumber.toString(),
-                                          filtereddocs[i]
-                                              .dateIssued
-                                              .toIso8601String()
-                                              .substring(0, 10),
+                                          filtereddocs[i].dateIssued.toIso8601String().substring(0, 10),
                                           filtereddocs[i].clientname,
                                           filtereddocs[i].description,
                                           filtereddocs[i].qamount,
                                           filtereddocs[i].approvalStatus,
                                           filtereddocs[i].ccmTicketNumber,
-                                          filtereddocs[i]
-                                              .jobcompletionDate
-                                              .toIso8601String()
-                                              .substring(0, 10)
+                                          filtereddocs[i].jobcompletionDate.toIso8601String().substring(0, 10)
                                         ],
                                       );
                                     }
 
                                     excel.setDefaultSheet('CWR-Summary');
                                     // File file = File(excel.encode()!, 'CWR');
-                                    var fileBytes = excel.save(
-                                        fileName: "CWR-Summary.xlsx");
+                                    var fileBytes = excel.save(fileName: "CWR-Summary.xlsx");
                                   },
                                   child: AspectRatio(
                                       aspectRatio: 1,
@@ -234,449 +214,322 @@ class _CwrSummaryState extends State<CwrSummary>
                                         context: context,
                                         builder: (context) {
                                           return Dialog(
-                                            child:
-                                                StreamBuilder<
-                                                        QuerySnapshot<
-                                                            Map<String,
-                                                                dynamic>>>(
-                                                    stream: countries
-                                                        .doc(session
-                                                            .country!.code)
-                                                        .collection(
-                                                            'quotations')
-                                                        .where('isTrash',
-                                                            isEqualTo: true)
-                                                        .snapshots(),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot.connectionState ==
-                                                              ConnectionState
-                                                                  .active &&
-                                                          snapshot.hasData) {
-                                                        return Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Container(
-                                                                height: 50,
-                                                                width: double
-                                                                    .infinity,
-                                                                color:
-                                                                    Colors.blue,
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .all(
-                                                                          8.0),
-                                                                  child: Text(
-                                                                    'Recycle Bin',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w800,
-                                                                      fontSize:
-                                                                          25,
+                                            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                                stream: countries
+                                                    .doc(session.country!.code)
+                                                    .collection('quotations')
+                                                    .where('isTrash', isEqualTo: true)
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
+                                                    return Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Container(
+                                                            height: 50,
+                                                            width: double.infinity,
+                                                            color: Colors.blue,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Text(
+                                                                'Recycle Bin',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.w800,
+                                                                  fontSize: 25,
+                                                                ),
+                                                              ),
+                                                            )),
+                                                        SingleChildScrollView(
+                                                          scrollDirection: Axis.horizontal,
+                                                          child: DataTable(
+                                                            headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                                                            columns: [
+                                                              "INVOICE",
+                                                              "QUOTE NO",
+                                                              "DATE ISSUED",
+                                                              "CLIENT",
+                                                              "DESCRIPTION",
+                                                              "QUOTE AMT",
+                                                              "STATUS",
+                                                              "CLIENT PO",
+                                                              // "MARGIN %",
+                                                              "MARGIN AMT",
+                                                              "CCM TKT NO",
+                                                              "COMPLETION DATE",
+                                                              "RESTORE",
+                                                              "DELETE"
+                                                            ].map((e) => DataColumn(label: Text(e))).toList(),
+                                                            rows: snapshot.data!.docs.map<DataRow>(
+                                                              (e) {
+                                                                print(e.data());
+                                                                Quotation data = Quotation.fromJson(e.data(), e.id);
+                                                                return DataRow(
+                                                                  cells: [
+                                                                    DataCell(
+                                                                      IconButton(
+                                                                        onPressed: () {},
+                                                                        icon: Icon(Icons.notes_rounded),
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                )),
-                                                            SingleChildScrollView(
-                                                              scrollDirection:
-                                                                  Axis.horizontal,
-                                                              child: DataTable(
-                                                                headingTextStyle:
-                                                                    TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                columns: [
-                                                                  "INVOICE",
-                                                                  "QUOTE NO",
-                                                                  "DATE ISSUED",
-                                                                  "CLIENT",
-                                                                  "DESCRIPTION",
-                                                                  "QUOTE AMT",
-                                                                  "STATUS",
-                                                                  "CLIENT PO",
-                                                                  // "MARGIN %",
-                                                                  "MARGIN AMT",
-                                                                  "CCM TKT NO",
-                                                                  "COMPLETION DATE",
-                                                                  "RESTORE",
-                                                                  "DELETE"
-                                                                ]
-                                                                    .map((e) =>
-                                                                        DataColumn(
-                                                                            label:
-                                                                                Text(e)))
-                                                                    .toList(),
-                                                                rows: snapshot
-                                                                    .data!.docs
-                                                                    .map<
-                                                                        DataRow>(
-                                                                  (e) {
-                                                                    print(e
-                                                                        .data());
-                                                                    Quotation
-                                                                        data =
-                                                                        Quotation.fromJson(
-                                                                            e.data(),
-                                                                            e.id);
-                                                                    return DataRow(
-                                                                      cells: [
-                                                                        DataCell(
-                                                                          IconButton(
-                                                                            onPressed:
-                                                                                () {},
-                                                                            icon:
-                                                                                Icon(Icons.notes_rounded),
-                                                                          ),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .qnumber),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(
-                                                                            data.dateIssued.toString().substring(0,
-                                                                                10),
-                                                                          ),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .clientname),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .description),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .qamount
-                                                                              .toString()),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .approvalStatus),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(
-                                                                              ''),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(
-                                                                              ''),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .ccmTicketNumber),
-                                                                        ),
-                                                                        DataCell(
-                                                                          Text(data
-                                                                              .jobcompletionDate
-                                                                              .toString()
-                                                                              .substring(0, 10)),
-                                                                        ),
-                                                                        DataCell(
-                                                                          IconButton(
-                                                                            icon:
-                                                                                Icon(Icons.restore),
-                                                                            onPressed:
-                                                                                () {
-                                                                              countries.doc(session.country!.code).collection('quotations').doc(e.id).update(
-                                                                                {
-                                                                                  "isTrash": false
-                                                                                },
-                                                                              );
+                                                                    DataCell(
+                                                                      Text(data.qnumber),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(
+                                                                        data.dateIssued.toString().substring(0, 10),
+                                                                      ),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(data.clientname),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(data.description),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(data.qamount.toString()),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(data.approvalStatus),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(''),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(''),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(data.ccmTicketNumber),
+                                                                    ),
+                                                                    DataCell(
+                                                                      Text(data.jobcompletionDate.toString().substring(0, 10)),
+                                                                    ),
+                                                                    DataCell(
+                                                                      IconButton(
+                                                                        icon: Icon(Icons.restore),
+                                                                        onPressed: () {
+                                                                          countries
+                                                                              .doc(session.country!.code)
+                                                                              .collection('quotations')
+                                                                              .doc(e.id)
+                                                                              .update(
+                                                                            {"isTrash": false},
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                    DataCell(
+                                                                      IconButton(
+                                                                        onPressed: () {
+                                                                          CoolAlert.show(
+                                                                            width: MediaQuery.of(context).size.width > 500
+                                                                                ? MediaQuery.of(context).size.width / 2
+                                                                                : MediaQuery.of(context).size.width * 0.85,
+                                                                            showCancelBtn: true,
+                                                                            onCancelBtnTap: () => Navigator.pop(context),
+                                                                            onConfirmBtnTap: () {
+                                                                              // setState(() {
+                                                                              countries
+                                                                                  .doc(session.country!.code)
+                                                                                  .collection('quotations')
+                                                                                  .doc(e.id)
+                                                                                  .delete();
+                                                                              // });
+                                                                              Navigator.pop(context);
                                                                             },
-                                                                          ),
-                                                                        ),
-                                                                        DataCell(
-                                                                          IconButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              CoolAlert.show(
-                                                                                width: MediaQuery.of(context).size.width > 500 ? MediaQuery.of(context).size.width / 2 : MediaQuery.of(context).size.width * 0.85,
-                                                                                showCancelBtn: true,
-                                                                                onCancelBtnTap: () => Navigator.pop(context),
-                                                                                onConfirmBtnTap: () {
-                                                                                  // setState(() {
-                                                                                  countries.doc(session.country!.code).collection('quotations').doc(e.id).delete();
-                                                                                  // });
-                                                                                  Navigator.pop(context);
-                                                                                },
-                                                                                context: context,
-                                                                                type: CoolAlertType.confirm,
-                                                                              );
-                                                                            },
-                                                                            icon:
-                                                                                Icon(Icons.delete),
-                                                                            color:
-                                                                                Colors.red,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ).toList(),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 20.0,
-                                                            ),
-                                                            Center(
+                                                                            context: context,
+                                                                            type: CoolAlertType.confirm,
+                                                                          );
+                                                                        },
+                                                                        icon: Icon(Icons.delete),
+                                                                        color: Colors.red,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },
+                                                            ).toList(),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 20.0,
+                                                        ),
+                                                        Center(
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            child: ElevatedButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(context);
+                                                              },
                                                               child: Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .all(
-                                                                        8.0),
-                                                                child:
-                                                                    ElevatedButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child:
-                                                                      Padding(
-                                                                    padding: const EdgeInsets
-                                                                            .all(
-                                                                        16.0),
-                                                                    child: Text(
-                                                                        'Cancel'),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      } else {
-                                                        return Shimmer
-                                                            .fromColors(
-                                                          baseColor:
-                                                              Colors.grey[300]!,
-                                                          highlightColor:
-                                                              Colors.grey[100]!,
-                                                          // enabled: _enabled,
-                                                          child:
-                                                              SingleChildScrollView(
-                                                            scrollDirection:
-                                                                Axis.vertical,
-                                                            child:
-                                                                SingleChildScrollView(
-                                                              scrollDirection:
-                                                                  Axis.horizontal,
-                                                              child: DataTable(
-                                                                headingTextStyle:
-                                                                    TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                columns: [
-                                                                  "EDIT",
-                                                                  "INVOICE",
-                                                                  "QUOTE NO",
-                                                                  "DATE ISSUED",
-                                                                  "CLIENT",
-                                                                  "DESCRIPTION",
-                                                                  "QUOTE AMT",
-                                                                  "STATUS",
-                                                                  "CLIENT PO",
-                                                                  // "MARGIN %",
-                                                                  "MARGIN AMT",
-                                                                  "CCM TKT NO",
-                                                                  "COMPLETION DATE",
-                                                                  "DELETE"
-                                                                ]
-                                                                    .map((e) =>
-                                                                        DataColumn(
-                                                                            label:
-                                                                                Text(
-                                                                          e,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        )))
-                                                                    .toList(),
-                                                                rows: List
-                                                                    .generate(
-                                                                  20,
-                                                                  (index) =>
-                                                                      DataRow(
-                                                                    cells: [
-                                                                      DataCell(
-                                                                        Icon(
-                                                                          Icons
-                                                                              .edit,
-                                                                          color:
-                                                                              Colors.white,
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Icon(
-                                                                          Icons
-                                                                              .notes_rounded,
-                                                                          color:
-                                                                              Colors.white,
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      DataCell(
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(4.0),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                100,
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
+                                                                padding: const EdgeInsets.all(16.0),
+                                                                child: Text('Cancel'),
                                                               ),
                                                             ),
                                                           ),
-                                                        );
-                                                      }
-                                                    }),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  } else {
+                                                    return Shimmer.fromColors(
+                                                      baseColor: Colors.grey[300]!,
+                                                      highlightColor: Colors.grey[100]!,
+                                                      // enabled: _enabled,
+                                                      child: SingleChildScrollView(
+                                                        scrollDirection: Axis.vertical,
+                                                        child: SingleChildScrollView(
+                                                          scrollDirection: Axis.horizontal,
+                                                          child: DataTable(
+                                                            headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                                                            columns: [
+                                                              "EDIT",
+                                                              "INVOICE",
+                                                              "QUOTE NO",
+                                                              "DATE ISSUED",
+                                                              "CLIENT",
+                                                              "DESCRIPTION",
+                                                              "QUOTE AMT",
+                                                              "STATUS",
+                                                              "CLIENT PO",
+                                                              // "MARGIN %",
+                                                              "MARGIN AMT",
+                                                              "CCM TKT NO",
+                                                              "COMPLETION DATE",
+                                                              "DELETE"
+                                                            ]
+                                                                .map((e) => DataColumn(
+                                                                        label: Text(
+                                                                      e,
+                                                                      style: TextStyle(
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    )))
+                                                                .toList(),
+                                                            rows: List.generate(
+                                                              20,
+                                                              (index) => DataRow(
+                                                                cells: [
+                                                                  DataCell(
+                                                                    Icon(
+                                                                      Icons.edit,
+                                                                      color: Colors.white,
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Icon(
+                                                                      Icons.notes_rounded,
+                                                                      color: Colors.white,
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  DataCell(
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(4.0),
+                                                                      child: Container(
+                                                                        width: 100,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                }),
                                           );
                                         });
                                   },
@@ -722,8 +575,7 @@ class _CwrSummaryState extends State<CwrSummary>
                             children: [
                               Expanded(
                                   child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -746,8 +598,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                         controller: searchcon,
                                         decoration: InputDecoration(
                                           hintText: 'Search',
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none),
+                                          border: OutlineInputBorder(borderSide: BorderSide.none),
                                         ),
                                       ),
                                     ),
@@ -756,11 +607,9 @@ class _CwrSummaryState extends State<CwrSummary>
                               )),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'From',
@@ -778,22 +627,17 @@ class _CwrSummaryState extends State<CwrSummary>
                                         shadowColor: Colors.grey,
                                         child: TextFormField(
                                           onTap: () async {
-                                            fromdateval = await _selectDate(
-                                                context, DateTime.now());
+                                            fromdateval = await _selectDate(context, DateTime.now());
                                             setState(() {
-                                              fromdate.text = fromdateval
-                                                  .toString()
-                                                  .substring(0, 10);
+                                              fromdate.text = fromdateval.toString().substring(0, 10);
                                             });
                                           },
                                           readOnly: true,
                                           controller: fromdate,
                                           decoration: InputDecoration(
-                                            suffixIcon:
-                                                Icon(Icons.calendar_today),
+                                            suffixIcon: Icon(Icons.calendar_today),
                                             hintText: 'dd-mm-yyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
+                                            border: OutlineInputBorder(borderSide: BorderSide.none),
                                           ),
                                         ),
                                       )
@@ -803,11 +647,9 @@ class _CwrSummaryState extends State<CwrSummary>
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'To',
@@ -825,22 +667,17 @@ class _CwrSummaryState extends State<CwrSummary>
                                         shadowColor: Colors.grey,
                                         child: TextFormField(
                                           onTap: () async {
-                                            todateval = await _selectDate(
-                                                context, DateTime.now());
+                                            todateval = await _selectDate(context, DateTime.now());
                                             setState(() {
-                                              todate.text = todateval
-                                                  .toString()
-                                                  .substring(0, 10);
+                                              todate.text = todateval.toString().substring(0, 10);
                                             });
                                           },
                                           readOnly: true,
                                           controller: todate,
                                           decoration: InputDecoration(
-                                            suffixIcon:
-                                                Icon(Icons.calendar_today),
+                                            suffixIcon: Icon(Icons.calendar_today),
                                             hintText: 'dd-mm-yyy',
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none),
+                                            border: OutlineInputBorder(borderSide: BorderSide.none),
                                           ),
                                         ),
                                       )
@@ -850,11 +687,9 @@ class _CwrSummaryState extends State<CwrSummary>
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Overall Status',
@@ -874,9 +709,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                           shadowColor: Colors.grey,
                                           child: DropdownButtonHideUnderline(
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                               child: DropdownButton(
                                                   value: _statusvalue,
                                                   items: [
@@ -893,8 +726,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                                       value: 'Canceled',
                                                     ),
                                                     DropdownMenuItem(
-                                                      child: Text(
-                                                          "All Quotations"),
+                                                      child: Text("All Quotations"),
                                                       value: 'All Quotations',
                                                     )
                                                   ],
@@ -914,11 +746,9 @@ class _CwrSummaryState extends State<CwrSummary>
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Approval Status',
@@ -938,9 +768,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                           shadowColor: Colors.grey,
                                           child: DropdownButtonHideUnderline(
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                               child: DropdownButton(
                                                   value: _approvalvalue,
                                                   items: [
@@ -961,8 +789,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                                       value: 'Canceled',
                                                     ),
                                                     DropdownMenuItem(
-                                                      child: Text(
-                                                          "All Quotations"),
+                                                      child: Text("All Quotations"),
                                                       value: 'All Quotations',
                                                     )
                                                   ],
@@ -1053,8 +880,7 @@ class _CwrSummaryState extends State<CwrSummary>
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
-                        headingTextStyle:
-                            TextStyle(fontWeight: FontWeight.bold),
+                        headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
                         columns: [
                           "EDIT",
                           "INVOICE",
@@ -1131,30 +957,20 @@ class _CwrSummaryState extends State<CwrSummary>
                                 Text(data.ccmTicketNumber),
                               ),
                               DataCell(
-                                Text(data.jobcompletionDate
-                                    .toString()
-                                    .substring(0, 10)),
+                                Text(data.jobcompletionDate.toString().substring(0, 10)),
                               ),
                               DataCell(
                                 IconButton(
                                   onPressed: () {
                                     CoolAlert.show(
-                                      width: MediaQuery.of(context).size.width >
-                                              500
-                                          ? MediaQuery.of(context).size.width /
-                                              2
-                                          : MediaQuery.of(context).size.width *
-                                              0.85,
+                                      width: MediaQuery.of(context).size.width > 500
+                                          ? MediaQuery.of(context).size.width / 2
+                                          : MediaQuery.of(context).size.width * 0.85,
                                       showCancelBtn: true,
-                                      onCancelBtnTap: () =>
-                                          Navigator.pop(context),
+                                      onCancelBtnTap: () => Navigator.pop(context),
                                       onConfirmBtnTap: () {
                                         // setState(() {
-                                        countries
-                                            .doc(session.country!.code)
-                                            .collection('quotations')
-                                            .doc(data.id)
-                                            .update(
+                                        countries.doc(session.country!.code).collection('quotations').doc(data.id).update(
                                           {"isTrash": true},
                                         );
                                         // });
@@ -1358,10 +1174,7 @@ class _CwrSummaryState extends State<CwrSummary>
                   color: Colors.blue,
                   child: TabBar(
                     controller: controller,
-                    tabs: [
-                      Tab(text: "Client Invoice"),
-                      Tab(text: "Contrator Invoice")
-                    ],
+                    tabs: [Tab(text: "Client Invoice"), Tab(text: "Contrator Invoice")],
                   ),
                 ),
                 SizedBox(
@@ -1377,8 +1190,7 @@ class _CwrSummaryState extends State<CwrSummary>
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: DataTable(
-                                headingTextStyle:
-                                    TextStyle(fontWeight: FontWeight.bold),
+                                headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
                                 columns: [
                                   "INVOICE NO",
                                   "INVOICE AMOUNT",
@@ -1415,9 +1227,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                           ),
                                           DataCell(
                                             Text(
-                                              e.receivedDate
-                                                  .toString()
-                                                  .substring(
+                                              e.receivedDate.toString().substring(
                                                     0,
                                                     10,
                                                   ),
@@ -1453,8 +1263,7 @@ class _CwrSummaryState extends State<CwrSummary>
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: DataTable(
-                                headingTextStyle:
-                                    TextStyle(fontWeight: FontWeight.bold),
+                                headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
                                 columns: [
                                   "INVOICE NO",
                                   "INVOICE AMOUNT",
@@ -1474,8 +1283,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                           ),
                                         )))
                                     .toList(),
-                                rows: quotation
-                                    .contractorPurchaseOrders.first.invoices
+                                rows: quotation.contractorPurchaseOrders.first.invoices
                                     .map((e) => DataRow(cells: [
                                           DataCell(
                                             Text(e.number),
@@ -1485,9 +1293,7 @@ class _CwrSummaryState extends State<CwrSummary>
                                           ),
                                           DataCell(
                                             Text(
-                                              e.receivedDate
-                                                  .toString()
-                                                  .substring(
+                                              e.receivedDate.toString().substring(
                                                     0,
                                                     10,
                                                   ),

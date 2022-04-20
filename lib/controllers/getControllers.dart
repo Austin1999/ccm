@@ -36,8 +36,7 @@ class CountryController extends GetxController {
   }
 
   Stream<List<Country>> getCountries() {
-    var countrieslist = countries.snapshots().map(
-        (query) => query.docs.map((e) => Country.fromJson(e.data())).toList());
+    var countrieslist = countries.snapshots().map((query) => query.docs.map((e) => Country.fromJson(e.data())).toList());
     session.countries = countrylist;
     return countrieslist;
   }
@@ -58,15 +57,11 @@ class ClientController extends GetxController {
   Stream<List<Client>> getClients() {
     print('ready');
     print(session.country);
-    return countries
-        .doc(session.country!.code)
-        .collection('clients')
-        .snapshots()
-        .map((query) => query.docs.map((e) {
-              print(session.country!.code);
-              print(e.data());
-              return Client.fromJson(e.data(), e.id);
-            }).toList());
+    return countries.doc(session.country!.code).collection('clients').snapshots().map((query) => query.docs.map((e) {
+          print(session.country!.code);
+          print(e.data());
+          return Client.fromJson(e.data(), e.id);
+        }).toList());
   }
 }
 
@@ -83,7 +78,7 @@ class ContractorController extends GetxController {
 
   Stream<List<Contractor>> getContractor() {
     return contractors
-        .where('country', isEqualTo: session.country!.code)
+        // .where('country', isEqualTo: session.country!.code)
         .snapshots()
         .map((query) => query.docs.map((e) {
               return Contractor.fromJson(e.data(), e.id);
@@ -132,10 +127,6 @@ class ClientDashboardController extends GetxController {
   }
 
   Stream<Map<String, dynamic>> getClientvalues() {
-    return firestore
-        .collection('payments')
-        .doc('clienttotals')
-        .snapshots()
-        .map((event) => event.data()!);
+    return firestore.collection('payments').doc('clienttotals').snapshots().map((event) => event.data()!);
   }
 }
