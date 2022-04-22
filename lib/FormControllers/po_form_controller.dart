@@ -15,9 +15,11 @@ class ContractorPoFormController {
   List<Invoice> invoices = [];
   InvoiceFormController invoiceForm = InvoiceFormController();
 
+  final contractorFormKey = GlobalKey<FormState>();
+
   int? _invoiceIndex;
 
-  final formKey = GlobalKey<FormState>();
+  ContractorPoFormController();
 
   ContractorPo get object => ContractorPo(
         number: number.text,
@@ -26,14 +28,34 @@ class ContractorPoFormController {
         issuedDate: issuedDate!,
         quoteNumber: quoteNumber.text,
         quoteAmount: double.parse(quoteAmount.text),
+        workCommence: workCommence,
+        workComplete: workComplete,
         invoices: invoices,
       );
+
+  factory ContractorPoFormController.fromPO(ContractorPo po) {
+    var controller = ContractorPoFormController();
+    controller.number.text = po.number;
+    controller.contractor = po.contractor;
+    controller.amount.text = po.amount.toString();
+    controller.issuedDate = po.issuedDate;
+    controller.quoteNumber.text = po.quoteNumber;
+    controller.quoteAmount.text = po.quoteAmount.toString();
+    controller.workCommence = po.workCommence;
+    controller.workComplete = po.workComplete;
+    controller.invoices = po.invoices;
+
+    if (controller.invoices.isNotEmpty) {
+      controller.invoiceForm = InvoiceFormController.frominvoice(controller.invoices.first);
+      controller.selectedInvoice = 0;
+    }
+    return controller;
+  }
 
   addInvoice() {
     // if (invoiceForm.formKey.currentState!.validate()) {
     //   invoices.add(invoiceForm.object);
     // }
-
     invoices.add(invoiceForm.object);
   }
 
@@ -42,8 +64,10 @@ class ContractorPoFormController {
     invoiceForm = (index == null) ? InvoiceFormController() : _selectInvoice(invoices.elementAt(index));
   }
 
+  int? get selectedInvoice => _invoiceIndex;
+
   _selectInvoice(Invoice invoice) {
-    invoiceForm = InvoiceFormController.frominvoice(invoice);
+    return InvoiceFormController.frominvoice(invoice);
   }
 
   deleteInvoice(int index) {

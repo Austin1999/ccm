@@ -1,10 +1,13 @@
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
+import 'package:ccm/widgets/quotation/payments.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../FormControllers/invoice_form_controller.dart';
 import '../../FormControllers/po_form_controller.dart';
+import 'credits.dart';
 import 'quote_date_picker.dart';
 
 class ContractorInvoiceForm extends StatefulWidget {
@@ -37,11 +40,23 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
               ),
             ),
             Divider(),
-            ExpansionTile(
-              title: Text("Show invoices"),
-              children: [
-                Text("hello"),
-              ],
+            Card(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DataTable(columns: [
+                  DataColumn(label: Text('Number')),
+                  DataColumn(label: Text('Amount')),
+                  DataColumn(label: Text('Issued Date')),
+                  DataColumn(label: Text('Received Amount')),
+                  DataColumn(label: Text('Last Received Date')),
+                  DataColumn(label: Text('Credit Amount')),
+                  DataColumn(label: Text('Payments')),
+                  DataColumn(label: Text('Credits')),
+                  DataColumn(label: Text('Delete')),
+                  DataColumn(label: Text('Edit')),
+                ], rows: getSource()),
+              ),
             ),
             Table(
               children: [
@@ -50,18 +65,15 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                   QuoteTextBox(controller: invoiceForm.amount, hintText: 'Invoice Amount'),
                   QuoteDate(
                     title: 'Invoice Received Date',
-                    date: controller.issuedDate,
+                    date: invoiceForm.issuedDate,
                     onPressed: () async {
-                      await showDatePicker(
+                      invoiceForm.issuedDate = await showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
+                        initialDate: invoiceForm.issuedDate ?? DateTime.now(),
                         firstDate: DateTime.utc(2000),
                         lastDate: DateTime.utc(2100),
-                      ).then((value) {
-                        setState(() {
-                          controller.issuedDate = value ?? controller.issuedDate;
-                        });
-                      });
+                      );
+                      setState(() {});
                     },
                   ),
                   QuoteTextBox(controller: invoiceForm.taxNumber, hintText: 'Tax Number'),
@@ -92,21 +104,19 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                         onPressed: () {
-                          controller.addInvoice();
+                          setState(() {
+                            controller.addInvoice();
+                          });
                         },
                         child: Text("Add Invoice")),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(onPressed: () {}, child: Text("Edit Invoice")),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(onPressed: () {}, child: Text("Payments")),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(onPressed: () {}, child: Text("Credits")),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          controller.updateInvoice();
+                        },
+                        child: Text("Edit Invoice")),
                   ),
                 ],
               ),
@@ -115,5 +125,58 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
         ),
       ),
     );
+  }
+
+  getSource() {
+    List<DataRow> datarows = [];
+    for (int i = 0; i < controller.invoices.length; i++) {
+      var e = controller.invoices[i];
+      datarows.add(DataRow(color: MaterialStateProperty.all(controller.selectedInvoice == i ? Colors.blue.shade50 : Colors.white), cells: [
+        DataCell(Text(e.number)),
+        DataCell(Text(e.amount.toString())),
+        DataCell(Text(format.format(e.issuedDate))),
+        DataCell(Text(e.receivedAmount.toString())),
+        DataCell(Text(e.lastReceivedDate == null ? 'No Payments' : format.format(e.lastReceivedDate!))),
+        DataCell(Text(e.creditAmount.toString())),
+        DataCell(ElevatedButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return PaymentForm(invoice: e, callback: refresh);
+                  });
+            },
+            child: Text('Payments'))),
+        DataCell(ElevatedButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CreditForm(invoice: e, callback: refresh);
+                  });
+            },
+            child: Text('Credits'))),
+        DataCell(IconButton(
+            onPressed: () {
+              setState(() {
+                controller.deleteInvoice(i);
+              });
+            },
+            icon: Icon(Icons.delete))),
+        DataCell(IconButton(
+            onPressed: () {
+              setState(() {
+                controller.selectedInvoice = i;
+              });
+            },
+            icon: Icon(Icons.edit))),
+      ]));
+    }
+
+    return datarows;
+  }
+
+  void refresh() {
+    setState(() {});
   }
 }

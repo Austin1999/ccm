@@ -15,7 +15,6 @@ class AuthRouter extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
             var user = snapshot.data;
-            // print(user!.uid);
             if (user!.emailVerified) {
               return LandingPage();
             } else {

@@ -27,15 +27,7 @@ class _UsersListState extends State<UsersList> {
   }
 
   late Country _selectedCountry;
-  addContractor(
-      {required isEdit,
-      nameval,
-      addressval,
-      fullnameval,
-      emailval,
-      phoneval,
-      roleval,
-      doc_id}) {
+  addContractor({required isEdit, nameval, addressval, fullnameval, emailval, phoneval, roleval, doc_id}) {
     String role = roleval;
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
@@ -67,8 +59,7 @@ class _UsersListState extends State<UsersList> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -87,14 +78,11 @@ class _UsersListState extends State<UsersList> {
                                     elevation: 5,
                                     shadowColor: Colors.grey,
                                     child: TextFormField(
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Field Cannot be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                       controller: name,
                                       decoration: InputDecoration(
                                         hintText: 'User Name',
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none),
+                                        border: OutlineInputBorder(borderSide: BorderSide.none),
                                       ),
                                     ),
                                   ),
@@ -102,8 +90,7 @@ class _UsersListState extends State<UsersList> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -122,14 +109,11 @@ class _UsersListState extends State<UsersList> {
                                     elevation: 5,
                                     shadowColor: Colors.grey,
                                     child: TextFormField(
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Field Cannot be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                       controller: address,
                                       decoration: InputDecoration(
                                         hintText: 'Address',
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none),
+                                        border: OutlineInputBorder(borderSide: BorderSide.none),
                                       ),
                                     ),
                                   ),
@@ -137,8 +121,7 @@ class _UsersListState extends State<UsersList> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -157,14 +140,11 @@ class _UsersListState extends State<UsersList> {
                                     elevation: 5,
                                     shadowColor: Colors.grey,
                                     child: TextFormField(
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Field Cannot be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                       controller: fullname,
                                       decoration: InputDecoration(
                                         hintText: 'Full Name',
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none),
+                                        border: OutlineInputBorder(borderSide: BorderSide.none),
                                       ),
                                     ),
                                   ),
@@ -180,8 +160,7 @@ class _UsersListState extends State<UsersList> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -200,8 +179,7 @@ class _UsersListState extends State<UsersList> {
                                   elevation: 5,
                                   shadowColor: Colors.grey,
                                   child: TextFormField(
-                                    autovalidateMode:
-                                        AutovalidateMode.onUserInteraction,
+                                    autovalidateMode: AutovalidateMode.onUserInteraction,
                                     validator: (val) => val!.isEmpty
                                         ? 'Email Cannot be Empty'
                                         : RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
@@ -211,8 +189,7 @@ class _UsersListState extends State<UsersList> {
                                     controller: email,
                                     decoration: InputDecoration(
                                       hintText: 'Email',
-                                      border: OutlineInputBorder(
-                                          borderSide: BorderSide.none),
+                                      border: OutlineInputBorder(borderSide: BorderSide.none),
                                     ),
                                   ),
                                 ),
@@ -220,8 +197,7 @@ class _UsersListState extends State<UsersList> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -248,9 +224,7 @@ class _UsersListState extends State<UsersList> {
                                         ),
                                       ],
                                       autofocus: true,
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Phone number should not be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Phone number should not be empty' : null,
                                       controller: phone,
                                       decoration: InputDecoration(
                                         labelText: 'Phone Number',
@@ -259,9 +233,7 @@ class _UsersListState extends State<UsersList> {
                                         ),
                                       ),
                                       initialCountryCode: _selectedCountry.code,
-                                      onChanged: (phone) {
-                                        // print(mobile.text);
-                                      },
+                                      onChanged: (phone) {},
                                     ),
                                   ),
                                   // child: TextFormField(
@@ -282,8 +254,7 @@ class _UsersListState extends State<UsersList> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -303,8 +274,7 @@ class _UsersListState extends State<UsersList> {
                                   shadowColor: Colors.grey,
                                   child: DropdownButtonHideUnderline(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                       child: DropdownButton(
                                           value: role,
                                           items: [
@@ -347,9 +317,7 @@ class _UsersListState extends State<UsersList> {
                               ElevatedButton(
                                 clipBehavior: Clip.antiAlias,
                                 style: ButtonStyle(
-                                  padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
-                                          EdgeInsets.all(15)),
+                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
                                   shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18.0),
@@ -370,9 +338,7 @@ class _UsersListState extends State<UsersList> {
                               ElevatedButton(
                                 clipBehavior: Clip.antiAlias,
                                 style: ButtonStyle(
-                                  padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
-                                          EdgeInsets.all(15)),
+                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
                                   shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18.0),
@@ -390,9 +356,7 @@ class _UsersListState extends State<UsersList> {
                                               children: [
                                                 CircularProgressIndicator(),
                                                 SizedBox(width: 10.0),
-                                                Text(isEdit
-                                                    ? 'Updating User...'
-                                                    : 'Adding User...')
+                                                Text(isEdit ? 'Updating User...' : 'Adding User...')
                                               ],
                                             ),
                                           );
@@ -513,8 +477,7 @@ class _UsersListState extends State<UsersList> {
                                     decoration: InputDecoration(
                                         hintText: 'Search Email',
                                         suffixIcon: Icon(Icons.search),
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none)),
+                                        border: OutlineInputBorder(borderSide: BorderSide.none)),
                                   )),
                             ),
                             SizedBox(
@@ -522,16 +485,10 @@ class _UsersListState extends State<UsersList> {
                             ),
                             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                                 stream: userscollection
-                                    .where('email',
-                                        isGreaterThanOrEqualTo:
-                                            searchclient.toLowerCase(),
-                                        isLessThan:
-                                            searchclient.toLowerCase() + 'z')
+                                    .where('email', isGreaterThanOrEqualTo: searchclient.toLowerCase(), isLessThan: searchclient.toLowerCase() + 'z')
                                     .snapshots(),
                                 builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.active &&
-                                      snapshot.hasData) {
+                                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
                                     List<UserModel> _clients = [];
 
                                     _clients = snapshot.data!.docs.map((e) {
@@ -547,57 +504,49 @@ class _UsersListState extends State<UsersList> {
                                           DataColumn(
                                             label: Text(
                                               'Contractor Name',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'Address',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'Email ID',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'Phone No',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'Role',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'FullName',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'Delete',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           DataColumn(
                                             label: Text(
                                               'Edit',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                         ],
@@ -631,35 +580,15 @@ class _UsersListState extends State<UsersList> {
                                                     onTap: () {
                                                       CoolAlert.show(
                                                         context: context,
-                                                        type: CoolAlertType
-                                                            .confirm,
-                                                        width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width >
-                                                                500
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width /
-                                                                2
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.85,
+                                                        type: CoolAlertType.confirm,
+                                                        width: MediaQuery.of(context).size.width > 500
+                                                            ? MediaQuery.of(context).size.width / 2
+                                                            : MediaQuery.of(context).size.width * 0.85,
                                                         showCancelBtn: true,
-                                                        onCancelBtnTap: () =>
-                                                            Navigator.pop(
-                                                                context),
+                                                        onCancelBtnTap: () => Navigator.pop(context),
                                                         onConfirmBtnTap: () {
-                                                          userscollection
-                                                              .doc(e.docid)
-                                                              .delete()
-                                                              .then(
-                                                                (value) =>
-                                                                    Navigator.pop(
-                                                                        context),
+                                                          userscollection.doc(e.docid).delete().then(
+                                                                (value) => Navigator.pop(context),
                                                               );
                                                         },
                                                       );
@@ -670,7 +599,6 @@ class _UsersListState extends State<UsersList> {
                                                         Icons.edit,
                                                         // color: Colors.,
                                                       ), onTap: () {
-                                                    print(e.docid);
                                                     addContractor(
                                                         isEdit: true,
                                                         nameval: e.name,
@@ -697,28 +625,18 @@ class _UsersListState extends State<UsersList> {
                                       highlightColor: Colors.grey[100]!,
                                       // enabled: _enabled,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.55,
+                                              width: MediaQuery.of(context).size.width * 0.55,
                                               child: Card(
                                                   color: Colors.white,
                                                   elevation: 5,
                                                   child: TextFormField(
                                                     decoration: InputDecoration(
-                                                        suffixIcon:
-                                                            Icon(Icons.search),
-                                                        border:
-                                                            OutlineInputBorder(
-                                                                borderSide:
-                                                                    BorderSide
-                                                                        .none)),
+                                                        suffixIcon: Icon(Icons.search), border: OutlineInputBorder(borderSide: BorderSide.none)),
                                                   )),
                                             ),
                                           ),
@@ -726,16 +644,14 @@ class _UsersListState extends State<UsersList> {
                                             height: 20,
                                           ),
                                           GridView.builder(
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: 5,
                                               childAspectRatio: 4,
                                             ),
                                             itemCount: 35,
                                             shrinkWrap: true,
                                             itemBuilder: (context, index) {
-                                              return CountryCard(
-                                                  text: "", code: "");
+                                              return CountryCard(text: "", code: "");
                                             }, // crossAxisCount: 5,
                                           ),
                                         ],

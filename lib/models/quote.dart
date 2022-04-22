@@ -26,7 +26,7 @@ class Quotation {
   String number;
   String client;
   double amount;
-  String currencyCode;
+  String? currencyCode;
   String? parentQuote;
   String? category;
   String clientApproval;
@@ -40,8 +40,13 @@ class Quotation {
   List<ContractorPo> contractorPo;
   List<String> comments;
 
-  double get margin => amount - contractorPo.fold(0, (previousValue, element) => previousValue + element.amount);
-  double get percent => margin / (contractorPo.fold(0, (previousValue, element) => previousValue + element.amount));
+  double get margin => (amount - clientCredits) - (contractorAmount - contractorAmount);
+  double get percent => margin * 100 / (contractorPo.fold(0, (previousValue, element) => previousValue + element.amount));
+  double get receivables => clientInvoices.fold(0, (previousValue, element) => previousValue + element.receivables);
+  double get payables => contractorPo.fold(0, (previousValue, element) => previousValue + element.payables);
+  double get clientCredits => clientInvoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
+  double get contractorCredits => contractorPo.fold(0, (previousValue, element) => previousValue + element.credits);
+  double get contractorAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.amount);
 
   factory Quotation.fromJson(Map<String, dynamic> json) => Quotation(
         id: json["id"],
@@ -49,12 +54,12 @@ class Quotation {
         client: json["client"],
         amount: json["amount"],
         clientApproval: json["clientApproval"],
-        issuedDate: DateTime.parse(json["issuedDate"].toDate()),
+        issuedDate: json["issuedDate"].toDate(),
         description: json["description"],
-        approvalStatus: json["approvalStatus"],
+        approvalStatus: ApprovalStatus.values.elementAt(json["approvalStatus"]),
         ccmTicketNumber: json["ccmTicketNumber"],
-        completionDate: DateTime.parse(json["completionDate"].toDate()),
-        overallStatus: json["overallStatus"],
+        completionDate: json["completionDate"].toDate(),
+        overallStatus: OverallStatus.values.elementAt(json["overallStatus"]),
         clientInvoices: List<Invoice>.from(json["clientInvoices"].map((x) => Invoice.fromJson(x))),
         contractorPo: List<ContractorPo>.from(json["contractorPo"].map((x) => ContractorPo.fromJson(x))),
         comments: List<String>.from(json["comments"].map((x) => x)),
@@ -62,6 +67,40 @@ class Quotation {
         parentQuote: json['parentQuote'],
         category: json['category'],
       );
+
+  get search {
+    List<String> strings = [];
+    strings.addAll(makeSearchString(number));
+    clientInvoices.forEach((element) {
+      strings.addAll(makeSearchString(element.number));
+      element.credits.forEach((element) {
+        strings.addAll(makeSearchString(element.note));
+      });
+    });
+    contractorPo.forEach((po) {
+      po.invoices.forEach((element) {
+        strings.addAll(makeSearchString(element.number));
+        element.credits.forEach((element) {
+          strings.addAll(makeSearchString(element.note));
+        });
+      });
+      strings.addAll(makeSearchString(po.number));
+    });
+    return strings;
+  }
+
+  makeSearchString(String text) {
+    List<String> returns = [];
+    var length = text.length;
+    if (text.length >= 3) {
+      for (int i = 2; i < length; i++) {
+        returns.add(text.substring(2, i).toLowerCase());
+      }
+      returns.add(text.toLowerCase());
+    }
+
+    return returns;
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -71,16 +110,29 @@ class Quotation {
         "clientApproval": clientApproval,
         "issuedDate": issuedDate,
         "description": description,
-        "approvalStatus": approvalStatus,
+        "approvalStatus": approvalStatus.index,
         "ccmTicketNumber": ccmTicketNumber,
         "completionDate": completionDate,
-        "overallStatus": overallStatus,
+        "overallStatus": overallStatus.index,
         "currencyCode": currencyCode,
         "parentQuote": parentQuote,
         "category": category,
         "clientInvoices": List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
         "contractorPo": List<dynamic>.from(contractorPo.map((x) => x.toJson())),
         "comments": List<dynamic>.from(comments.map((x) => x)),
+        "search": search
+      };
+
+  Map<String, dynamic> toRTDBJson() => {
+        "id": id,
+        "number": number,
+        "client": client,
+        "amount": amount,
+        "approvalStatus": approvalStatus.index,
+        "currencyCode": currencyCode,
+        "margin": margin,
+        "receivables": receivables,
+        "payables": payables,
       };
 }
 
@@ -111,12 +163,13 @@ class Invoice {
 
   double get receivedAmount => payments.fold(0, (previousValue, element) => previousValue + element.amount);
   double get creditAmount => credits.fold(0, (previousValue, element) => previousValue + element.amount);
+  double get receivables => amount - receivedAmount - creditAmount;
 
   factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
         number: json["number"],
         amount: json["amount"],
         taxNumber: json["taxNumber"],
-        issuedDate: DateTime.parse(json["issuedDate"].toDate()),
+        issuedDate: json["issuedDate"].toDate(),
         payments: List<Payment>.from(json["payments"].map((x) => Payment.fromJson(x))),
         credits: List<Credit>.from(json["credits"].map((x) => Credit.fromJson(x))),
       );
@@ -138,14 +191,14 @@ class Credit {
     required this.date,
   });
 
-  int amount;
+  double amount;
   String note;
   DateTime date;
 
   factory Credit.fromJson(Map<String, dynamic> json) => Credit(
         amount: json["amount"],
         note: json["note"],
-        date: DateTime.parse(json["date"].toDate()),
+        date: json["date"].toDate(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -161,12 +214,12 @@ class Payment {
     required this.date,
   });
 
-  int amount;
+  double amount;
   DateTime date;
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
         amount: json["amount"],
-        date: DateTime.parse(json["date"].toDate()),
+        date: json["date"].toDate(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -198,15 +251,18 @@ class ContractorPo {
   DateTime? workComplete;
   List<Invoice> invoices;
 
+  double get payables => invoices.fold(0, (previousValue, element) => previousValue + element.receivables);
+  double get credits => invoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
+
   factory ContractorPo.fromJson(Map<String, dynamic> json) => ContractorPo(
         number: json["number"],
         contractor: json["contractor"],
         amount: json["amount"],
-        issuedDate: DateTime.parse(json["issuedDate"].toDate()),
+        issuedDate: json["issuedDate"].toDate(),
         quoteNumber: json["quoteNumber"],
         quoteAmount: json["quoteAmount"],
-        workCommence: DateTime.parse(json["workCommence"]),
-        workComplete: DateTime.parse(json["workComplete"]),
+        workCommence: json["workCommence"].toDate(),
+        workComplete: json["workComplete"].toDate(),
         invoices: List<Invoice>.from(json["invoices"].map((x) => Invoice.fromJson(x))),
       );
 

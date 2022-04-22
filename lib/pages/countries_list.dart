@@ -1,13 +1,11 @@
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/countries.dart';
-import 'package:ccm/pages/cwr_summary.dart';
-import 'package:ccm/pages/splashscreen.dart';
-import 'package:ccm/services/firebase.dart';
-import 'package:cool_alert/cool_alert.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
+
+import 'cwr_quotation_list.dart';
 
 class CountriesList extends StatefulWidget {
   CountriesList({Key? key}) : super(key: key);
@@ -62,10 +60,7 @@ class _CountriesListState extends State<CountriesList> {
                               'Add Country',
                             ),
                             onPressed: () {
-                              Country.countries
-                                  .firstWhere((element) =>
-                                      element.code == _selectedCountry)
-                                  .add();
+                              Country.countries.firstWhere((element) => element.code == _selectedCountry).add();
                               Navigator.of(context).pop();
                             },
                           ),
@@ -113,10 +108,8 @@ class _CountriesListState extends State<CountriesList> {
                                         search = v;
                                       });
                                     },
-                                    decoration: InputDecoration(
-                                        suffixIcon: Icon(Icons.search),
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none)),
+                                    decoration:
+                                        InputDecoration(suffixIcon: Icon(Icons.search), border: OutlineInputBorder(borderSide: BorderSide.none)),
                                   )),
                             ),
                             SizedBox(
@@ -157,16 +150,13 @@ class _CountriesListState extends State<CountriesList> {
                                   child: Center(
                                     child: Text(
                                       'No Countries found',
-                                      style:
-                                          Theme.of(context).textTheme.headline4,
+                                      style: Theme.of(context).textTheme.headline4,
                                     ),
                                   ),
                                 );
                               } else {
                                 _tempCountries = countryController.countrylist
-                                    .where((element) => element.name
-                                        .toLowerCase()
-                                        .contains(search.toLowerCase()))
+                                    .where((element) => element.name.toLowerCase().contains(search.toLowerCase()))
                                     .toList()
                                     .obs;
                                 return GridView.count(
@@ -192,14 +182,13 @@ class _CountriesListState extends State<CountriesList> {
                                             //         ),
                                             //       );
                                             //     });
+                                            print(e.toJson());
                                             session.country = e;
                                             Get.put(ClientController());
                                             // Get.put(ContractorController());
                                             Get.to(() => CwrSummary());
                                           },
-                                          child: CountryCard(
-                                              text: e.name,
-                                              code: e.code.toLowerCase())))
+                                          child: CountryCard(text: e.name, code: e.code.toLowerCase())))
                                       .toList(),
                                   //         );
                                   // } else {
@@ -275,8 +264,7 @@ class _CountriesListState extends State<CountriesList> {
 }
 
 class CountryCard extends StatelessWidget {
-  CountryCard({Key? key, required this.text, required this.code})
-      : super(key: key);
+  CountryCard({Key? key, required this.text, required this.code}) : super(key: key);
   final String text;
   final String code;
   @override
@@ -293,10 +281,7 @@ class CountryCard extends StatelessWidget {
               flex: 1,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Image.asset('icons/flags/png/$code.png',
-                    package: 'country_icons',
-                    height: double.maxFinite / 2,
-                    fit: BoxFit.contain),
+                child: Image.asset('icons/flags/png/$code.png', package: 'country_icons', height: double.maxFinite / 2, fit: BoxFit.contain),
               ),
             ),
             Expanded(flex: 3, child: Text(text)),
@@ -381,10 +366,6 @@ class CountryCard extends StatelessWidget {
 // }
 
 extension StringCasingExtension on String {
-  String toCapitalized() =>
-      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
-      .split(' ')
-      .map((str) => str.toCapitalized())
-      .join(' ');
+  String toCapitalized() => length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
 }

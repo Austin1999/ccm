@@ -7,7 +7,6 @@ signin({required String username, required String password}) async {
   String serverUsername = 'ccm_auth';
   String serverPassword = 'ccm_digi123#';
   String basicAuth = 'Basic ' + convert.base64Encode(convert.utf8.encode('$serverUsername:$serverPassword'));
-  print(basicAuth);
 
   final queryParameters = {
     'name': username,

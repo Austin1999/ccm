@@ -50,16 +50,11 @@ class ClientController extends GetxController {
   void onReady() {
     // TODO: implement onReady
     super.onReady();
-    print('ready');
     clientlist.bindStream(getClients());
   }
 
   Stream<List<Client>> getClients() {
-    print('ready');
-    print(session.country);
     return countries.doc(session.country!.code).collection('clients').snapshots().map((query) => query.docs.map((e) {
-          print(session.country!.code);
-          print(e.data());
           return Client.fromJson(e.data(), e.id);
         }).toList());
   }
@@ -94,21 +89,16 @@ class QuotationController extends GetxController {
   void onReady() {
     // TODO: implement onReady
     super.onReady();
-    print('ready');
     quotionlist.bindStream(getQuotations());
   }
 
   Stream<List<Quotation>> getQuotations() {
-    print('ready');
-    print(session.country);
     return countries
         .doc(session.country!.code)
         .collection('quotations')
         // .where('isTrash', isEqualTo: false)
         .snapshots()
         .map((query) => query.docs.map((e) {
-              print(session.country!.code);
-              print(e.data());
               return Quotation.fromJson(e.data(), e.id);
             }).toList());
   }
@@ -122,7 +112,6 @@ class ClientDashboardController extends GetxController {
   void onReady() {
     // TODO: implement onReady
     super.onReady();
-    print('ready');
     clientpayment.bindStream(getClientvalues());
   }
 

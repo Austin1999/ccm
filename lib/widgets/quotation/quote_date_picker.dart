@@ -22,7 +22,7 @@ class QuoteDate extends StatelessWidget {
         shadowColor: Colors.grey,
         child: SizedBox(
           width: double.infinity,
-          height: 51,
+          height: 52,
           child: Row(
             children: [
               Expanded(

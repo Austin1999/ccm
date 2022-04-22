@@ -2,13 +2,14 @@ import 'package:ccm/auth/auth_route.dart';
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart' as getxcon;
 import 'package:ccm/firebase_options.dart';
+import 'package:ccm/models/quote.dart';
+import 'package:ccm/widgets/quotation/payments.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'pages/landing_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'pages/quotation_form.dart';
-import 'pages/quotation_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +37,13 @@ class MyApp extends StatelessWidget {
         // elevatedButtonTheme : ElevatedButtonThemeData(style: ButtonStyle(backgroundColor: Color(0xFF29588C),))
       ),
       home: AuthRouter(),
-      // home: QuotationForm(),
+      // routes: {
+      //   '/': (p0) => AuthRouter(),
+      //   // '/QuotationForm': (p0) => QuotationForm(),
+      // },
+      // home: PaymentForm(
+      //   invoice: Invoice(number: 'QT', amount: 250, issuedDate: DateTime.now(), payments: [], credits: []),
+      // ),
     );
   }
 }

@@ -12,15 +12,7 @@ Client clientFromJson(String str) => Client.fromJson(json.decode(str), '');
 String clientToJson(Client data) => json.encode(data.toJson());
 
 class Client {
-  Client(
-      {required this.name,
-      this.address,
-      this.country,
-      this.email,
-      this.phone,
-      this.contactPerson,
-      this.docid,
-      this.cwr});
+  Client({required this.name, this.address, this.country, this.email, this.phone, this.contactPerson, this.docid, this.cwr});
 
   String name;
   String? address;
@@ -41,22 +33,15 @@ class Client {
       docid: doc_id,
       contactPerson: json["contactPerson"] ?? '');
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "address": address,
-        "country": country,
-        "email": email,
-        "phone": phone,
-        "cwr": cwr,
-        "contactPerson": contactPerson
-      };
+  Map<String, dynamic> toJson() =>
+      {"name": name, "address": address, "country": country, "email": email, "phone": phone, "cwr": cwr, "contactPerson": contactPerson};
 
   Future<dynamic> add() async {
     return await clients(country)
         .doc(name)
         .set(toJson())
-        .then((value) => Response.success("Client Added successfully"))
-        .onError((error, stackTrace) => Response.error(error));
+        .then((value) => Result.success("Client Added successfully"))
+        .onError((error, stackTrace) => Result.error(error));
   }
 
   static Future<List<Client>> list() async {
@@ -66,11 +51,9 @@ class Client {
   }
 }
 
-InvoicePaymentModel clientCreditModelFromJson(String str) =>
-    InvoicePaymentModel.fromJson(json.decode(str));
+InvoicePaymentModel clientCreditModelFromJson(String str) => InvoicePaymentModel.fromJson(json.decode(str));
 
-String clientCreditModelToJson(InvoicePaymentModel data) =>
-    json.encode(data.toJson());
+String clientCreditModelToJson(InvoicePaymentModel data) => json.encode(data.toJson());
 
 class InvoicePaymentModel {
   InvoicePaymentModel({
@@ -87,8 +70,7 @@ class InvoicePaymentModel {
   String? paymentdate;
   double? recievedamount;
 
-  factory InvoicePaymentModel.fromJson(Map<String, dynamic> json) =>
-      InvoicePaymentModel(
+  factory InvoicePaymentModel.fromJson(Map<String, dynamic> json) => InvoicePaymentModel(
         invoiceamount: json["invoiceamount"],
         invoicenumber: json["invoicenumber"],
         issueddate: json["issueddate"],
@@ -110,39 +92,39 @@ CreditModel clientInvoiePaymentModelFromJson(String str) => CreditModel.fromJson
 String clientInvoiePaymentModelToJson(CreditModel data) => json.encode(data.toJson());
 
 class CreditModel {
-    CreditModel({
-        this.invoiceamount,
-        this.invoicenumber,
-        this.issueddate,
-        this.creditRecieveDate,
-        this.creditamount,
-        this.creditnoteno,
-    });
+  CreditModel({
+    this.invoiceamount,
+    this.invoicenumber,
+    this.issueddate,
+    this.creditRecieveDate,
+    this.creditamount,
+    this.creditnoteno,
+  });
 
-    double? invoiceamount;
-    String? invoicenumber;
-    String? issueddate;
-    String? creditRecieveDate;
-    double? creditamount;
-    String? creditnoteno;
+  double? invoiceamount;
+  String? invoicenumber;
+  String? issueddate;
+  String? creditRecieveDate;
+  double? creditamount;
+  String? creditnoteno;
 
-    factory CreditModel.fromJson(Map<String, dynamic> json) => CreditModel(
+  factory CreditModel.fromJson(Map<String, dynamic> json) => CreditModel(
         invoiceamount: json["invoiceamount"],
         invoicenumber: json["invoicenumber"],
         issueddate: json["issueddate"],
         creditRecieveDate: json["creditRecieveDate"],
         creditamount: json["creditamount"],
         creditnoteno: json["creditnoteno"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "invoiceamount": invoiceamount,
         "invoicenumber": invoicenumber,
         "issueddate": issueddate,
         "creditRecieveDate": creditRecieveDate,
         "creditamount": creditamount,
         "creditnoteno": creditnoteno,
-    };
+      };
 }
 
 // // ClientTotalModel clientInvoiePaymentModelFromJson(String str) => CreditModel.fromJson(json.decode(str));

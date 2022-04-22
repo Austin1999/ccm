@@ -28,15 +28,7 @@ class _ClientListState extends State<ClientList> {
   late Country _selectedCountry;
   String searchclient = '';
   String searchcountry = session.countries.first.code;
-  addClient(
-      {required isEdit,
-      nameval,
-      addressval,
-      required cwrval,
-      emailval,
-      phoneval,
-      contact,
-      doc_id}) {
+  addClient({required isEdit, nameval, addressval, required cwrval, emailval, phoneval, contact, doc_id}) {
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
     TextEditingController cwr = TextEditingController(text: cwrval);
@@ -47,8 +39,7 @@ class _ClientListState extends State<ClientList> {
     showDialog(
         context: context,
         builder: (context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
+          return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
             return Dialog(
               backgroundColor: Color(0xFFE8F3FA),
               child: Padding(
@@ -69,8 +60,7 @@ class _ClientListState extends State<ClientList> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -89,14 +79,11 @@ class _ClientListState extends State<ClientList> {
                                     elevation: 5,
                                     shadowColor: Colors.grey,
                                     child: TextFormField(
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Field Cannot be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                       controller: name,
                                       decoration: InputDecoration(
                                         hintText: 'Full Name',
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none),
+                                        border: OutlineInputBorder(borderSide: BorderSide.none),
                                       ),
                                     ),
                                   ),
@@ -104,8 +91,7 @@ class _ClientListState extends State<ClientList> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -124,14 +110,11 @@ class _ClientListState extends State<ClientList> {
                                     elevation: 5,
                                     shadowColor: Colors.grey,
                                     child: TextFormField(
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Field Cannot be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                       controller: address,
                                       decoration: InputDecoration(
                                         hintText: 'Address',
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide.none),
+                                        border: OutlineInputBorder(borderSide: BorderSide.none),
                                       ),
                                     ),
                                   ),
@@ -139,8 +122,7 @@ class _ClientListState extends State<ClientList> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -162,8 +144,7 @@ class _ClientListState extends State<ClientList> {
                                       shadowColor: Colors.grey,
                                       child: DropdownButtonHideUnderline(
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                           child: DropdownButton(
                                               value: cwr.text,
                                               items: session.countries
@@ -194,8 +175,7 @@ class _ClientListState extends State<ClientList> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -214,14 +194,11 @@ class _ClientListState extends State<ClientList> {
                                   elevation: 5,
                                   shadowColor: Colors.grey,
                                   child: TextFormField(
-                                    validator: (val) => val!.isEmpty
-                                        ? 'Field Cannot be empty'
-                                        : null,
+                                    validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                     controller: email,
                                     decoration: InputDecoration(
                                       hintText: 'Email',
-                                      border: OutlineInputBorder(
-                                          borderSide: BorderSide.none),
+                                      border: OutlineInputBorder(borderSide: BorderSide.none),
                                     ),
                                   ),
                                 ),
@@ -229,8 +206,7 @@ class _ClientListState extends State<ClientList> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -257,9 +233,7 @@ class _ClientListState extends State<ClientList> {
                                         ),
                                       ],
                                       autofocus: true,
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Phone number should not be empty'
-                                          : null,
+                                      validator: (val) => val!.isEmpty ? 'Phone number should not be empty' : null,
                                       controller: phone,
                                       decoration: InputDecoration(
                                         labelText: 'Phone Number',
@@ -268,9 +242,7 @@ class _ClientListState extends State<ClientList> {
                                         ),
                                       ),
                                       initialCountryCode: searchcountry,
-                                      onChanged: (phone) {
-                                        // print(mobile.text);
-                                      },
+                                      onChanged: (phone) {},
                                     ),
                                   ),
                                 ),
@@ -278,8 +250,7 @@ class _ClientListState extends State<ClientList> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -298,14 +269,11 @@ class _ClientListState extends State<ClientList> {
                                   elevation: 5,
                                   shadowColor: Colors.grey,
                                   child: TextFormField(
-                                    validator: (val) => val!.isEmpty
-                                        ? 'Field Cannot be empty'
-                                        : null,
+                                    validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                     controller: contactPerson,
                                     decoration: InputDecoration(
                                       hintText: 'Contact Person',
-                                      border: OutlineInputBorder(
-                                          borderSide: BorderSide.none),
+                                      border: OutlineInputBorder(borderSide: BorderSide.none),
                                     ),
                                   ),
                                 ),
@@ -321,9 +289,7 @@ class _ClientListState extends State<ClientList> {
                               ElevatedButton(
                                 clipBehavior: Clip.antiAlias,
                                 style: ButtonStyle(
-                                  padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
-                                          EdgeInsets.all(15)),
+                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
                                   shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18.0),
@@ -344,9 +310,7 @@ class _ClientListState extends State<ClientList> {
                               ElevatedButton(
                                 clipBehavior: Clip.antiAlias,
                                 style: ButtonStyle(
-                                  padding:
-                                      MaterialStateProperty.all<EdgeInsets>(
-                                          EdgeInsets.all(15)),
+                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
                                   shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18.0),
@@ -363,25 +327,18 @@ class _ClientListState extends State<ClientList> {
                                               children: [
                                                 CircularProgressIndicator(),
                                                 SizedBox(width: 10.0),
-                                                Text(isEdit
-                                                    ? 'Updating User...'
-                                                    : 'Adding User...')
+                                                Text(isEdit ? 'Updating User...' : 'Adding User...')
                                               ],
                                             ),
                                           );
                                         });
 
                                     isEdit
-                                        ? countries
-                                            .doc(searchcountry)
-                                            .collection('clients')
-                                            .doc(doc_id)
-                                            .update(
+                                        ? countries.doc(searchcountry).collection('clients').doc(doc_id).update(
                                             {
                                               'name': name.text,
                                               'address': address.text,
-                                              'contactPerson':
-                                                  contactPerson.text,
+                                              'contactPerson': contactPerson.text,
                                               'country': searchcountry,
                                               'email': email.text,
                                               'phone': phone.text,
@@ -397,16 +354,12 @@ class _ClientListState extends State<ClientList> {
                                             Navigator.pop(context);
                                             Navigator.pop(context);
                                           })
-                                        : await countries
-                                            .doc(searchcountry)
-                                            .collection('clients')
-                                            .add(
+                                        : await countries.doc(searchcountry).collection('clients').add(
                                             {
                                               'name': name.text,
                                               'cwr': cwr.text,
                                               'address': address.text,
-                                              'contactPerson':
-                                                  contactPerson.text,
+                                              'contactPerson': contactPerson.text,
                                               'country': searchcountry,
                                               'email': email.text,
                                               'phone': phone.text,
@@ -483,8 +436,7 @@ class _ClientListState extends State<ClientList> {
                             Row(
                               children: [
                                 SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.30,
+                                  width: MediaQuery.of(context).size.width * 0.30,
                                   child: Card(
                                       color: Colors.white,
                                       elevation: 5,
@@ -497,20 +449,17 @@ class _ClientListState extends State<ClientList> {
                                         decoration: InputDecoration(
                                             hintText: 'Enter Email',
                                             suffixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none)),
+                                            border: OutlineInputBorder(borderSide: BorderSide.none)),
                                       )),
                                 ),
                                 SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.30,
+                                  width: MediaQuery.of(context).size.width * 0.30,
                                   child: Card(
                                     color: Colors.white,
                                     elevation: 5,
                                     child: DropdownButtonHideUnderline(
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                         child: DropdownButton(
                                             value: searchcountry,
                                             items: session.countries
@@ -545,16 +494,10 @@ class _ClientListState extends State<ClientList> {
                                 stream: countries
                                     .doc(searchcountry)
                                     .collection('clients')
-                                    .where('email',
-                                        isGreaterThanOrEqualTo:
-                                            searchclient.toLowerCase(),
-                                        isLessThan:
-                                            searchclient.toLowerCase() + 'z')
+                                    .where('email', isGreaterThanOrEqualTo: searchclient.toLowerCase(), isLessThan: searchclient.toLowerCase() + 'z')
                                     .snapshots(),
                                 builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.active &&
-                                      snapshot.hasData) {
+                                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
                                     List<Client> _clients = [];
 
                                     _clients = snapshot.data!.docs.map((e) {
@@ -572,73 +515,55 @@ class _ClientListState extends State<ClientList> {
                                               DataColumn(
                                                 label: Text(
                                                   'Client Name',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Address',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Email ID',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Phone No',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Country',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'CWR Country',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Contact Person',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Delete',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                               DataColumn(
                                                 label: Text(
                                                   'Edit',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                             ],
@@ -675,42 +600,20 @@ class _ClientListState extends State<ClientList> {
                                                         onTap: () {
                                                           CoolAlert.show(
                                                               context: context,
-                                                              type: CoolAlertType
-                                                                  .confirm,
-                                                              width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width >
-                                                                      500
-                                                                  ? MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width /
-                                                                      2
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.85,
-                                                              showCancelBtn:
-                                                                  true,
-                                                              onCancelBtnTap: () =>
-                                                                  Navigator.pop(
-                                                                      context),
-                                                              onConfirmBtnTap:
-                                                                  () async {
+                                                              type: CoolAlertType.confirm,
+                                                              width: MediaQuery.of(context).size.width > 500
+                                                                  ? MediaQuery.of(context).size.width / 2
+                                                                  : MediaQuery.of(context).size.width * 0.85,
+                                                              showCancelBtn: true,
+                                                              onCancelBtnTap: () => Navigator.pop(context),
+                                                              onConfirmBtnTap: () async {
                                                                 await countries
-                                                                    .doc(session
-                                                                        .country!
-                                                                        .code)
-                                                                    .collection(
-                                                                        'clients')
-                                                                    .doc(
-                                                                        e.docid)
+                                                                    .doc(session.country!.code)
+                                                                    .collection('clients')
+                                                                    .doc(e.docid)
                                                                     .delete();
                                                                 // .whenComplete(() =>
-                                                                Navigator.pop(
-                                                                    context);
+                                                                Navigator.pop(context);
                                                                 // );
                                                               });
                                                         },
@@ -720,17 +623,14 @@ class _ClientListState extends State<ClientList> {
                                                             Icons.edit,
                                                             // color: Colors.,
                                                           ), onTap: () {
-                                                        print(e.docid);
                                                         addClient(
                                                             isEdit: true,
                                                             nameval: e.name,
-                                                            addressval:
-                                                                e.address,
+                                                            addressval: e.address,
                                                             emailval: e.email,
                                                             phoneval: e.phone,
                                                             cwrval: e.country,
-                                                            contact:
-                                                                e.contactPerson,
+                                                            contact: e.contactPerson,
                                                             doc_id: e.docid);
                                                       }),
                                                     ],
@@ -749,28 +649,18 @@ class _ClientListState extends State<ClientList> {
                                       highlightColor: Colors.grey[100]!,
                                       // enabled: _enabled,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.55,
+                                              width: MediaQuery.of(context).size.width * 0.55,
                                               child: Card(
                                                   color: Colors.white,
                                                   elevation: 5,
                                                   child: TextFormField(
                                                     decoration: InputDecoration(
-                                                        suffixIcon:
-                                                            Icon(Icons.search),
-                                                        border:
-                                                            OutlineInputBorder(
-                                                                borderSide:
-                                                                    BorderSide
-                                                                        .none)),
+                                                        suffixIcon: Icon(Icons.search), border: OutlineInputBorder(borderSide: BorderSide.none)),
                                                   )),
                                             ),
                                           ),
@@ -778,16 +668,14 @@ class _ClientListState extends State<ClientList> {
                                             height: 20,
                                           ),
                                           GridView.builder(
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: 5,
                                               childAspectRatio: 4,
                                             ),
                                             itemCount: 35,
                                             shrinkWrap: true,
                                             itemBuilder: (context, index) {
-                                              return CountryCard(
-                                                  text: "", code: "");
+                                              return CountryCard(text: "", code: "");
                                             }, // crossAxisCount: 5,
                                           ),
                                         ],

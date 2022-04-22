@@ -60,8 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -80,14 +79,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               elevation: 5,
                               shadowColor: Colors.grey,
                               child: TextFormField(
-                                validator: (val) => val!.isEmpty
-                                    ? 'Field Cannot be empty'
-                                    : null,
+                                validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                 controller: name,
                                 decoration: InputDecoration(
                                   hintText: 'User Name',
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none),
+                                  border: OutlineInputBorder(borderSide: BorderSide.none),
                                 ),
                               ),
                             ),
@@ -95,8 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -115,14 +110,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               elevation: 5,
                               shadowColor: Colors.grey,
                               child: TextFormField(
-                                validator: (val) => val!.isEmpty
-                                    ? 'Field Cannot be empty'
-                                    : null,
+                                validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                 controller: address,
                                 decoration: InputDecoration(
                                   hintText: 'Address',
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none),
+                                  border: OutlineInputBorder(borderSide: BorderSide.none),
                                 ),
                               ),
                             ),
@@ -130,8 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -150,14 +141,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               elevation: 5,
                               shadowColor: Colors.grey,
                               child: TextFormField(
-                                validator: (val) => val!.isEmpty
-                                    ? 'Field Cannot be empty'
-                                    : null,
+                                validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
                                 controller: fullname,
                                 decoration: InputDecoration(
                                   hintText: 'Full Name',
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none),
+                                  border: OutlineInputBorder(borderSide: BorderSide.none),
                                 ),
                               ),
                             ),
@@ -173,8 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -193,8 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             elevation: 5,
                             shadowColor: Colors.grey,
                             child: TextFormField(
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
                               validator: (val) => val!.isEmpty
                                   ? 'Email Cannot be Empty'
                                   : RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
@@ -204,8 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               controller: email,
                               decoration: InputDecoration(
                                 hintText: 'Email',
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide.none),
+                                border: OutlineInputBorder(borderSide: BorderSide.none),
                               ),
                             ),
                           ),
@@ -213,8 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -241,9 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ],
                                 autofocus: true,
-                                validator: (val) => val!.isEmpty
-                                    ? 'Phone number should not be empty'
-                                    : null,
+                                validator: (val) => val!.isEmpty ? 'Phone number should not be empty' : null,
                                 controller: phone,
                                 decoration: InputDecoration(
                                   labelText: 'Phone Number',
@@ -252,9 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 initialCountryCode: 'SG',
-                                onChanged: (phone) {
-                                  // print(mobile.text);
-                                },
+                                onChanged: (phone) {},
                               ),
                             ),
                           ),
@@ -262,8 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -289,8 +268,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ElevatedButton(
                           clipBehavior: Clip.antiAlias,
                           style: ButtonStyle(
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                                EdgeInsets.all(25)),
+                            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(25)),
                             shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
@@ -311,8 +289,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ElevatedButton(
                           clipBehavior: Clip.antiAlias,
                           style: ButtonStyle(
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                                EdgeInsets.all(25)),
+                            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(25)),
                             shape: MaterialStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
@@ -327,23 +304,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                   builder: (context) {
                                     return AlertDialog(
                                       content: Row(
-                                        children: [
-                                          CircularProgressIndicator(),
-                                          SizedBox(width: 10.0),
-                                          Text('Updating User...')
-                                        ],
+                                        children: [CircularProgressIndicator(), SizedBox(width: 10.0), Text('Updating User...')],
                                       ),
                                     );
                                   });
 
                               userscollection.doc(uid).update(
-                                {
-                                  "name": name.text,
-                                  "address": address.text,
-                                  "email": email.text,
-                                  "phone": phone.text,
-                                  "fullname": fullname.text
-                                },
+                                {"name": name.text, "address": address.text, "email": email.text, "phone": phone.text, "fullname": fullname.text},
                               ).then((value) {
                                 name.clear();
                                 address.clear();

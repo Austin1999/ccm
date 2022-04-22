@@ -1,6 +1,9 @@
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
+import 'package:ccm/widgets/quotation/credits.dart';
+import 'package:ccm/widgets/quotation/payments.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'quote_date_picker.dart';
 
@@ -15,6 +18,10 @@ class ClientInvoiceForm extends StatefulWidget {
 
 class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
   QuotationFormController get controller => widget.controller;
+
+  void refresh() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +40,11 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
               ),
             ),
             Divider(),
-            ExpansionTile(
-              title: Text("Show Invoices"),
-              children: [
-                DataTable(
+            Card(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DataTable(
                     headingRowColor: MaterialStateProperty.all(Colors.white),
                     dataRowColor: MaterialStateProperty.all(Colors.white),
                     columns: [
@@ -46,12 +54,13 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
                       DataColumn(label: Text('Received Amount')),
                       DataColumn(label: Text('Last Received Date')),
                       DataColumn(label: Text('Credit Amount')),
+                      DataColumn(label: Text('Payments')),
+                      DataColumn(label: Text('Credits')),
                       DataColumn(label: Text('Delete')),
                       DataColumn(label: Text('Edit')),
                     ],
                     rows: getSource()),
-                SizedBox(height: 20),
-              ],
+              ),
             ),
             Table(
               children: [
@@ -102,7 +111,6 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
                           setState(() {
                             controller.addInvoice();
                           });
-                          print("Invoice Added");
                         },
                         child: Text("Add Invoice")),
                   ),
@@ -113,17 +121,8 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
                           setState(() {
                             controller.updateInvoice();
                           });
-                          print("Invoice Updated");
                         },
                         child: Text("Update Invoice")),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(onPressed: () {}, child: Text("Add Payments")),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(onPressed: () {}, child: Text("Add Credits")),
                   ),
                 ],
               ),
@@ -138,28 +137,50 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
     List<DataRow> datarows = [];
     for (int i = 0; i < controller.clientInvoices.length; i++) {
       var e = controller.clientInvoices[i];
-      datarows.add(DataRow(cells: [
-        DataCell(Text(e.number)),
-        DataCell(Text(e.amount.toString())),
-        DataCell(Text(format.format(e.issuedDate))),
-        DataCell(Text(e.receivedAmount.toString())),
-        DataCell(Text(e.lastReceivedDate.toString())),
-        DataCell(Text(e.creditAmount.toString())),
-        DataCell(IconButton(
-            onPressed: () {
-              setState(() {
-                controller.deleteInvoice(i);
-              });
-            },
-            icon: Icon(Icons.delete))),
-        DataCell(IconButton(
-            onPressed: () {
-              setState(() {
-                controller.selectedInvoice = i;
-              });
-            },
-            icon: Icon(Icons.edit))),
-      ]));
+      datarows.add(DataRow(
+          color: MaterialStateProperty.all(
+            controller.selectedInvoice == i ? Colors.blue.shade50 : Colors.white,
+          ),
+          cells: [
+            DataCell(Text(e.number)),
+            DataCell(Text(e.amount.toString())),
+            DataCell(Text(format.format(e.issuedDate))),
+            DataCell(Text(e.receivedAmount.toString())),
+            DataCell(Text(e.lastReceivedDate == null ? '' : format.format(e.lastReceivedDate!))),
+            DataCell(Text(e.creditAmount.toString())),
+            DataCell(ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return PaymentForm(invoice: e, callback: refresh);
+                      });
+                },
+                child: Text('Payments'))),
+            DataCell(ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return CreditForm(invoice: e, callback: refresh);
+                      });
+                },
+                child: Text('Credits'))),
+            DataCell(IconButton(
+                onPressed: () {
+                  setState(() {
+                    controller.deleteInvoice(i);
+                  });
+                },
+                icon: Icon(Icons.delete))),
+            DataCell(IconButton(
+                onPressed: () {
+                  setState(() {
+                    controller.selectedInvoice = i;
+                  });
+                },
+                icon: Icon(Icons.edit))),
+          ]));
     }
 
     return datarows;

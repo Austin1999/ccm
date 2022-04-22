@@ -2,22 +2,13 @@ import 'dart:convert';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/services/firebase.dart';
 
-Contractor clientFromJson(String str) =>
-    Contractor.fromJson(json.decode(str), '');
+Contractor clientFromJson(String str) => Contractor.fromJson(json.decode(str), '');
 
 String clientToJson(Contractor data) => json.encode(data.toJson());
 
 class Contractor {
   Contractor(
-      {required this.name,
-      this.address,
-      this.country,
-      this.email,
-      this.phone,
-      this.contactPerson,
-      this.payable,
-      this.docid,
-      this.countryName});
+      {required this.name, this.address, this.country, this.email, this.phone, this.contactPerson, this.payable, this.docid, this.countryName});
 
   String name;
   String? address;
@@ -34,7 +25,7 @@ class Contractor {
       address: json["address"],
       country: json["country"],
       email: json["email"],
-      payable: json['payable']??0,
+      payable: json['payable'] ?? 0,
       phone: json["phone"],
       countryName: json["countryName"] ?? '',
       docid: doc_id,
@@ -44,7 +35,7 @@ class Contractor {
         "name": name,
         "address": address,
         "country": country,
-        "payable":payable,
+        "payable": payable,
         "email": email,
         "phone": phone,
         "countryName": countryName,
@@ -55,8 +46,8 @@ class Contractor {
     return await contractors
         .doc(name)
         .set(toJson())
-        .then((value) => Response.success("Contractor Added successfully"))
-        .onError((error, stackTrace) => Response.error(error));
+        .then((value) => Result.success("Contractor Added successfully"))
+        .onError((error, stackTrace) => Result.error(error));
   }
 
   get quotations => clients(country).doc(name).collection("quotations");

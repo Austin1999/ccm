@@ -78,18 +78,15 @@ class CustomTextFormField extends StatelessWidget {
 getHeight(context) => MediaQuery.of(context).size.height;
 getWidth(context) => MediaQuery.of(context).size.width;
 
-showFutureDialog(
-    {required BuildContext context, required Future<dynamic> future}) {
-  print("I am in future dialog");
+showFutureDialog({required BuildContext context, required Future<dynamic> future}) {
   showDialog(
       context: context,
       builder: (context) {
         return FutureBuilder(
             future: future,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active ||
-                  snapshot.connectionState == ConnectionState.done) {
-                var response = snapshot.data as Response;
+              if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                var response = snapshot.data as Result;
                 return AlertDialog(
                   title: Text(response.code),
                   content: Text(response.message),

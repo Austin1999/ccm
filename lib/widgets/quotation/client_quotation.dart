@@ -27,115 +27,161 @@ class _ClientQuotationState extends State<ClientQuotation> {
       child: Card(
         elevation: 5,
         color: Color(0xFFE8F3FA),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('CLIENT QUOTATION', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 25)),
+        child: Form(
+          key: controller.quoteFormKey,
+          child: Column(
+            children: [
+              Table(
+                children: [
+                  TableRow(children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, top: 40),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text('CLIENT QUOTATION', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 25)),
+                      ),
+                    ),
+                    Container(),
+                    Container(),
+                    QuoteDropdown(title: 'Currency'),
+                    QuoteDropdown(title: 'Category'),
+                    QuoteTypeAhead(
+                        optionsBuilder: (value) {
+                          return ['SAMPLE1', 'SAMPLE2', 'SAMPLE3'];
+                        },
+                        title: 'Parent quote'),
+                  ])
+                ],
               ),
-            ),
-            Divider(),
-            Table(
-              children: [
-                TableRow(children: [
-                  QuoteTextBox(controller: widget.controller.number, hintText: 'Quotation'),
-                  Obx((() {
-                    print(clientController.clientlist.length);
-                    return QuoteDropdown(
-                      title: 'Client',
-                      items: clientController.clientlist.map((element) => DropdownMenuItem(child: Text(element.name), value: element.name)).toList(),
-                      value: controller.client,
-                      onChanged: (String? value) {
+              Divider(),
+              Table(
+                children: [
+                  TableRow(children: [
+                    QuoteTextBox(
+                      controller: widget.controller.number,
+                      hintText: 'Quotation',
+                      validator: (val) {
+                        if ((val ?? '').isEmpty) {
+                          return 'Field should not be empty';
+                        }
+                        return null;
+                      },
+                    ),
+                    Obx((() {
+                      return QuoteDropdown(
+                        title: 'Client',
+                        items:
+                            clientController.clientlist.map((element) => DropdownMenuItem(child: Text(element.name), value: element.name)).toList(),
+                        value: controller.client,
+                        onChanged: (String? value) {
+                          setState(() {
+                            controller.client = value ?? controller.client;
+                          });
+                        },
+                      );
+                    })),
+                    QuoteTextBox(
+                      controller: widget.controller.amount,
+                      hintText: 'Quote Amount',
+                      onChanged: (amount) {
+                        var margin;
+                        var percent;
+                        try {
+                          margin = controller.object.margin;
+                          percent = controller.object.percent;
+                          setState(() {});
+                        } catch (e) {
+                          margin = 0;
+                          percent = 0;
+                        }
                         setState(() {
-                          controller.client = value ?? controller.client;
+                          controller.marginController.text = margin.toStringAsFixed(2);
+                          controller.percentController.text = percent.toStringAsFixed(2);
                         });
                       },
-                    );
-                  })),
-                  QuoteTextBox(controller: widget.controller.amount, hintText: 'Quote Amount'),
-                  QuoteTextBox(controller: widget.controller.clientApproval, hintText: 'Client Approval'),
-                ]),
-                TableRow(children: [
-                  QuoteDate(
-                    title: 'Issued Date',
-                    date: controller.issuedDate,
-                    onPressed: () async {
-                      await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.utc(2000),
-                        lastDate: DateTime.utc(2100),
-                      ).then((value) {
-                        setState(() {
-                          controller.issuedDate = value ?? controller.issuedDate;
+                    ),
+                    QuoteTextBox(controller: widget.controller.clientApproval, hintText: 'Client Approval'),
+                  ]),
+                  TableRow(children: [
+                    QuoteDate(
+                      title: 'Issued Date',
+                      date: controller.issuedDate,
+                      onPressed: () async {
+                        await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.utc(2000),
+                          lastDate: DateTime.utc(2100),
+                        ).then((value) {
+                          setState(() {
+                            controller.issuedDate = value ?? controller.issuedDate;
+                          });
                         });
-                      });
-                    },
-                  ),
-                  QuoteTextBox(controller: widget.controller.description, hintText: 'Description'),
-                  QuoteDropdown<ApprovalStatus>(
-                    value: controller.approvalStatus,
-                    title: 'Approval Status',
-                    onChanged: (value) {
-                      setState(() {
-                        controller.approvalStatus = value ?? controller.approvalStatus;
-                      });
-                    },
-                    items: ApprovalStatus.values.map((e) {
-                      return DropdownMenuItem(
-                        child: Text(e.toString().split('.').last.toUpperCase()),
-                        value: e,
-                      );
-                    }).toList(),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(flex: 3, child: QuoteTextBox(readOnly: true, controller: widget.controller.marginController, hintText: 'Margin')),
-                      Expanded(flex: 2, child: QuoteTextBox(readOnly: true, controller: widget.controller.percentController, hintText: '%')),
-                    ],
-                  ),
-                ]),
-                TableRow(children: [
-                  QuoteTextBox(controller: widget.controller.ccmTicketNumber, hintText: 'CCM Ticket Number'),
-                  QuoteDate(
-                    title: 'Job Completion Date',
-                    date: controller.completionDate,
-                    onPressed: () async {
-                      await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.utc(2000),
-                        lastDate: DateTime.utc(2100),
-                      ).then((value) {
+                      },
+                    ),
+                    QuoteTextBox(controller: widget.controller.description, hintText: 'Description'),
+                    QuoteDropdown<ApprovalStatus>(
+                      value: controller.approvalStatus,
+                      title: 'Approval Status',
+                      onChanged: (value) {
                         setState(() {
-                          controller.completionDate = value ?? controller.completionDate;
+                          controller.approvalStatus = value ?? controller.approvalStatus;
                         });
-                      });
-                    },
-                  ),
-                  Container(),
-                  QuoteDropdown<OverallStatus>(
-                    value: controller.overallStatus,
-                    title: 'Overall Status',
-                    onChanged: (value) {
-                      setState(() {
-                        controller.overallStatus = value ?? controller.overallStatus;
-                      });
-                    },
-                    items: OverallStatus.values.map((e) {
-                      return DropdownMenuItem(
-                        child: Text(e.toString().split('.').last.toUpperCase()),
-                        value: e,
-                      );
-                    }).toList(),
-                  ),
-                ]),
-              ],
-            ),
-            SizedBox(height: 16),
-          ],
+                      },
+                      items: ApprovalStatus.values.map((e) {
+                        return DropdownMenuItem(
+                          child: Text(e.toString().split('.').last.toUpperCase()),
+                          value: e,
+                        );
+                      }).toList(),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(flex: 3, child: QuoteTextBox(readOnly: true, controller: widget.controller.marginController, hintText: 'Margin')),
+                        Expanded(flex: 2, child: QuoteTextBox(readOnly: true, controller: widget.controller.percentController, hintText: '%')),
+                      ],
+                    ),
+                  ]),
+                  TableRow(children: [
+                    QuoteTextBox(controller: widget.controller.ccmTicketNumber, hintText: 'CCM Ticket Number'),
+                    QuoteDate(
+                      title: 'Job Completion Date',
+                      date: controller.completionDate,
+                      onPressed: () async {
+                        await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.utc(2000),
+                          lastDate: DateTime.utc(2100),
+                        ).then((value) {
+                          setState(() {
+                            controller.completionDate = value ?? controller.completionDate;
+                          });
+                        });
+                      },
+                    ),
+                    Container(),
+                    QuoteDropdown<OverallStatus>(
+                      value: controller.overallStatus,
+                      title: 'Overall Status',
+                      onChanged: (value) {
+                        setState(() {
+                          controller.overallStatus = value ?? controller.overallStatus;
+                        });
+                      },
+                      items: OverallStatus.values.map((e) {
+                        return DropdownMenuItem(
+                          child: Text(e.toString().split('.').last.toUpperCase()),
+                          value: e,
+                        );
+                      }).toList(),
+                    ),
+                  ]),
+                ],
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

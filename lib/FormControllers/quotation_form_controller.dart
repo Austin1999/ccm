@@ -1,6 +1,5 @@
 import 'package:ccm/FormControllers/invoice_form_controller.dart';
 import 'package:ccm/FormControllers/po_form_controller.dart';
-import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +18,8 @@ class QuotationFormController {
   var marginController = TextEditingController();
   var percentController = TextEditingController();
 
+  final quoteFormKey = GlobalKey<FormState>();
+
   //Ribbon Fields
   String? currencyCode;
   String? parentQuote;
@@ -35,6 +36,25 @@ class QuotationFormController {
 
   QuotationFormController();
 
+  Quotation get object => Quotation(
+      category: category,
+      completionDate: completionDate,
+      id: id,
+      parentQuote: parentQuote,
+      number: number.text,
+      client: client!,
+      amount: double.parse(amount.text),
+      currencyCode: currencyCode ?? 'INR',
+      clientApproval: clientApproval.text,
+      issuedDate: issuedDate!,
+      description: description.text,
+      approvalStatus: approvalStatus,
+      ccmTicketNumber: ccmTicketNumber.text,
+      overallStatus: overallStatus,
+      clientInvoices: clientInvoices,
+      contractorPo: contractorPos,
+      comments: comments);
+
   factory QuotationFormController.fromQuotation(Quotation quotation) {
     var controller = QuotationFormController();
     controller.id = quotation.id;
@@ -46,8 +66,8 @@ class QuotationFormController {
     controller.description.text = quotation.description;
     controller.approvalStatus = quotation.approvalStatus;
     controller.ccmTicketNumber.text = quotation.ccmTicketNumber;
-    controller.marginController.text = quotation.margin.toString();
-    controller.percentController.text = quotation.percent.toString();
+    controller.marginController.text = quotation.margin.toStringAsFixed(2);
+    controller.percentController.text = quotation.percent.toStringAsFixed(2);
     controller.completionDate = quotation.completionDate;
     controller.overallStatus = quotation.overallStatus;
     controller.clientInvoices = quotation.clientInvoices;
@@ -59,6 +79,14 @@ class QuotationFormController {
     controller.parentQuote = quotation.parentQuote;
     controller.category = quotation.category;
     //============
+
+    if (controller.clientInvoices.isNotEmpty) {
+      controller.selectedInvoice = 0;
+    }
+    if (controller.contractorPos.isNotEmpty) {
+      controller.selectedPo = 0;
+    }
+
     return controller;
   }
 
@@ -68,15 +96,19 @@ class QuotationFormController {
     // if (invoiceForm.formKey.currentState!.validate()) {
     //   clientInvoices.add(invoiceForm.object);
     // }
-    clientInvoices.add(invoiceForm.object);
+    var invoice = invoiceForm.object;
+    invoice.payments = [];
+    invoice.credits = [];
+    clientInvoices.add(invoice);
   }
 
   set selectedInvoice(int? index) {
     _invoiceIndex = index;
-    print(clientInvoices.length);
 
     invoiceForm = (index == null) ? InvoiceFormController() : _selectInvoice(clientInvoices.elementAt(index));
   }
+
+  int? get selectedInvoice => _invoiceIndex;
 
   _selectInvoice(Invoice invoice) {
     return InvoiceFormController.frominvoice(invoice);
@@ -104,19 +136,21 @@ class QuotationFormController {
   int? _poIndex;
 
   addPo() {
-    // if (invoiceForm.formKey.currentState!.validate()) {
-    //   clientInvoices.add(invoiceForm.object);
-    // }
-    contractorPos.add(contractorForm.object);
+    if (contractorForm.contractorFormKey.currentState!.validate()) {
+      contractorForm.invoices = [];
+      contractorPos.add(contractorForm.object);
+    }
   }
 
   set selectedPo(int? index) {
     _poIndex = index;
-    contractorForm = (index == null) ? ContractorPoFormController() : _selectPo(clientInvoices.elementAt(index));
+    contractorForm = (index == null) ? ContractorPoFormController() : _selectPo(contractorPos.elementAt(index));
   }
 
-  _selectPo(Invoice invoice) {
-    return ContractorPoFormController();
+  int? get selectedPo => _poIndex;
+
+  _selectPo(ContractorPo po) {
+    return ContractorPoFormController.fromPO(po);
   }
 
   deletePo(int index) {

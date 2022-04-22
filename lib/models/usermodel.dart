@@ -2,19 +2,12 @@ import 'dart:convert';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/services/firebase.dart';
 
-UserModel clientFromJson(String str) => UserModel.fromJson(json.decode(str),'');
+UserModel clientFromJson(String str) => UserModel.fromJson(json.decode(str), '');
 
 String clientToJson(UserModel data) => json.encode(data.toJson());
 
 class UserModel {
-  UserModel(
-      {required this.name,
-      this.address,
-      this.email,
-      this.phone,
-      this.fullname,
-      this.docid,
-      this.role});
+  UserModel({required this.name, this.address, this.email, this.phone, this.fullname, this.docid, this.role});
 
   String name;
   String? address;
@@ -33,20 +26,13 @@ class UserModel {
       docid: doc_id,
       fullname: json["fullname"] ?? '');
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "address": address,
-        "email": email,
-        "phone": phone,
-        "role": role,
-        "fullname": fullname
-      };
+  Map<String, dynamic> toJson() => {"name": name, "address": address, "email": email, "phone": phone, "role": role, "fullname": fullname};
 
   Future<dynamic> add() async {
     return await contractors
         .doc(name)
         .set(toJson())
-        .then((value) => Response.success("User Added successfully"))
-        .onError((error, stackTrace) => Response.error(error));
+        .then((value) => Result.success("User Added successfully"))
+        .onError((error, stackTrace) => Result.error(error));
   }
 }
