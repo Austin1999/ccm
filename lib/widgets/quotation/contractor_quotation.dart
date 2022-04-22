@@ -206,7 +206,7 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
     for (int i = 0; i < length; i++) {
       var e = controller.contractorPos[i];
 
-      dataRows.add(DataRow(key: UniqueKey(), color: (i == controller.selectedPo) ? MaterialStateProperty.all(Colors.blue.shade50) : null, cells: [
+      dataRows.add(DataRow(key: UniqueKey(), color: (i == controller.selectedPo) ? MaterialStateProperty.all(Colors.grey.shade300) : null, cells: [
         DataCell(Text(e.number)),
         DataCell(Text(e.contractor)),
         DataCell(Text(e.amount.toString())),
@@ -281,7 +281,7 @@ class ContractorSource extends DataTableSource {
     final e = contractorPOs[index];
     return DataRow(
         key: UniqueKey(),
-        color: (index == poIndex) ? MaterialStateProperty.all(Colors.blue.shade50) : MaterialStateProperty.all(Colors.white),
+        color: (index == poIndex) ? MaterialStateProperty.all(Colors.grey.shade300) : MaterialStateProperty.all(Colors.white),
         cells: [
           DataCell(Text(e.number)),
           DataCell(Text(e.contractor)),

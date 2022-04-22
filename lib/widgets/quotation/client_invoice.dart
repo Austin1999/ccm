@@ -139,7 +139,7 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
       var e = controller.clientInvoices[i];
       datarows.add(DataRow(
           color: MaterialStateProperty.all(
-            controller.selectedInvoice == i ? Colors.blue.shade50 : Colors.white,
+            controller.selectedInvoice == i ? Colors.grey.shade300 : Colors.white,
           ),
           cells: [
             DataCell(Text(e.number)),

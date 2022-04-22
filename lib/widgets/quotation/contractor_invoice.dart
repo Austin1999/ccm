@@ -131,7 +131,7 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
     List<DataRow> datarows = [];
     for (int i = 0; i < controller.invoices.length; i++) {
       var e = controller.invoices[i];
-      datarows.add(DataRow(color: MaterialStateProperty.all(controller.selectedInvoice == i ? Colors.blue.shade50 : Colors.white), cells: [
+      datarows.add(DataRow(color: MaterialStateProperty.all(controller.selectedInvoice == i ? Colors.grey.shade300 : Colors.white), cells: [
         DataCell(Text(e.number)),
         DataCell(Text(e.amount.toString())),
         DataCell(Text(format.format(e.issuedDate))),
