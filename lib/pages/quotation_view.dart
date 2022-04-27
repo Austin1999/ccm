@@ -1311,83 +1311,96 @@ class _QuotationViewState extends State<QuotationView> {
                                                           .isNotEmpty) {
                                                         contractorInvoice
                                                             .clear();
-                                                        for (int i = 0;
-                                                            i <
-                                                                contractorPO
-                                                                    .length;
-                                                            i++) {
-                                                          var v =
-                                                              contractorPO[i];
-                                                          if (v.poNumber ==
-                                                              data) {
-                                                            print(
-                                                                'Invoice : ${v.invoices}');
-                                                            setState(() {
-                                                              // contractorInvoice =
-                                                              //     v.invoices;
-                                                              // contractorInvoice
-                                                              //     .clear();
-                                                              v.invoices.isEmpty
-                                                                  ? null
-                                                                  : v.invoices
-                                                                      .forEach(
-                                                                          (element) {
-                                                                      contractorInvoice
-                                                                          .add(
-                                                                              element);
-                                                                    });
-                                                              contractorpouid =
-                                                                  v.uid;
+                                                        // for (int i = 0;
+                                                        //     i <
+                                                        //         contractorPO
+                                                        //             .length;
+                                                        //     i++) {
+                                                        //   var v =
+                                                        //       contractorPO[i];
+                                                        contractorPO.forEach(
+                                                          (v) {
+                                                            if (v.poNumber ==
+                                                                data) {
+                                                            
+                                                              contractorInvoice
+                                                                  .clear();
                                                               contractorQuotationPONumber
-                                                                      .text =
-                                                                  v.poNumber;
-
+                                                                  .clear();
                                                               contractorQuotationPOAmount
-                                                                      .text =
-                                                                  v.poAmount
-                                                                      .toString();
-
+                                                                  .clear();
                                                               contractorQuotationContractorName
-                                                                      .text =
-                                                                  v.name;
-
+                                                                  .clear();
                                                               contractorQuotationPOIssueDate
-                                                                      .text =
-                                                                  v.issueDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-
+                                                                  .clear();
                                                               contractorQuotationNo
-                                                                      .text =
-                                                                  v.quotationNumber!;
-
+                                                                  .clear();
                                                               contractorQuotationAmount
-                                                                      .text =
-                                                                  v.quotationAmount
-                                                                      .toString();
-
+                                                                  .clear();
                                                               contractorQuotationWorkCommence
-                                                                      .text =
-                                                                  v.workCommenceDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
+                                                                  .clear();
                                                               contractorQuotationWorkComplete
-                                                                      .text =
-                                                                  v.workCompleteDate
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0,
-                                                                          10);
-                                                            });
-                                                          }
-                                                          break;
+                                                                  .clear();
+                                                              setState(() {
+                                                                print(
+                                                                    v.invoices);
+                                                                // contractorInvoice =
+                                                                //     v.invoices;
+                                                                // print(
+                                                                //     contractorInvoice);
+                                                                contractorpouid =
+                                                                    v.uid;
+                                                                contractorQuotationPONumber
+                                                                        .text =
+                                                                    v.poNumber;
 
-                                                          // else{ print('Null Value');
-                                                        }
+                                                                contractorQuotationPOAmount
+                                                                        .text =
+                                                                    v.poAmount
+                                                                        .toString();
+
+                                                                contractorQuotationContractorName
+                                                                        .text =
+                                                                    v.name;
+
+                                                                contractorQuotationPOIssueDate
+                                                                        .text =
+                                                                    v.issueDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+
+                                                                contractorQuotationNo
+                                                                        .text =
+                                                                    v.quotationNumber!;
+
+                                                                contractorQuotationAmount
+                                                                        .text =
+                                                                    v.quotationAmount
+                                                                        .toString();
+
+                                                                contractorQuotationWorkCommence
+                                                                        .text =
+                                                                    v.workCommenceDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+                                                                contractorQuotationWorkComplete
+                                                                        .text =
+                                                                    v.workCompleteDate
+                                                                        .toString()
+                                                                        .substring(
+                                                                            0,
+                                                                            10);
+                                                              });
+                                                            }
+                                                            // break;
+
+                                                            // else{ print('Null Value');
+                                                          },
+                                                        );
                                                       }
                                                     },
                                                     decoration: InputDecoration(
@@ -1572,12 +1585,15 @@ class _QuotationViewState extends State<QuotationView> {
                                         onPressed: () {
                                           setState(() {
                                             var uid = UniqueKey().toString();
-                                            contractorPO.add(ContractorPurchaseOrder(
+                                            contractorPO.add(
+                                              ContractorPurchaseOrder(
                                                 uid: uid,
-                                                name: contractorQuotationContractorName
-                                                    .text,
-                                                poNumber: contractorQuotationPONumber
-                                                    .text,
+                                                name:
+                                                    contractorQuotationContractorName
+                                                        .text,
+                                                poNumber:
+                                                    contractorQuotationPONumber
+                                                        .text,
                                                 quotationAmount: double.parse(
                                                     contractorQuotationAmount
                                                         .text),
@@ -1590,9 +1606,14 @@ class _QuotationViewState extends State<QuotationView> {
                                                     contractorQuotationPOAmount
                                                         .text),
                                                 workCommenceDate: DateTime.parse(
-                                                    contractorQuotationWorkCommence.text),
-                                                workCompleteDate: DateTime.parse(contractorQuotationWorkComplete.text),
-                                                invoices: contractorInvoice));
+                                                    contractorQuotationWorkCommence
+                                                        .text),
+                                                workCompleteDate: DateTime.parse(
+                                                    contractorQuotationWorkComplete
+                                                        .text),
+                                                invoices: contractorInvoice,
+                                              ),
+                                            );
                                           });
                                           contractorQuotationPONumber.clear();
                                           contractorQuotationAmount.clear();
@@ -2141,6 +2162,8 @@ class _QuotationViewState extends State<QuotationView> {
                                                       .text) {
                                                 cpo.invoices =
                                                     contractorInvoice;
+                                                print(contractorInvoice);
+                                                print(cpo.invoices);
                                               }
                                             });
                                           });
