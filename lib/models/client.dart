@@ -33,14 +33,31 @@ class Client {
       docid: doc_id,
       contactPerson: json["contactPerson"] ?? '');
 
-  Map<String, dynamic> toJson() =>
-      {"name": name, "address": address, "country": country, "email": email, "phone": phone, "cwr": cwr, "contactPerson": contactPerson};
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "address": address,
+        "country": country,
+        "email": email,
+        "phone": phone,
+        "cwr": cwr,
+        "docid": docid,
+        "contactPerson": contactPerson,
+      };
 
-  Future<dynamic> add() async {
-    return await clients(country)
-        .doc(name)
+  Future<Result> add() async {
+    docid = await getNextClientId();
+    return clients(country)
+        .doc(docid)
         .set(toJson())
         .then((value) => Result.success("Client Added successfully"))
+        .onError((error, stackTrace) => Result.error(error));
+  }
+
+  Future<dynamic> update() async {
+    return clients(country)
+        .doc(docid)
+        .update(toJson())
+        .then((value) => Result.success("Client Updated successfully"))
         .onError((error, stackTrace) => Result.error(error));
   }
 

@@ -178,6 +178,7 @@
 // }
 
 import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/pages/dashboardpage.dart';
 import 'package:ccm/pages/profile.dart';
 import 'package:ccm/pages/userList.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
@@ -203,8 +204,7 @@ class _LandingPageState extends State<LandingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF3A5F85),
-        title: Text(
-            'In a world of gray, CCM provides clarity to all construction & facility projects'),
+        title: Text('In a world of gray, CCM provides clarity to all construction & facility projects'),
         centerTitle: true,
         actions: [
           TextButton.icon(
@@ -336,7 +336,7 @@ class _LandingPageState extends State<LandingPage> {
               controller: page,
               children: [
                 CountriesList(),
-                DashBoardPage(),
+                Dashboard(),
                 ProfilePage(),
                 UsersList(),
                 ClientList(),

@@ -342,19 +342,17 @@ class _ContractorListState extends State<ContractorList> {
                                           );
                                         });
 
+                                    var contractor = Contractor(
+                                        docid: doc_id,
+                                        name: name.text,
+                                        address: address.text,
+                                        contactPerson: contactPerson.text,
+                                        country: countrycode.text,
+                                        countryName: countryname.text,
+                                        phone: phone.text);
+
                                     isEdit
-                                        ? contractors.doc(doc_id).update(
-                                            {
-                                              'name': name.text,
-                                              'address': address.text,
-                                              'contactPerson': contactPerson.text,
-                                              'countryName': countryname.text,
-                                              'country': countrycode.text,
-                                              'email': email.text,
-                                              'phone': phone.text,
-                                              // 'cwr': countrycode.text,
-                                            },
-                                          ).then((value) {
+                                        ? contractor.update().then((value) {
                                             name.clear();
                                             address.clear();
                                             countrycode.clear();
@@ -364,19 +362,7 @@ class _ContractorListState extends State<ContractorList> {
                                             Navigator.pop(context);
                                             Navigator.pop(context);
                                           })
-                                        : await contractors.add(
-                                            {
-                                              'name': name.text,
-                                              // 'cwr': countrycode.text,
-                                              'payable': 0,
-                                              'address': address.text,
-                                              'countryName': countryname.text,
-                                              'contactPerson': contactPerson.text,
-                                              'country': countrycode.text,
-                                              'email': email.text,
-                                              'phone': phone.text,
-                                            },
-                                          ).then((value) {
+                                        : await contractor.add().then((value) {
                                             name.clear();
                                             address.clear();
                                             countrycode.clear();

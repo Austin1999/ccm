@@ -39,12 +39,22 @@ class Contractor {
         "email": email,
         "phone": phone,
         "countryName": countryName,
-        "contactPerson": contactPerson
+        "contactPerson": contactPerson,
+        "docId": docid,
       };
 
   Future<dynamic> add() async {
+    docid = await getNextContractorID();
     return await contractors
-        .doc(name)
+        .doc(docid)
+        .set(toJson())
+        .then((value) => Result.success("Contractor Added successfully"))
+        .onError((error, stackTrace) => Result.error(error));
+  }
+
+  Future<dynamic> update() async {
+    return await contractors
+        .doc(docid)
         .set(toJson())
         .then((value) => Result.success("Contractor Added successfully"))
         .onError((error, stackTrace) => Result.error(error));

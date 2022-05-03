@@ -1,10 +1,13 @@
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
+import 'package:ccm/controllers/currency_controller.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quote.dart';
+import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_field/countries.dart' as list;
 
 import 'quote_date_picker.dart';
 
@@ -19,6 +22,55 @@ class ClientQuotation extends StatefulWidget {
 
 class _ClientQuotationState extends State<ClientQuotation> {
   QuotationFormController get controller => widget.controller;
+
+  final quoteIssuedDateController = TextEditingController();
+  final jobCompletionDateController = TextEditingController();
+
+  @override
+  void initState() {
+    quoteIssuedDateController.text = controller.issuedDate == null ? '' : format.format(controller.issuedDate!);
+    jobCompletionDateController.text = controller.completionDate == null ? '' : format.format(controller.completionDate!);
+    controller.currencyCode = controller.currencyCode ?? session.country!.currencyCode;
+    super.initState();
+  }
+
+  static const _categoryList = [
+    {'key': "FM", "value": "FM", "text": "FM Contract"},
+    {'key': "IN", "value": "IN", "text": "Interior & General"},
+    {'key': "EL", "value": "EL", "text": "Electrical"},
+    {'key': "HV", "value": "HV", "text": "HVAC System"},
+    {'key': "PL", "value": "PL", "text": "Plumping & Pest"},
+    {'key': "FI", "value": "FI", "text": "Fire Protection"},
+    {'key': "AV", "value": "AV", "text": "AV system"},
+    {'key': "IT", "value": "IT", "text": "IT & Security"},
+    {'key': "CA", "value": "CA", "text": "Carpentry Works"},
+    {'key': "FU", "value": "FU", "text": "Furniture & Rugs"},
+    {'key': "AD", "value": "AD", "text": "Additional Works"}
+  ];
+
+  List<DropdownMenuItem<String>> get categoryItems => _categoryList
+      .map((e) => DropdownMenuItem(
+            child: Text(e['text'] ?? ''),
+            value: e['value'],
+          ))
+      .toList();
+
+  String? _requiredValidator(String? number) {
+    if ((number ?? '').isEmpty) {
+      return 'Field should not be empty';
+    }
+    return null;
+  }
+
+  String? _amountValidator(String? p1) {
+    try {
+      double.parse(p1.toString());
+    } catch (e) {
+      return 'Amount should be numbers and not empty';
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +95,43 @@ class _ClientQuotationState extends State<ClientQuotation> {
                     ),
                     Container(),
                     Container(),
-                    QuoteDropdown(title: 'Currency'),
-                    QuoteDropdown(title: 'Category'),
+                    QuoteDropdown<String>(
+                      title: 'Currency',
+                      items: currencyController.items,
+                      value: controller.currencyCode,
+                      onChanged: (val) {
+                        setState(() {
+                          controller.currencyCode = val ?? controller.currencyCode;
+                        });
+                      },
+                    ),
+                    QuoteDropdown<String>(
+                      value: controller.category,
+                      title: 'Category',
+                      items: categoryItems,
+                      onChanged: (val) {
+                        controller.category = val;
+                      },
+                    ),
                     QuoteTypeAhead(
-                        optionsBuilder: (value) {
-                          return ['SAMPLE1', 'SAMPLE2', 'SAMPLE3'];
+                        onSelected: (val) {
+                          setState(() {
+                            controller.parentQuote = val;
+                          });
+                        },
+                        onChanged: (val) {
+                          if ((val).isEmpty) {
+                            controller.parentQuote = null;
+                          }
+                        },
+                        text: (controller.parentQuote ?? ''),
+                        optionsBuilder: (textValue) async {
+                          var values = await quotations.get().then((value) => value.docs
+                              .map((e) => Quotation.fromJson(e.data()).number)
+                              .where((element) => element.toLowerCase().startsWith(textValue.text.toLowerCase()))
+                              .toList());
+
+                          return values;
                         },
                         title: 'Parent quote'),
                   ])
@@ -67,20 +151,24 @@ class _ClientQuotationState extends State<ClientQuotation> {
                         return null;
                       },
                     ),
-                    Obx((() {
-                      return QuoteDropdown(
-                        title: 'Client',
-                        items:
-                            clientController.clientlist.map((element) => DropdownMenuItem(child: Text(element.name), value: element.name)).toList(),
-                        value: controller.client,
-                        onChanged: (String? value) {
-                          setState(() {
-                            controller.client = value ?? controller.client;
-                          });
-                        },
-                      );
-                    })),
+                    QuoteDropdown<String>(
+                      title: 'Client',
+                      validator: (val) {
+                        if ((val ?? '').isEmpty) {
+                          return 'Please select a client';
+                        }
+                        return null;
+                      },
+                      items: clientController.clientlist.map((element) => DropdownMenuItem(child: Text(element.name), value: element.docid)).toList(),
+                      value: controller.client,
+                      onChanged: (String? value) {
+                        setState(() {
+                          controller.client = value ?? controller.client;
+                        });
+                      },
+                    ),
                     QuoteTextBox(
+                      validator: _amountValidator,
                       controller: widget.controller.amount,
                       hintText: 'Quote Amount',
                       onChanged: (amount) {
@@ -100,21 +188,33 @@ class _ClientQuotationState extends State<ClientQuotation> {
                         });
                       },
                     ),
-                    QuoteTextBox(controller: widget.controller.clientApproval, hintText: 'Client Approval'),
+                    QuoteTextBox(
+                      controller: widget.controller.clientApproval,
+                      hintText: 'Client Approval',
+                    ),
                   ]),
                   TableRow(children: [
-                    QuoteDate(
+                    QuoteDateBox(
+                      readOnly: true,
+                      hintText: 'Enter date',
+                      controler: quoteIssuedDateController,
                       title: 'Issued Date',
-                      date: controller.issuedDate,
+                      validator: (val) {
+                        if ((val ?? '').isEmpty) {
+                          return 'Date should not be empty';
+                        }
+                        return null;
+                      },
                       onPressed: () async {
                         await showDatePicker(
                           context: context,
-                          initialDate: DateTime.now(),
+                          initialDate: controller.issuedDate ?? DateTime.now(),
                           firstDate: DateTime.utc(2000),
                           lastDate: DateTime.utc(2100),
                         ).then((value) {
                           setState(() {
                             controller.issuedDate = value ?? controller.issuedDate;
+                            quoteIssuedDateController.text = controller.issuedDate == null ? '' : format.format(controller.issuedDate!);
                           });
                         });
                       },
@@ -127,6 +227,11 @@ class _ClientQuotationState extends State<ClientQuotation> {
                         setState(() {
                           controller.approvalStatus = value ?? controller.approvalStatus;
                         });
+                      },
+                      selectedItemBuilder: (context) {
+                        return ApprovalStatus.values.map((e) {
+                          return SizedBox(height: 52, child: Text(e.toString().split('.').last.toUpperCase()));
+                        }).toList();
                       },
                       items: ApprovalStatus.values.map((e) {
                         return DropdownMenuItem(
@@ -144,18 +249,20 @@ class _ClientQuotationState extends State<ClientQuotation> {
                   ]),
                   TableRow(children: [
                     QuoteTextBox(controller: widget.controller.ccmTicketNumber, hintText: 'CCM Ticket Number'),
-                    QuoteDate(
+                    QuoteDateBox(
+                      hintText: 'Job Completion Date',
+                      controler: jobCompletionDateController,
                       title: 'Job Completion Date',
-                      date: controller.completionDate,
                       onPressed: () async {
                         await showDatePicker(
                           context: context,
-                          initialDate: DateTime.now(),
+                          initialDate: controller.completionDate ?? DateTime.now(),
                           firstDate: DateTime.utc(2000),
                           lastDate: DateTime.utc(2100),
                         ).then((value) {
                           setState(() {
                             controller.completionDate = value ?? controller.completionDate;
+                            jobCompletionDateController.text = controller.completionDate == null ? '' : format.format(controller.completionDate!);
                           });
                         });
                       },

@@ -27,7 +27,7 @@ class ContractorPoFormController {
         amount: double.parse(amount.text),
         issuedDate: issuedDate!,
         quoteNumber: quoteNumber.text,
-        quoteAmount: double.parse(quoteAmount.text),
+        quoteAmount: quoteAmount.text.isEmpty ? null : double.parse(quoteAmount.text),
         workCommence: workCommence,
         workComplete: workComplete,
         invoices: invoices,
@@ -39,8 +39,8 @@ class ContractorPoFormController {
     controller.contractor = po.contractor;
     controller.amount.text = po.amount.toString();
     controller.issuedDate = po.issuedDate;
-    controller.quoteNumber.text = po.quoteNumber;
-    controller.quoteAmount.text = po.quoteAmount.toString();
+    controller.quoteNumber.text = po.quoteNumber ?? '';
+    controller.quoteAmount.text = po.quoteAmount?.toString() ?? '';
     controller.workCommence = po.workCommence;
     controller.workComplete = po.workComplete;
     controller.invoices = po.invoices;
@@ -53,10 +53,13 @@ class ContractorPoFormController {
   }
 
   addInvoice() {
-    // if (invoiceForm.formKey.currentState!.validate()) {
-    //   invoices.add(invoiceForm.object);
-    // }
-    invoices.add(invoiceForm.object);
+    if (invoiceForm.invoiceFormKey.currentState!.validate()) {
+      var invoice = invoiceForm.object;
+      invoice.payments = [];
+      invoice.credits = [];
+      invoices.add(invoice);
+      selectedInvoice = invoices.length - 1;
+    }
   }
 
   set selectedInvoice(int? index) {
@@ -78,12 +81,12 @@ class ContractorPoFormController {
   }
 
   updateInvoice() {
-    // if (invoiceForm.formKey.currentState!.validate() && _invoiceIndex != null) {
-    //   invoices.removeAt(_invoiceIndex!);
-    //   invoices.insert(_invoiceIndex!, invoiceForm.object);
-    // }
-
+    var invoice = invoices.elementAt(_invoiceIndex!);
     invoices.removeAt(_invoiceIndex!);
-    invoices.insert(_invoiceIndex!, invoiceForm.object);
+    if (invoiceForm.invoiceFormKey.currentState!.validate()) {
+      invoices.insert(_invoiceIndex!, invoiceForm.object);
+    } else {
+      invoices.insert(_invoiceIndex!, invoice);
+    }
   }
 }

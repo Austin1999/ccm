@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
 class QuoteDropdown<T> extends StatelessWidget {
-  const QuoteDropdown({Key? key, this.items, this.onChanged, this.value, required this.title}) : super(key: key);
+  const QuoteDropdown(
+      {Key? key, this.items, this.onChanged, this.value, required this.title, this.validator, this.selectedItemBuilder, this.hintText})
+      : super(key: key);
 
   final List<DropdownMenuItem<T>>? items;
   final void Function(T?)? onChanged;
   final T? value;
   final String title;
+  final String? Function(T?)? validator;
+  final List<Widget> Function(BuildContext)? selectedItemBuilder;
+  final String? hintText;
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +27,17 @@ class QuoteDropdown<T> extends StatelessWidget {
           color: Colors.white,
           elevation: 5,
           shadowColor: Colors.grey,
-          child: DropdownButtonHideUnderline(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: DropdownButton(
-              items: items,
-              onChanged: onChanged,
-              value: value,
+          child: DropdownButtonFormField(
+            decoration: InputDecoration(
+              hintText: '',
+              border: OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(4.0))),
             ),
-          )),
+            validator: validator,
+            items: items,
+            onChanged: onChanged,
+            value: value,
+            isExpanded: true,
+          ),
         ),
       ),
     );

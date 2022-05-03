@@ -1,3 +1,9 @@
+import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/models/comment.dart';
+import 'package:ccm/models/dashboard_data.dart';
+import 'package:ccm/models/response.dart';
+import 'package:ccm/services/firebase.dart';
+
 enum ApprovalStatus { pending, approved, rejected, cancelled }
 enum OverallStatus { pending, completed, cancelled }
 
@@ -38,15 +44,53 @@ class Quotation {
   OverallStatus overallStatus;
   List<Invoice> clientInvoices;
   List<ContractorPo> contractorPo;
-  List<String> comments;
+  List<Comment> comments;
 
-  double get margin => (amount - clientCredits) - (contractorAmount - contractorAmount);
+  double get margin => (amount - clientCredits) - (contractorAmount - contractorCredits);
   double get percent => margin * 100 / (contractorPo.fold(0, (previousValue, element) => previousValue + element.amount));
-  double get receivables => clientInvoices.fold(0, (previousValue, element) => previousValue + element.receivables);
-  double get payables => contractorPo.fold(0, (previousValue, element) => previousValue + element.payables);
+
+  double get receivedAmount => clientInvoices.fold(0, (previousValue, element) => previousValue + element.closedAmount);
+  double get receivableAmount => clientInvoices.fold(0, (previousValue, element) => previousValue + element.remaining);
+
+  double get paidAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.paidAmount);
+  double get payableAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.totalPayables);
+
   double get clientCredits => clientInvoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
   double get contractorCredits => contractorPo.fold(0, (previousValue, element) => previousValue + element.credits);
+
   double get contractorAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.amount);
+
+  List<Map<String, dynamic>> get receivables => clientInvoices
+      .map((e) => ListElement(
+          closedAmount: e.closedAmount,
+          actualAmount: e.amount,
+          amount: e.remaining,
+          date: e.issuedDate,
+          credits: e.creditAmount,
+          entity: client,
+          quote_id: id ?? '',
+          currency: currencyCode ?? '',
+          country: session.country!.code,
+          quoteDate: issuedDate,
+          client: client))
+      // .where((element) => element.amount > 0)
+      .map((e) => e.toJson())
+      .toList();
+
+  List<Map<String, dynamic>> get payables {
+    List<Map<String, dynamic>> payables = [];
+    contractorPo.forEach((element) {
+      payables.addAll(element.payables.map((e) {
+        e.quote_id = id ?? '';
+        e.currency = currencyCode ?? '';
+        e.country = session.country!.code;
+        e.quoteDate = issuedDate;
+        e.client = client;
+        return e.toJson();
+      }).toList());
+    });
+    return payables;
+  }
 
   factory Quotation.fromJson(Map<String, dynamic> json) => Quotation(
         id: json["id"],
@@ -54,15 +98,15 @@ class Quotation {
         client: json["client"],
         amount: json["amount"],
         clientApproval: json["clientApproval"],
-        issuedDate: json["issuedDate"].toDate(),
+        issuedDate: json["issuedDate"]?.toDate(),
         description: json["description"],
         approvalStatus: ApprovalStatus.values.elementAt(json["approvalStatus"]),
         ccmTicketNumber: json["ccmTicketNumber"],
-        completionDate: json["completionDate"].toDate(),
+        completionDate: json["completionDate"]?.toDate(),
         overallStatus: OverallStatus.values.elementAt(json["overallStatus"]),
         clientInvoices: List<Invoice>.from(json["clientInvoices"].map((x) => Invoice.fromJson(x))),
         contractorPo: List<ContractorPo>.from(json["contractorPo"].map((x) => ContractorPo.fromJson(x))),
-        comments: List<String>.from(json["comments"].map((x) => x)),
+        comments: List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
         currencyCode: json['currencyCode'],
         parentQuote: json['parentQuote'],
         category: json['category'],
@@ -102,37 +146,141 @@ class Quotation {
     return returns;
   }
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "number": number,
-        "client": client,
-        "amount": amount,
-        "clientApproval": clientApproval,
-        "issuedDate": issuedDate,
-        "description": description,
-        "approvalStatus": approvalStatus.index,
-        "ccmTicketNumber": ccmTicketNumber,
-        "completionDate": completionDate,
-        "overallStatus": overallStatus.index,
-        "currencyCode": currencyCode,
-        "parentQuote": parentQuote,
-        "category": category,
-        "clientInvoices": List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
-        "contractorPo": List<dynamic>.from(contractorPo.map((x) => x.toJson())),
-        "comments": List<dynamic>.from(comments.map((x) => x)),
-        "search": search
-      };
+  Map<String, dynamic> toJson() {
+    print(receivables);
+    return {
+      "id": id,
+      "number": number,
+      "client": client,
+      "amount": amount,
+      "clientApproval": clientApproval,
+      "issuedDate": issuedDate,
+      "description": description,
+      "approvalStatus": approvalStatus.index,
+      "ccmTicketNumber": ccmTicketNumber,
+      "completionDate": completionDate,
+      "overallStatus": overallStatus.index,
+      "currencyCode": currencyCode,
+      "parentQuote": parentQuote,
+      "category": category,
+      "clientInvoices": List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
+      "contractorPo": List<dynamic>.from(contractorPo.map((x) => x.toJson())),
+      "comments": List<dynamic>.from(comments.map((x) => x.toJson())),
+      "search": search,
+      "contractorAmount": contractorAmount,
+      "receivedAmount": receivedAmount,
+      "receivableAmount": receivableAmount,
+      "paidAmount": paidAmount,
+      "payableAmount": payableAmount,
+      "clientCredits": clientCredits,
+      "contractorCredits": contractorCredits,
+      "payables": payables,
+      "receivables": receivables,
+      "country": session.country!.code,
+      "margin": margin,
+    };
+  }
 
-  Map<String, dynamic> toRTDBJson() => {
-        "id": id,
+  Future<Result> add() {
+    return quotations
+        .doc(id)
+        .set(toJson())
+        .then((value) => Result.success("Quote added successfully"))
+        .onError((error, stackTrace) => Result.error(error.toString()));
+  }
+
+  Future<Result> update() {
+    return quotations
+        .doc(id)
+        .set(toJson())
+        .then((value) => Result.success("Quote updated successfully"))
+        .onError((error, stackTrace) => Result.error(error.toString()));
+  }
+
+  Future<Result> delete() {
+    return quotations
+        .doc(id)
+        .delete()
+        .then((value) => Result.success("Quote deleted successfully"))
+        .onError((error, stackTrace) => Result.error(error.toString()));
+  }
+
+  // addQuote() async {
+  //   this.id = await getNextQuotationId();
+  //   quotations.doc(id).set(toJson()).then((_) {
+  //     List<Future> futures = [];
+  //     payables.forEach((element) {
+  //       futures.add(payablesRef.add(element));
+  //     });
+  //     receivables.forEach((element) {
+  //       futures.add(receivablesRef.add(element));
+  //     });
+  //     futures.add(dashboardDataRef.doc(id).set(DashboardData.fromJson(toJson()).toJson()));
+  //     return Future.wait(futures);
+  //   }).then((value) => Result.success("Quotation added successfully"));
+  // }
+}
+
+class ContractorPo {
+  ContractorPo({
+    required this.number,
+    required this.contractor,
+    required this.amount,
+    required this.issuedDate,
+    required this.quoteNumber,
+    required this.quoteAmount,
+    this.workCommence,
+    this.workComplete,
+    required this.invoices,
+  });
+
+  String number;
+  String contractor;
+  double amount;
+  DateTime issuedDate;
+  String? quoteNumber;
+  double? quoteAmount;
+  DateTime? workCommence;
+  DateTime? workComplete;
+  List<Invoice> invoices;
+
+  double get totalPayables => invoices.fold(0, (previousValue, element) => previousValue + element.remaining);
+  double get credits => invoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
+  double get paidAmount => invoices.fold(0, (previousValue, element) => previousValue + element.closedAmount);
+
+  List<ListElement> get payables => invoices.map((e) {
+        var listElement = e.listElement;
+        listElement.entity = contractor;
+        return listElement;
+      })
+          // .where((element) => element.amount > 0)
+          .toList();
+
+  factory ContractorPo.fromJson(Map<String, dynamic> json) => ContractorPo(
+        number: json["number"],
+        contractor: json["contractor"],
+        amount: json["amount"],
+        issuedDate: json["issuedDate"].toDate(),
+        quoteNumber: json["quoteNumber"],
+        quoteAmount: json["quoteAmount"],
+        workCommence: json["workCommence"]?.toDate(),
+        workComplete: json["workComplete"]?.toDate(),
+        invoices: List<Invoice>.from(json["invoices"].map((x) => Invoice.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
         "number": number,
-        "client": client,
+        "contractor": contractor,
         "amount": amount,
-        "approvalStatus": approvalStatus.index,
-        "currencyCode": currencyCode,
-        "margin": margin,
-        "receivables": receivables,
-        "payables": payables,
+        "issuedDate": issuedDate,
+        "quoteNumber": quoteNumber,
+        "quoteAmount": quoteAmount,
+        "workCommence": workCommence,
+        "workComplete": workComplete,
+        "invoices": List<dynamic>.from(invoices.map((x) => x.toJson())),
+        "paidAmount": paidAmount,
+        "credits": credits,
+        "totalPayables": totalPayables,
       };
 }
 
@@ -161,9 +309,24 @@ class Invoice {
           ? payments.first.date
           : payments.last.date;
 
-  double get receivedAmount => payments.fold(0, (previousValue, element) => previousValue + element.amount);
+  double get closedAmount => payments.fold(0, (previousValue, element) => previousValue + element.amount);
   double get creditAmount => credits.fold(0, (previousValue, element) => previousValue + element.amount);
-  double get receivables => amount - receivedAmount - creditAmount;
+  double get remaining {
+    var amt = amount - closedAmount - creditAmount;
+    return amt > 0 ? amt : 0;
+  }
+
+  ListElement get listElement => ListElement(
+      closedAmount: closedAmount,
+      actualAmount: amount,
+      amount: remaining,
+      date: issuedDate,
+      entity: '',
+      credits: creditAmount,
+      quote_id: '',
+      currency: '',
+      country: '',
+      client: '');
 
   factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
         number: json["number"],
@@ -181,6 +344,9 @@ class Invoice {
         "issuedDate": issuedDate,
         "payments": List<dynamic>.from(payments.map((x) => x.toJson())),
         "credits": List<dynamic>.from(credits.map((x) => x.toJson())),
+        "closedAmount": closedAmount,
+        "creditAmount": creditAmount,
+        "remaining": remaining
       };
 }
 
@@ -225,56 +391,5 @@ class Payment {
   Map<String, dynamic> toJson() => {
         "amount": amount,
         "date": date,
-      };
-}
-
-class ContractorPo {
-  ContractorPo({
-    required this.number,
-    required this.contractor,
-    required this.amount,
-    required this.issuedDate,
-    required this.quoteNumber,
-    required this.quoteAmount,
-    this.workCommence,
-    this.workComplete,
-    required this.invoices,
-  });
-
-  String number;
-  String contractor;
-  double amount;
-  DateTime issuedDate;
-  String quoteNumber;
-  double quoteAmount;
-  DateTime? workCommence;
-  DateTime? workComplete;
-  List<Invoice> invoices;
-
-  double get payables => invoices.fold(0, (previousValue, element) => previousValue + element.receivables);
-  double get credits => invoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
-
-  factory ContractorPo.fromJson(Map<String, dynamic> json) => ContractorPo(
-        number: json["number"],
-        contractor: json["contractor"],
-        amount: json["amount"],
-        issuedDate: json["issuedDate"].toDate(),
-        quoteNumber: json["quoteNumber"],
-        quoteAmount: json["quoteAmount"],
-        workCommence: json["workCommence"].toDate(),
-        workComplete: json["workComplete"].toDate(),
-        invoices: List<Invoice>.from(json["invoices"].map((x) => Invoice.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "number": number,
-        "contractor": contractor,
-        "amount": amount,
-        "issuedDate": issuedDate,
-        "quoteNumber": quoteNumber,
-        "quoteAmount": quoteAmount,
-        "workCommence": workCommence,
-        "workComplete": workComplete,
-        "invoices": List<dynamic>.from(invoices.map((x) => x.toJson())),
       };
 }

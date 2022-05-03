@@ -182,9 +182,8 @@ class _CountriesListState extends State<CountriesList> {
                                             //         ),
                                             //       );
                                             //     });
-                                            print(e.toJson());
                                             session.country = e;
-                                            Get.put(ClientController());
+
                                             // Get.put(ContractorController());
                                             Get.to(() => CwrSummary());
                                           },

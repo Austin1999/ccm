@@ -2,6 +2,8 @@ import 'package:ccm/auth/login.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/pages/landing_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/dashboard.dart';
 import '../services/firebase.dart';
 
 class AuthRouter extends StatelessWidget {

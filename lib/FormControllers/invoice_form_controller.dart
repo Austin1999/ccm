@@ -15,8 +15,15 @@ class InvoiceFormController {
   List<Payment> payments = [];
   List<Credit> credits = [];
 
-  Invoice get object =>
-      Invoice(number: number.text, amount: double.parse(amount.text), issuedDate: issuedDate!, payments: payments, credits: credits);
+  final invoiceFormKey = GlobalKey<FormState>();
+
+  Invoice get object => Invoice(
+      number: number.text,
+      amount: double.parse(amount.text),
+      issuedDate: issuedDate!,
+      payments: payments,
+      credits: credits,
+      taxNumber: taxNumber.text.isEmpty ? null : taxNumber.text);
 
   factory InvoiceFormController.frominvoice(Invoice invoice) {
     var controller = InvoiceFormController();
@@ -26,6 +33,7 @@ class InvoiceFormController {
     controller.issuedDate = invoice.issuedDate;
     controller.payments = invoice.payments;
     controller.credits = invoice.credits;
+    controller.taxNumber.text = invoice.taxNumber ?? '';
     return controller;
   }
 

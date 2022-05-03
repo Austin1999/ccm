@@ -11,6 +11,8 @@ import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../controllers/getControllers.dart';
+
 class CwrSummary extends StatefulWidget {
   CwrSummary({Key? key}) : super(key: key);
 
@@ -21,6 +23,7 @@ class CwrSummary extends StatefulWidget {
 class _CwrSummaryState extends State<CwrSummary> {
   @override
   void initState() {
+    Get.put(ClientController());
     filter();
     super.initState();
   }
@@ -58,16 +61,35 @@ class _CwrSummaryState extends State<CwrSummary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Color(0xFF3A5F85)),
+      appBar: AppBar(
+          backgroundColor: Color(0xFF3A5F85),
+          centerTitle: true,
+          title: Text(
+            "In a world of gray, CCM provides clarity to all construction & facility projects.",
+          )),
       backgroundColor: Color(0xFFFAFAFA),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(session.country!.name.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 25)),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(session.country!.name.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 25)),
+                ),
+              ),
+              Expanded(child: Container()),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      Get.to(() => QuotationForm());
+                    },
+                    child: Icon(Icons.add)),
+              )
+            ],
           ),
           TextButton(
               onPressed: () {
@@ -185,7 +207,6 @@ class _CwrSummaryState extends State<CwrSummary> {
                   quotes = docs.map((e) => Quotation.fromJson(e.data())).toList();
                 } catch (e) {
                   print(e.toString());
-                  print("I have error ^");
                   quotes = [];
                 }
 
@@ -206,6 +227,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                             columns: [
                               DataColumn(label: Text('Edit')),
                               DataColumn(label: Text('Invoice')),
+                              DataColumn(label: Text('Child Quotes')),
                               DataColumn(label: Text('Quote')),
                               DataColumn(label: Text('Issued on')),
                               DataColumn(label: Text('Client')),
@@ -283,7 +305,6 @@ class _CwrSummaryState extends State<CwrSummary> {
                 // );
               }
               if (snapshot.hasError) {
-                print("I have error");
                 print(snapshot.error);
               }
               return Center(
@@ -345,10 +366,16 @@ class QuoteDatasource extends DataTableSource {
                 context: context,
                 builder: (context) {
                   List<Widget> children = [];
-                  children.add(Text("Client Invoices"));
-                  children.add(InvoiceList(invoices: e.clientInvoices));
+                  children.add(Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Client Invoices".toUpperCase()),
+                  ));
+                  children.add(InvoiceList(invoices: e.clientInvoices, poNumber: e.clientApproval));
+                  children.add(const Divider());
+                  children.add(Text("Contractor Invoices".toUpperCase()));
                   e.contractorPo.forEach((element) {
-                    children.add(InvoiceList(invoices: element.invoices));
+                    children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
+                    children.add(const Divider());
                   });
                   return Dialog(
                     child: Column(
@@ -362,9 +389,66 @@ class QuoteDatasource extends DataTableSource {
             Icons.insert_drive_file,
             color: Colors.indigo,
           ))),
+      DataCell(IconButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return FutureBuilder<List<DataRow>>(
+                      future: getChildQuotes(e.number),
+                      builder: (context, snapshot) {
+                        List<DataRow> rows = [];
+                        if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                          rows = snapshot.data ?? [];
+
+                          if (rows.isEmpty) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AlertDialog(
+                                  content: Center(
+                                    child: Text("No child quotes available"),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+
+                          return AlertDialog(
+                            content: DataTable(columns: [
+                              DataColumn(label: Text('Edit')),
+                              DataColumn(label: Text('Invoice')),
+                              DataColumn(label: Text('Quote')),
+                              DataColumn(label: Text('Issued on')),
+                              DataColumn(label: Text('Client')),
+                              DataColumn(label: Text('Description')),
+                              DataColumn(label: Text('Amount')),
+                              DataColumn(label: Text('status')),
+                              DataColumn(label: Text('Client PO')),
+                              DataColumn(label: Text('Margin')),
+                              DataColumn(label: Text('CCM Ticket')),
+                              DataColumn(label: Text('Completion Date')),
+                              DataColumn(label: Text('Delete')),
+                            ], rows: rows),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return AlertDialog(content: Center(child: Text("Error occurred, Please try again..")));
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      });
+                });
+          },
+          icon: Icon(
+            Icons.view_agenda,
+            color: Colors.indigo,
+          ))),
       DataCell(SelectableText(e.number)),
       DataCell(SelectableText(format.format(e.issuedDate))),
-      DataCell(SelectableText(e.client)),
+      DataCell(SelectableText(clientController.getName(e.client))),
       DataCell(SelectableText(e.description)),
       DataCell(SelectableText(e.amount.toString())),
       DataCell(SelectableText(e.approvalStatus.toString().split('.').last.toUpperCase())),
@@ -392,4 +476,76 @@ class QuoteDatasource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+
+  Future<List<DataRow>> getChildQuotes(String number) async {
+    List<DataRow> rows = [];
+
+    return quotations.where("parentQuote", isEqualTo: number).get().then((value) {
+      value.docs.forEach((element) {
+        var q = Quotation.fromJson(element.data());
+        print(element.data());
+        var row = DataRow(cells: [
+          DataCell(IconButton(
+              onPressed: () {
+                Get.to(() => QuotationForm(quotation: q));
+              },
+              icon: Icon(
+                Icons.edit,
+                color: Colors.indigo,
+              ))),
+          DataCell(IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      List<Widget> children = [];
+                      children.add(Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Client Invoices".toUpperCase()),
+                      ));
+                      children.add(InvoiceList(invoices: q.clientInvoices, poNumber: q.clientApproval));
+                      children.add(const Divider());
+                      children.add(Text("Contractor Invoices".toUpperCase()));
+                      q.contractorPo.forEach((element) {
+                        children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
+                        children.add(const Divider());
+                      });
+                      return Dialog(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: children,
+                        ),
+                      );
+                    });
+              },
+              icon: Icon(
+                Icons.insert_drive_file,
+                color: Colors.indigo,
+              ))),
+          DataCell(SelectableText(q.number)),
+          DataCell(SelectableText(format.format(q.issuedDate))),
+          DataCell(SelectableText(clientController.getName(q.client))),
+          DataCell(SelectableText(q.description)),
+          DataCell(SelectableText(q.amount.toString())),
+          DataCell(SelectableText(q.approvalStatus.toString().split('.').last.toUpperCase())),
+          DataCell(SelectableText(q.clientApproval.toString())),
+          DataCell(SelectableText(q.margin.toStringAsFixed(2))),
+          DataCell(SelectableText(q.ccmTicketNumber.toString())),
+          DataCell(SelectableText(q.completionDate == null ? '' : format.format(q.completionDate!))),
+          DataCell(IconButton(
+              onPressed: () {
+                var future = quotations.doc(q.id).delete().then((value) => Result.success("Deleted Successfully"));
+                showFutureDialog(context: context, future: future);
+              },
+              icon: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ))),
+        ]);
+        rows.add(row);
+      });
+      print(rows.length);
+      return rows;
+    });
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:ccm/main.dart';
 import 'package:ccm/models/client.dart';
 import 'package:ccm/models/contractor.dart';
 import 'package:ccm/models/countries.dart';
@@ -44,19 +45,28 @@ class CountryController extends GetxController {
 
 class ClientController extends GetxController {
   static ClientController instance = Get.find();
-  RxList<Client> clientlist = RxList<Client>([]);
-
-  @override
-  void onReady() {
-    // TODO: implement onReady
-    super.onReady();
-    clientlist.bindStream(getClients());
+  List<Client> get clientlist {
+    var list = overAllClientList.where((element) => element.country == session.country?.code).toList();
+    printInfo(info: list.length.toString());
+    return list;
   }
 
-  Stream<List<Client>> getClients() {
-    return countries.doc(session.country!.code).collection('clients').snapshots().map((query) => query.docs.map((e) {
-          return Client.fromJson(e.data(), e.id);
-        }).toList());
+  List<Client> overAllClientList = [];
+
+  @override
+  void onInit() {
+    listenAllClients();
+    super.onInit();
+  }
+
+  listenAllClients() {
+    firestore.collectionGroup('clients').snapshots().listen((event) {
+      overAllClientList = event.docs.map((e) => Client.fromJson(e.data(), e.id)).toList();
+    });
+  }
+
+  String getName(String id) {
+    return overAllClientList.firstWhere((element) => element.docid == id).name;
   }
 }
 

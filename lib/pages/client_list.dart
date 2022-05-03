@@ -333,18 +333,19 @@ class _ClientListState extends State<ClientList> {
                                           );
                                         });
 
+                                    var client = Client(
+                                      name: name.text,
+                                      address: address.text,
+                                      contactPerson: contactPerson.text,
+                                      country: searchcountry,
+                                      email: email.text,
+                                      phone: phone.text,
+                                      cwr: cwr.text,
+                                      docid: doc_id,
+                                    );
+
                                     isEdit
-                                        ? countries.doc(searchcountry).collection('clients').doc(doc_id).update(
-                                            {
-                                              'name': name.text,
-                                              'address': address.text,
-                                              'contactPerson': contactPerson.text,
-                                              'country': searchcountry,
-                                              'email': email.text,
-                                              'phone': phone.text,
-                                              'cwr': cwr.text,
-                                            },
-                                          ).then((value) {
+                                        ? client.update().then((value) {
                                             name.clear();
                                             address.clear();
                                             cwr.clear();
@@ -354,17 +355,7 @@ class _ClientListState extends State<ClientList> {
                                             Navigator.pop(context);
                                             Navigator.pop(context);
                                           })
-                                        : await countries.doc(searchcountry).collection('clients').add(
-                                            {
-                                              'name': name.text,
-                                              'cwr': cwr.text,
-                                              'address': address.text,
-                                              'contactPerson': contactPerson.text,
-                                              'country': searchcountry,
-                                              'email': email.text,
-                                              'phone': phone.text,
-                                            },
-                                          ).then((value) {
+                                        : client.add().then((value) {
                                             name.clear();
                                             address.clear();
                                             cwr.clear();

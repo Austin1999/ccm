@@ -1,5 +1,6 @@
 import 'package:ccm/FormControllers/invoice_form_controller.dart';
 import 'package:ccm/FormControllers/po_form_controller.dart';
+import 'package:ccm/models/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,30 +31,31 @@ class QuotationFormController {
   OverallStatus overallStatus = OverallStatus.pending;
   List<Invoice> clientInvoices = [];
   List<ContractorPo> contractorPos = [];
-  List<String> comments = [];
+  List<Comment> comments = [];
   ContractorPoFormController contractorForm = ContractorPoFormController();
   InvoiceFormController invoiceForm = InvoiceFormController();
 
   QuotationFormController();
 
   Quotation get object => Quotation(
-      category: category,
-      completionDate: completionDate,
-      id: id,
-      parentQuote: parentQuote,
-      number: number.text,
-      client: client!,
-      amount: double.parse(amount.text),
-      currencyCode: currencyCode ?? 'INR',
-      clientApproval: clientApproval.text,
-      issuedDate: issuedDate!,
-      description: description.text,
-      approvalStatus: approvalStatus,
-      ccmTicketNumber: ccmTicketNumber.text,
-      overallStatus: overallStatus,
-      clientInvoices: clientInvoices,
-      contractorPo: contractorPos,
-      comments: comments);
+        category: category,
+        completionDate: completionDate,
+        id: id,
+        parentQuote: parentQuote,
+        number: number.text,
+        client: client!,
+        amount: double.parse(amount.text),
+        currencyCode: currencyCode ?? 'INR',
+        clientApproval: clientApproval.text,
+        issuedDate: issuedDate!,
+        description: description.text,
+        approvalStatus: approvalStatus,
+        ccmTicketNumber: ccmTicketNumber.text,
+        overallStatus: overallStatus,
+        clientInvoices: clientInvoices,
+        contractorPo: contractorPos,
+        comments: comments,
+      );
 
   factory QuotationFormController.fromQuotation(Quotation quotation) {
     var controller = QuotationFormController();
@@ -93,18 +95,17 @@ class QuotationFormController {
   int? _invoiceIndex;
 
   addInvoice() {
-    // if (invoiceForm.formKey.currentState!.validate()) {
-    //   clientInvoices.add(invoiceForm.object);
-    // }
-    var invoice = invoiceForm.object;
-    invoice.payments = [];
-    invoice.credits = [];
-    clientInvoices.add(invoice);
+    if (invoiceForm.invoiceFormKey.currentState!.validate()) {
+      var invoice = invoiceForm.object;
+      invoice.payments = [];
+      invoice.credits = [];
+      clientInvoices.add(invoice);
+      selectedInvoice = clientInvoices.length - 1;
+    }
   }
 
   set selectedInvoice(int? index) {
     _invoiceIndex = index;
-
     invoiceForm = (index == null) ? InvoiceFormController() : _selectInvoice(clientInvoices.elementAt(index));
   }
 
@@ -122,13 +123,13 @@ class QuotationFormController {
   }
 
   updateInvoice() {
-    // if (invoiceForm.formKey.currentState!.validate() && _invoiceIndex != null) {
-    //   clientInvoices.removeAt(_invoiceIndex!);
-    //   clientInvoices.insert(_invoiceIndex!, invoiceForm.object);
-    // }
-
+    var invoice = clientInvoices.elementAt(_invoiceIndex!);
     clientInvoices.removeAt(_invoiceIndex!);
-    clientInvoices.insert(_invoiceIndex!, invoiceForm.object);
+    if (invoiceForm.invoiceFormKey.currentState!.validate()) {
+      clientInvoices.insert(_invoiceIndex!, invoiceForm.object);
+    } else {
+      clientInvoices.insert(_invoiceIndex!, invoice);
+    }
   }
 
   //=================================   PO Form Controller Starts
@@ -139,6 +140,7 @@ class QuotationFormController {
     if (contractorForm.contractorFormKey.currentState!.validate()) {
       contractorForm.invoices = [];
       contractorPos.add(contractorForm.object);
+      selectedPo = contractorPos.length - 1;
     }
   }
 
@@ -161,12 +163,12 @@ class QuotationFormController {
   }
 
   updatePo() {
-    // if (invoiceForm.formKey.currentState!.validate() && _invoiceIndex != null) {
-    //   clientInvoices.removeAt(_invoiceIndex!);
-    //   clientInvoices.insert(_invoiceIndex!, invoiceForm.object);
-    // }
-
+    var po = contractorPos.elementAt(_poIndex!);
     contractorPos.removeAt(_poIndex!);
-    contractorPos.insert(_poIndex!, contractorForm.object);
+    if (contractorForm.contractorFormKey.currentState!.validate()) {
+      contractorPos.insert(_poIndex!, contractorForm.object);
+    } else {
+      contractorPos.insert(_poIndex!, po);
+    }
   }
 }

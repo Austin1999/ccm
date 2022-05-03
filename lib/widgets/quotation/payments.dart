@@ -23,7 +23,13 @@ class _PaymentFormState extends State<PaymentForm> {
   validate() {
     bool result = true;
     try {
-      double.parse(amount.text);
+      var mount = double.parse(amount.text);
+      if (widget.invoice.closedAmount + mount > widget.invoice.amount) {
+        setState(() {
+          amountError = 'Payments should not exceed invoice amount';
+          result = false;
+        });
+      }
     } catch (e) {
       setState(() {
         amountError = 'Amount should be number and not empty';

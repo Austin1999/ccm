@@ -304,7 +304,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   builder: (context) {
                                     return AlertDialog(
                                       content: Row(
-                                        children: [CircularProgressIndicator(), SizedBox(width: 10.0), Text('Updating User...')],
+                                        children: [
+                                          CircularProgressIndicator(),
+                                          SizedBox(width: 10.0),
+                                          Text('Updating User...'),
+                                        ],
                                       ),
                                     );
                                   });

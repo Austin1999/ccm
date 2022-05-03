@@ -2,8 +2,6 @@
 //
 //     final quotation = quotationFromJson(jsonString);
 
-import 'dart:convert';
-
 import 'package:ccm/models/client.dart';
 
 // Quotation quotationFromJson(String str) => Quotation.fromJson(json.decode(str));
@@ -64,11 +62,11 @@ class Quotation {
         clientname: json["clientname"] ?? '',
         qamount: json["Qamount"] ?? 0.00,
         clientApproval: json["clientApproval"] ?? '',
-        dateIssued: json["dateIssued"].toDate() ?? DateTime.now(),
+        dateIssued: json["dateIssued"]?.toDate() ?? DateTime.now(),
         description: json["description"] ?? '',
         approvalStatus: json["approvalStatus"] ?? '',
         ccmTicketNumber: json["ccmTicketNumber"] ?? '',
-        jobcompletionDate: json["jobcompletionDate"].toDate() ?? DateTime.now(),
+        jobcompletionDate: json["jobcompletionDate"] != null ? json["jobcompletionDate"]?.toDate() : null,
         overallstatus: json["overallstatus"] ?? '',
         parentQuoteId: json["parentQuoteId"] ?? '',
         clientInvoices: json["clientInvoices"] == null

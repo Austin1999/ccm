@@ -25,18 +25,16 @@ class QuoteTextBox extends StatelessWidget {
         color: Colors.white,
         elevation: 5,
         shadowColor: Colors.grey,
-        child: SizedBox(
-          child: TextFormField(
-            onChanged: onChanged,
-            validator: validator,
-            onTap: onTap,
-            readOnly: readOnly,
-            controller: controller,
-            decoration: InputDecoration(
+        child: TextFormField(
+          onChanged: onChanged,
+          validator: validator,
+          onTap: onTap,
+          readOnly: readOnly,
+          controller: controller,
+          decoration: InputDecoration(
               hintText: hintText,
-              border: OutlineInputBorder(borderSide: BorderSide.none),
-            ),
-          ),
+              border: OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(4.0))),
+              errorBorder: OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(4.0)), borderSide: BorderSide(color: Colors.red))),
         ),
       ),
     );
@@ -45,7 +43,14 @@ class QuoteTextBox extends StatelessWidget {
 
 class QuoteTypeAhead extends StatelessWidget {
   const QuoteTypeAhead(
-      {Key? key, this.onSelected, required this.optionsBuilder, required this.title, this.text, this.optionsViewBuilder, this.validator})
+      {Key? key,
+      this.onSelected,
+      required this.optionsBuilder,
+      required this.title,
+      this.text,
+      this.optionsViewBuilder,
+      this.validator,
+      this.onChanged})
       : super(key: key);
 
   final void Function(String)? onSelected;
@@ -54,6 +59,7 @@ class QuoteTypeAhead extends StatelessWidget {
   final String? text;
   final Widget Function(BuildContext, void Function(String), Iterable<String>)? optionsViewBuilder;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -66,25 +72,26 @@ class QuoteTypeAhead extends StatelessWidget {
         color: Colors.white,
         elevation: 5,
         shadowColor: Colors.grey,
-        child: SizedBox(
-            height: 52,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Autocomplete<String>(
-                initialValue: TextEditingValue(text: text ?? ''),
-                optionsBuilder: optionsBuilder,
-                onSelected: onSelected,
-                optionsViewBuilder: optionsViewBuilder,
-                fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-                  return TextFormField(
-                    controller: textEditingController,
-                    validator: validator,
-                    focusNode: focusNode,
-                    decoration: InputDecoration(border: InputBorder.none),
-                  );
-                },
-              ),
-            )),
+        child: Autocomplete<String>(
+          initialValue: TextEditingValue(text: text ?? ''),
+          optionsBuilder: optionsBuilder,
+          onSelected: onSelected,
+          optionsViewBuilder: optionsViewBuilder,
+          fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+            return TextFormField(
+              controller: textEditingController,
+              onChanged: onChanged,
+              validator: validator,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                  hintText: title,
+                  contentPadding: EdgeInsets.only(left: 8),
+                  border: OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(4.0))),
+                  errorBorder:
+                      OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(4.0)), borderSide: BorderSide(color: Colors.red))),
+            );
+          },
+        ),
       ),
     );
   }
