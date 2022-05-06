@@ -126,7 +126,8 @@ class QuotationFormController {
     var invoice = clientInvoices.elementAt(_invoiceIndex!);
     clientInvoices.removeAt(_invoiceIndex!);
     if (invoiceForm.invoiceFormKey.currentState!.validate()) {
-      clientInvoices.insert(_invoiceIndex!, invoiceForm.object);
+      var invoice = invoiceForm.object;
+      clientInvoices.insert(_invoiceIndex!, invoice);
     } else {
       clientInvoices.insert(_invoiceIndex!, invoice);
     }
@@ -166,7 +167,8 @@ class QuotationFormController {
     var po = contractorPos.elementAt(_poIndex!);
     contractorPos.removeAt(_poIndex!);
     if (contractorForm.contractorFormKey.currentState!.validate()) {
-      contractorPos.insert(_poIndex!, contractorForm.object);
+      var contractorPo = contractorForm.object;
+      contractorPos.insert(_poIndex!, contractorPo);
     } else {
       contractorPos.insert(_poIndex!, po);
     }

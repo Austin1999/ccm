@@ -202,6 +202,110 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: SideMenu(
+          controller: page,
+          style: SideMenuStyle(
+            displayMode: SideMenuDisplayMode.auto,
+            hoverColor: Colors.blue[100],
+            selectedColor: Colors.lightBlue,
+            selectedTitleTextStyle: TextStyle(color: Colors.white),
+            selectedIconColor: Colors.white,
+            // backgroundColor: Colors.amber
+            // openSideMenuWidth: 200
+          ),
+          title: Column(
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 150,
+                  maxWidth: 150,
+                ),
+                child: Image.asset(
+                  "assets/logo.png",
+                ),
+              ),
+              Divider(
+                indent: 8.0,
+                endIndent: 8.0,
+              ),
+            ],
+          ),
+          footer: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Devloped by Digisailor',
+              style: TextStyle(fontSize: 15),
+            ),
+          ),
+          items: [
+            SideMenuItem(
+              priority: 0,
+              title: 'Home',
+              onTap: () {
+                page.jumpToPage(0);
+              },
+              icon: Icon(Icons.home),
+              // badgeContent: Text(
+              //   '3',
+              //   style: TextStyle(color: Colors.white),
+              // ),
+            ),
+            SideMenuItem(
+              priority: 1,
+              title: 'Dashboard',
+              onTap: () {
+                page.jumpToPage(1);
+              },
+              icon: Icon(Icons.dashboard_rounded),
+            ),
+            SideMenuItem(
+              priority: 2,
+              title: 'My Profile',
+              onTap: () {
+                page.jumpToPage(2);
+              },
+              icon: Icon(Icons.account_circle),
+            ),
+            // SideMenuItem(
+            //   priority: 3,
+            //   title: 'Administration',
+            //   onTap: () => null,
+            //   icon: Icon(Icons.settings),
+            // ),
+            SideMenuItem(
+              priority: 3,
+              title: 'User',
+              onTap: () {
+                page.jumpToPage(3);
+              },
+              icon: Icon(Icons.people),
+            ),
+            SideMenuItem(
+              priority: 4,
+              title: 'Client',
+              onTap: () {
+                page.jumpToPage(4);
+              },
+              icon: Icon(Icons.person),
+            ),
+            SideMenuItem(
+              priority: 5,
+              title: 'Contractor',
+              onTap: () {
+                page.jumpToPage(5);
+              },
+              icon: Icon(Icons.workspaces_rounded),
+            ),
+            // SideMenuItem(
+            //   priority: 6,
+            //   title: 'Logout',
+            //   onTap: () async {},
+            //   icon: Icon(Icons.exit_to_app),
+            // ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Color(0xFF3A5F85),
         title: Text('In a world of gray, CCM provides clarity to all construction & facility projects'),
@@ -226,128 +330,45 @@ class _LandingPageState extends State<LandingPage> {
           ),
         ],
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      body: PageView(
+        controller: page,
         children: [
-          SideMenu(
-            controller: page,
-            style: SideMenuStyle(
-              displayMode: SideMenuDisplayMode.auto,
-              hoverColor: Colors.blue[100],
-              selectedColor: Colors.lightBlue,
-              selectedTitleTextStyle: TextStyle(color: Colors.white),
-              selectedIconColor: Colors.white,
-              // backgroundColor: Colors.amber
-              // openSideMenuWidth: 200
-            ),
-            title: Column(
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: 150,
-                    maxWidth: 150,
-                  ),
-                  child: Image.asset(
-                    "assets/logo.png",
-                  ),
-                ),
-                Divider(
-                  indent: 8.0,
-                  endIndent: 8.0,
-                ),
-              ],
-            ),
-            footer: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Devloped by Digisailor',
-                style: TextStyle(fontSize: 15),
-              ),
-            ),
-            items: [
-              SideMenuItem(
-                priority: 0,
-                title: 'Home',
-                onTap: () {
-                  page.jumpToPage(0);
-                },
-                icon: Icon(Icons.home),
-                // badgeContent: Text(
-                //   '3',
-                //   style: TextStyle(color: Colors.white),
-                // ),
-              ),
-              SideMenuItem(
-                priority: 1,
-                title: 'Dashboard',
-                onTap: () {
-                  page.jumpToPage(1);
-                },
-                icon: Icon(Icons.dashboard_rounded),
-              ),
-              SideMenuItem(
-                priority: 2,
-                title: 'My Profile',
-                onTap: () {
-                  page.jumpToPage(2);
-                },
-                icon: Icon(Icons.account_circle),
-              ),
-              // SideMenuItem(
-              //   priority: 3,
-              //   title: 'Administration',
-              //   onTap: () => null,
-              //   icon: Icon(Icons.settings),
-              // ),
-              SideMenuItem(
-                priority: 3,
-                title: 'User',
-                onTap: () {
-                  page.jumpToPage(3);
-                },
-                icon: Icon(Icons.people),
-              ),
-              SideMenuItem(
-                priority: 4,
-                title: 'Client',
-                onTap: () {
-                  page.jumpToPage(4);
-                },
-                icon: Icon(Icons.person),
-              ),
-              SideMenuItem(
-                priority: 5,
-                title: 'Contractor',
-                onTap: () {
-                  page.jumpToPage(5);
-                },
-                icon: Icon(Icons.workspaces_rounded),
-              ),
-              // SideMenuItem(
-              //   priority: 6,
-              //   title: 'Logout',
-              //   onTap: () async {},
-              //   icon: Icon(Icons.exit_to_app),
-              // ),
-            ],
-          ),
-          Expanded(
-            child: PageView(
-              controller: page,
-              children: [
-                CountriesList(),
-                Dashboard(),
-                ProfilePage(),
-                UsersList(),
-                ClientList(),
-                ContractorList(),
+          CountriesList(),
+          Dashboard(),
+          ProfilePage(),
+          UsersList(),
+          ClientList(),
+          ContractorList(),
 
-                // ContractorView()
-              ],
-            ),
-          ),
+          // ContractorView()
         ],
       ),
     );
   }
 }
+
+
+
+
+
+//  body: Row(
+//         mainAxisAlignment: MainAxisAlignment.start,
+//         children: [
+      
+//           Expanded(
+//             child: PageView(
+//               controller: page,
+//               children: [
+//                 CountriesList(),
+//                 Dashboard(),
+//                 ProfilePage(),
+//                 UsersList(),
+//                 ClientList(),
+//                 ContractorList(),
+
+//                 // ContractorView()
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),

@@ -47,11 +47,25 @@ class ClientController extends GetxController {
   static ClientController instance = Get.find();
   List<Client> get clientlist {
     var list = overAllClientList.where((element) => element.country == session.country?.code).toList();
-    printInfo(info: list.length.toString());
+
     return list;
   }
 
   List<Client> overAllClientList = [];
+
+  Iterable<Client> filteredClients(String? country) {
+    if (country == null) {
+      return overAllClientList;
+    } else {
+      return overAllClientList.where((element) => element.country == country);
+    }
+  }
+
+  Client getIdByName(String name) {
+    var client = clientlist.firstWhere((element) => element.name == name);
+
+    return client;
+  }
 
   @override
   void onInit() {

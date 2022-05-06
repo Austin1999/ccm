@@ -124,7 +124,7 @@ class _CountriesListState extends State<CountriesList> {
                             //             isLessThan: search.toTitleCase() + 'z')
                             //         .snapshots(),
                             //     builder: (context, snapshot) {
-                            // print(snapshot.hasData);
+
                             // if (snapshot.connectionState ==
                             //         ConnectionState.active &&
                             //     snapshot.hasData) {
@@ -141,7 +141,7 @@ class _CountriesListState extends State<CountriesList> {
                             //     ? null
                             //     : session.country =
                             //         session.countries.first;
-                            // // print(session.country);
+
                             // return
                             Obx(() {
                               if (countryController.countrylist.isEmpty) {

@@ -4,6 +4,7 @@ import 'package:ccm/models/response.dart';
 import 'package:ccm/pages/quotation_form.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/invoice_list.dart';
+import 'package:ccm/widgets/quotation/multiselect.dart';
 import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
@@ -27,6 +28,8 @@ class _CwrSummaryState extends State<CwrSummary> {
     filter();
     super.initState();
   }
+
+  List<String> selectedItems = [];
 
   final searchController = TextEditingController();
   DateTime? fromDate;
@@ -108,12 +111,14 @@ class _CwrSummaryState extends State<CwrSummary> {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 columnWidths: {
                   0: FlexColumnWidth(3),
                   1: FlexColumnWidth(2),
                   2: FlexColumnWidth(2),
                   3: FlexColumnWidth(2),
                   4: FlexColumnWidth(2),
+                  5: FlexColumnWidth(2),
                 },
                 children: [
                   TableRow(children: [
@@ -192,6 +197,28 @@ class _CwrSummaryState extends State<CwrSummary> {
                       },
                       items: approvalStatusItems(),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: ListTile(
+                        title: Text("F"),
+                        subtitle: Card(
+                          margin: EdgeInsets.all(4),
+                          color: Colors.black,
+                          child: Container(
+                            color: Colors.white,
+                            child: DropDownMultiSelect(
+                                options: clientController.clientlist.map((e) => e.name).toList(),
+                                selectedValues: selectedItems,
+                                onChanged: (val) {
+                                  setState(() {
+                                    selectedItems = val;
+                                  });
+                                },
+                                whenEmpty: 'Select client'),
+                          ),
+                        ),
+                      ),
+                    )
                   ])
                 ],
               ),
@@ -206,8 +233,13 @@ class _CwrSummaryState extends State<CwrSummary> {
                 try {
                   quotes = docs.map((e) => Quotation.fromJson(e.data())).toList();
                 } catch (e) {
-                  print(e.toString());
                   quotes = [];
+                }
+
+                if (selectedItems.isNotEmpty) {
+                  var temp = [];
+                  temp = selectedItems.map((e) => clientController.getIdByName(e).docid).toList();
+                  quotes = quotes.where((element) => temp.contains(element.client)).toList();
                 }
 
                 var source = QuoteDatasource(quotes, context);
@@ -458,7 +490,7 @@ class QuoteDatasource extends DataTableSource {
       DataCell(SelectableText(e.completionDate == null ? '' : format.format(e.completionDate!))),
       DataCell(IconButton(
           onPressed: () {
-            var future = quotations.doc(e.id).delete().then((value) => Result.success("Deleted Successfully"));
+            var future = e.delete();
             showFutureDialog(context: context, future: future);
           },
           icon: Icon(
@@ -483,68 +515,71 @@ class QuoteDatasource extends DataTableSource {
     return quotations.where("parentQuote", isEqualTo: number).get().then((value) {
       value.docs.forEach((element) {
         var q = Quotation.fromJson(element.data());
-        print(element.data());
-        var row = DataRow(cells: [
-          DataCell(IconButton(
-              onPressed: () {
-                Get.to(() => QuotationForm(quotation: q));
-              },
-              icon: Icon(
-                Icons.edit,
-                color: Colors.indigo,
-              ))),
-          DataCell(IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      List<Widget> children = [];
-                      children.add(Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Client Invoices".toUpperCase()),
-                      ));
-                      children.add(InvoiceList(invoices: q.clientInvoices, poNumber: q.clientApproval));
-                      children.add(const Divider());
-                      children.add(Text("Contractor Invoices".toUpperCase()));
-                      q.contractorPo.forEach((element) {
-                        children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
+
+        var row = DataRow(
+          color: q.overallStatus == OverallStatus.completed ? MaterialStateProperty.all(Colors.green) : null,
+          cells: [
+            DataCell(IconButton(
+                onPressed: () {
+                  Get.to(() => QuotationForm(quotation: q));
+                },
+                icon: Icon(
+                  Icons.edit,
+                  color: Colors.indigo,
+                ))),
+            DataCell(IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        List<Widget> children = [];
+                        children.add(Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("Client Invoices".toUpperCase()),
+                        ));
+                        children.add(InvoiceList(invoices: q.clientInvoices, poNumber: q.clientApproval));
                         children.add(const Divider());
+                        children.add(Text("Contractor Invoices".toUpperCase()));
+                        q.contractorPo.forEach((element) {
+                          children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
+                          children.add(const Divider());
+                        });
+                        return Dialog(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: children,
+                          ),
+                        );
                       });
-                      return Dialog(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: children,
-                        ),
-                      );
-                    });
-              },
-              icon: Icon(
-                Icons.insert_drive_file,
-                color: Colors.indigo,
-              ))),
-          DataCell(SelectableText(q.number)),
-          DataCell(SelectableText(format.format(q.issuedDate))),
-          DataCell(SelectableText(clientController.getName(q.client))),
-          DataCell(SelectableText(q.description)),
-          DataCell(SelectableText(q.amount.toString())),
-          DataCell(SelectableText(q.approvalStatus.toString().split('.').last.toUpperCase())),
-          DataCell(SelectableText(q.clientApproval.toString())),
-          DataCell(SelectableText(q.margin.toStringAsFixed(2))),
-          DataCell(SelectableText(q.ccmTicketNumber.toString())),
-          DataCell(SelectableText(q.completionDate == null ? '' : format.format(q.completionDate!))),
-          DataCell(IconButton(
-              onPressed: () {
-                var future = quotations.doc(q.id).delete().then((value) => Result.success("Deleted Successfully"));
-                showFutureDialog(context: context, future: future);
-              },
-              icon: Icon(
-                Icons.delete,
-                color: Colors.red,
-              ))),
-        ]);
+                },
+                icon: Icon(
+                  Icons.insert_drive_file,
+                  color: Colors.indigo,
+                ))),
+            DataCell(SelectableText(q.number)),
+            DataCell(SelectableText(format.format(q.issuedDate))),
+            DataCell(SelectableText(clientController.getName(q.client))),
+            DataCell(SelectableText(q.description)),
+            DataCell(SelectableText(q.amount.toString())),
+            DataCell(SelectableText(q.approvalStatus.toString().split('.').last.toUpperCase())),
+            DataCell(SelectableText(q.clientApproval.toString())),
+            DataCell(SelectableText(q.margin.toStringAsFixed(2))),
+            DataCell(SelectableText(q.ccmTicketNumber.toString())),
+            DataCell(SelectableText(q.completionDate == null ? '' : format.format(q.completionDate!))),
+            DataCell(IconButton(
+                onPressed: () {
+                  var future = quotations.doc(q.id).delete().then((value) => Result.success("Deleted Successfully"));
+                  showFutureDialog(context: context, future: future);
+                },
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ))),
+          ],
+        );
         rows.add(row);
       });
-      print(rows.length);
+
       return rows;
     });
   }

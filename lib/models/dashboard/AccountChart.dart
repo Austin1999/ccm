@@ -1,5 +1,5 @@
 class AccountChartData {
-  AccountChartData({required this.entity, required this.amount, required this.currency});
+  AccountChartData({required this.entity, required this.amount, this.currency = 'INR'});
   String entity;
   double amount;
   String currency;

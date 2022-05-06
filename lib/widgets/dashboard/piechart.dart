@@ -1,6 +1,4 @@
-import 'package:ccm/main.dart';
 import 'package:ccm/models/pieChartData.dart';
-import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -14,12 +12,24 @@ class PieStatement extends StatelessWidget {
   List<PieChartSectionData> getChartSectionData() {
     List<PieChartSectionData> data = [];
     chartData.forEach((element) {
-      printNormal(element.value.toString());
-      data.add(PieChartSectionData(
-        value: double.parse(element.value.toStringAsFixed(2)),
-        color: element.color,
-        radius: element.radius,
-      ));
+      if (element.value != 0) {
+        data.add(PieChartSectionData(
+          value: double.parse(element.value.toStringAsFixed(2)),
+          color: element.color,
+          radius: element.radius,
+        ));
+      }
+    });
+    if (data.isEmpty) {
+      return getEmptyChartData();
+    }
+    return data;
+  }
+
+  getEmptyChartData() {
+    List<PieChartSectionData> data = [];
+    chartData.forEach((element) {
+      data.add(PieChartSectionData(value: 1, title: '', color: element.color.withOpacity(0.2), radius: element.radius));
     });
     return data;
   }

@@ -1,6 +1,5 @@
 import 'package:ccm/auth/auth_route.dart';
 import 'package:ccm/controllers/currency_controller.dart';
-import 'package:ccm/controllers/dashboard.dart';
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/controllers/getx_controllers.dart' as getxcon;
 import 'package:ccm/firebase_options.dart';

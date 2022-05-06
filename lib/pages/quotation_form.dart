@@ -1,10 +1,7 @@
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
 import 'package:ccm/controllers/getControllers.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quote.dart';
-import 'package:ccm/models/response.dart';
 import 'package:ccm/pages/comments.dart';
-import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/client_invoice.dart';
 import 'package:ccm/widgets/quotation/client_quotation.dart';
 import 'package:ccm/widgets/quotation/contractor_quotation.dart';
@@ -66,26 +63,12 @@ class _QuotationFormState extends State<QuotationForm> {
             onPressed: () async {
               if (controller.quoteFormKey.currentState!.validate()) {
                 var quotation = controller.object;
-                var text = "updated";
+                var future;
                 if (widget.quotation == null) {
-                  quotation.id = await getNextQuotationId();
-                  text = "added";
+                  future = quotation.add();
+                } else {
+                  future = quotation.update(checkNumber: quotation.number != widget.quotation!.number);
                 }
-                var future = quotations.doc(quotation.id).set(quotation.toJson()).then((value) {
-                  // return databaseRef
-                  //     .child(session.country!.code)
-                  //     .child(quotation.id!)
-                  //     .set(quotation.toRTDBJson())
-                  //     .then((value) => Result.success("Quotation $text successfully"))
-                  //     .catchError((error) {
-                  //   print(
-                  //     error.toString(),
-                  //   );
-                  //   return Result.error(error.toString());
-                  // });
-                  return Result.success("Quotation $text successfully");
-                }).then(((value) => value));
-
                 showFutureDialog(context: context, future: future);
               }
             },

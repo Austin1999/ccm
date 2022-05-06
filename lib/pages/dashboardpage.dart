@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/currency_controller.dart';
+import '../models/dashboard/AccountChart.dart';
 import '../widgets/dashboard/agedAccounatables.dart';
+import '../widgets/dashboard/monthly_statement.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({Key? key}) : super(key: key);
@@ -20,7 +22,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    country = session.country?.code;
+    country = 'IN';
     currency = session.country?.currencyCode ?? 'SGD';
 
     // dashboard.loadData();
@@ -66,6 +68,7 @@ class _DashboardState extends State<Dashboard> {
                       onChanged: (val) {
                         setState(() {
                           country = val ?? country;
+                          client = null;
                         });
                       },
                       items: countryController.countrylist
@@ -83,7 +86,8 @@ class _DashboardState extends State<Dashboard> {
                           client = val ?? client;
                         });
                       },
-                      items: clientController.overAllClientList
+                      items: clientController
+                          .filteredClients(country)
                           .map((element) => DropdownMenuItem(
                                 child: Text(element.name),
                                 value: element.docid,
@@ -116,39 +120,47 @@ class _DashboardState extends State<Dashboard> {
                   country: country,
                   client: client,
                 ),
-                Builder(builder: (context) {
-                  Get.put(DashboardController(), tag: 'top5');
-                  DashboardController controller = Get.find(tag: 'top5');
-                  return GetBuilder(
-                      init: controller,
-                      builder: (context) {
-                        controller.loadEntityWiseData();
-                        return ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: 300),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    child: Top5Entity(
-                                  country: country,
-                                  currency: currency,
-                                  data: controller.topReceivables,
-                                  isClient: true,
-                                )),
-                                Expanded(
-                                    child: Top5Entity(
-                                  country: country,
-                                  currency: currency,
-                                  data: controller.topPayables,
-                                  isClient: false,
-                                )),
-                              ],
-                            ),
-                          ),
-                        );
-                      });
-                })
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Builder(builder: (context) {
+                    DashboardController controller = Get.put((DashboardController()), tag: 'top5');
+
+                    return FutureBuilder<Map<String, List<AccountChartData>>>(
+                        future: controller.loadEntityWiseData(country: country),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                            var map = snapshot.data;
+                            return Top5Entity(
+                              currency: currency,
+                              country: country,
+                              top5clients: map!["top5clients"] ?? [],
+                              top5contractors: map["top5contractors"] ?? [],
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Text("Could not load data");
+                          }
+                          return Top5Entity(
+                            currency: currency,
+                            country: country,
+                            top5clients: [],
+                            top5contractors: [],
+                          );
+                        });
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 600),
+                    child: MonthlyStatement(
+                      currency: currency,
+                      country: country,
+                      client: client,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
