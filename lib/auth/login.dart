@@ -1,5 +1,4 @@
 import 'package:ccm/controllers/getx_controllers.dart';
-import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
@@ -40,11 +39,7 @@ class _SignInState extends State<SignIn> {
                       SizedBox(height: 20),
                       Text(
                         "Crystal Clear Management-Leading Facilities Management Service In Asia",
-                        style: TextStyle(
-                            color: Colors.blueGrey,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            letterSpacing: 1.2),
+                        style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold, fontSize: 17, letterSpacing: 1.2),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 20),
@@ -77,9 +72,7 @@ class _SignInState extends State<SignIn> {
                                     isObscure = !isObscure;
                                   });
                                 },
-                                icon: isObscure
-                                    ? Icon(Icons.visibility)
-                                    : Icon(Icons.visibility_off),
+                                icon: isObscure ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                               ),
                               // labelText: labelText,
                               labelStyle: const TextStyle(
@@ -111,9 +104,7 @@ class _SignInState extends State<SignIn> {
                               ),
                               filled: true,
                               fillColor: Colors.white.withOpacity(0.8),
-                              contentPadding:
-                                  const EdgeInsetsDirectional.fromSTEB(
-                                      16, 0, 0, 25),
+                              contentPadding: const EdgeInsetsDirectional.fromSTEB(16, 0, 0, 25),
                             ),
                             style: const TextStyle(
                               fontFamily: 'Lexend Deca',
@@ -138,7 +129,31 @@ class _SignInState extends State<SignIn> {
                       // ),
                       SizedBox(height: 20),
                       TextButton(
-                          onPressed: () {}, child: Text("Forgot password")),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  final controller = TextEditingController();
+
+                                  return AlertDialog(
+                                    title: Text("Enter email"),
+                                    content: TextFormField(
+                                      controller: controller,
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            authController.auth.resetPassword(email: controller.text);
+                                            Navigator.of(context).pop();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(content: Text("A Reset link will be sent to the provided mail")));
+                                          },
+                                          child: Text("Send Reset Link"))
+                                    ],
+                                  );
+                                });
+                          },
+                          child: Text("Forgot password")),
                       ElevatedButton(
                           onPressed: () {
                             CoolAlert.show(
@@ -147,10 +162,7 @@ class _SignInState extends State<SignIn> {
                                     : MediaQuery.of(context).size.width * 0.85,
                                 context: context,
                                 type: CoolAlertType.loading);
-                            authController.auth
-                                .signInWithEmailAndPassword(
-                                    username.text, password.text)
-                                .then((value) {
+                            authController.auth.signInWithEmailAndPassword(username.text, password.text).then((value) {
                               Navigator.pop(context);
                             }, onError: (e) {
                               Navigator.pop(context);
@@ -164,16 +176,12 @@ class _SignInState extends State<SignIn> {
                                       ),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                                         children: [
                                           Text(
                                             e.message.toString(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1,
+                                            style: Theme.of(context).textTheme.subtitle1,
                                           ),
                                           SizedBox(
                                             height: 10.0,
@@ -188,7 +196,7 @@ class _SignInState extends State<SignIn> {
                                     );
                                   });
                             });
-                            },
+                          },
                           child: Text("Login")),
                     ],
                   ),

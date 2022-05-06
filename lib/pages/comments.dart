@@ -38,11 +38,14 @@ class _CommentsListState extends State<CommentsList> {
               flex: 1,
               child: Container(
                 decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/logo.png"),
+                  ),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
                   ),
-                  color: Colors.white,
+                  color: Colors.grey.shade100,
                 ),
                 child: Column(
                   children: [
@@ -120,6 +123,7 @@ class _CommentsListState extends State<CommentsList> {
           ),
         ),
       ));
+
       // Map<int, TableColumnWidth>? columnWidths;
       // if (authController.auth.currentUser!.uid == widget.comments[i].uid) {
       //   if (widget.comments[i].uid == authController.auth.currentUser!.uid) {
@@ -144,7 +148,7 @@ class _CommentsListState extends State<CommentsList> {
 
       // }
     }
-    print(listTiles.length);
+
     return listTiles;
   }
 }

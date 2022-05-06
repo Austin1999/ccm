@@ -3,8 +3,10 @@ import 'package:ccm/FormControllers/po_form_controller.dart';
 import 'package:ccm/models/comment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../models/quote.dart';
+import '../services/firebase.dart';
 
 class QuotationFormController {
   String? id;
@@ -126,7 +128,8 @@ class QuotationFormController {
     var invoice = clientInvoices.elementAt(_invoiceIndex!);
     clientInvoices.removeAt(_invoiceIndex!);
     if (invoiceForm.invoiceFormKey.currentState!.validate()) {
-      clientInvoices.insert(_invoiceIndex!, invoiceForm.object);
+      var invoice = invoiceForm.object;
+      clientInvoices.insert(_invoiceIndex!, invoice);
     } else {
       clientInvoices.insert(_invoiceIndex!, invoice);
     }
@@ -166,9 +169,47 @@ class QuotationFormController {
     var po = contractorPos.elementAt(_poIndex!);
     contractorPos.removeAt(_poIndex!);
     if (contractorForm.contractorFormKey.currentState!.validate()) {
-      contractorPos.insert(_poIndex!, contractorForm.object);
+      var contractorPo = contractorForm.object;
+      contractorPos.insert(_poIndex!, contractorPo);
     } else {
       contractorPos.insert(_poIndex!, po);
     }
   }
+}
+
+class QuotationFormState extends GetxController {
+  static QuotationFormState instance = Get.find();
+
+  void onInit() {
+    super.onInit();
+    if (selectedQuotation != null) {
+      _controller = QuotationFormController.fromQuotation(selectedQuotation!);
+    } else {
+      _controller = QuotationFormController();
+    }
+    if (selectedQuotation != null) {
+      populateQuotes(selectedQuotation!);
+    }
+  }
+
+  QuotationFormState(this.selectedQuotation);
+
+  Quotation? selectedQuotation;
+  QuotationFormController _controller = QuotationFormController();
+  set controller(QuotationFormController value) {
+    _controller = value;
+    update();
+  }
+
+  List<Quotation> relatedQuotes = [];
+
+  void populateQuotes(Quotation quotation) async {
+    relatedQuotes = await quotations.where('parentQuote', isEqualTo: quotation.number).get().then((value) {
+      return value.docs.map((e) => Quotation.fromJson(e.data())).toList();
+    });
+    relatedQuotes.insert(0, quotation);
+    update();
+  }
+
+  QuotationFormController get controller => _controller;
 }

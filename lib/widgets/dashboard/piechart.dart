@@ -1,6 +1,4 @@
-import 'package:ccm/main.dart';
 import 'package:ccm/models/pieChartData.dart';
-import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -14,12 +12,25 @@ class PieStatement extends StatelessWidget {
   List<PieChartSectionData> getChartSectionData() {
     List<PieChartSectionData> data = [];
     chartData.forEach((element) {
-      printNormal(element.value.toString());
-      data.add(PieChartSectionData(
-        value: double.parse(element.value.toStringAsFixed(2)),
-        color: element.color,
-        radius: element.radius,
-      ));
+      if (element.value != 0) {
+        data.add(PieChartSectionData(
+          value: element.value,
+          color: element.color,
+          radius: element.radius,
+          title: element.value.toStringAsFixed(2),
+        ));
+      }
+    });
+    if (data.isEmpty) {
+      return getEmptyChartData();
+    }
+    return data;
+  }
+
+  getEmptyChartData() {
+    List<PieChartSectionData> data = [];
+    chartData.forEach((element) {
+      data.add(PieChartSectionData(value: 1, title: '', color: element.color.withOpacity(0.2), radius: element.radius));
     });
     return data;
   }
@@ -54,35 +65,47 @@ class PieStatement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 300),
-        child: Row(
-          children: [
-            Expanded(
-                flex: 5,
-                child: Center(
-                  child: PieChart(
-                    PieChartData(
-                      sections: getChartSectionData(),
-                      centerSpaceRadius: 0,
-                    ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Divider(),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: header ?? Container(),
+        ),
+        Divider(),
+        ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 300),
+            child: Row(
+              children: [
+                Expanded(
+                    flex: 5,
+                    child: Center(
+                      child: PieChart(
+                        PieChartData(
+                          sections: getChartSectionData(),
+                          centerSpaceRadius: 0,
+                        ),
+                      ),
+                    )),
+                Expanded(
+                  flex: 8,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Table(
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        columnWidths: {
+                          0: FlexColumnWidth(3),
+                          1: FlexColumnWidth(9),
+                          2: FlexColumnWidth(10),
+                        },
+                        children: getLabels()),
                   ),
-                )),
-            Expanded(
-              flex: 8,
-              child: Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    columnWidths: {
-                      0: FlexColumnWidth(3),
-                      1: FlexColumnWidth(9),
-                      2: FlexColumnWidth(10),
-                    },
-                    children: getLabels()),
-              ),
-            ),
-          ],
-        ));
+                ),
+              ],
+            )),
+        footer ?? Container(),
+      ],
+    );
   }
 }

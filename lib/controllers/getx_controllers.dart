@@ -1,27 +1,47 @@
 import 'package:ccm/controllers/getControllers.dart';
 import 'package:ccm/models/countries.dart';
+import 'package:ccm/models/usermodel.dart';
 
-import 'package:ccm/services/auth.dart';
+import 'package:ccm/services/firebase.dart';
 import 'package:get/get.dart';
-
-import '../models/client.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
   var auth = Auth();
 }
 
-AuthController authController = AuthController.instance;
-
 class SessionController extends GetxController {
   static SessionController instance = Get.find();
+
+  UserModel? user;
+
+  loadProfile() {
+    if (authController.auth.currentUser != null) {
+      userscollection.doc(authController.auth.currentUser!.uid).get().then((value) {
+        if (value.exists) {
+          user = UserModel.fromJson(value.data()!, value.id);
+
+          if (user?.role == "Admin") {
+            myCountries = countryController.countrylist.toList();
+          } else {
+            var list = countryController.countrylist.toList();
+            myCountries = user!.country.map((e) => list.firstWhere((element) => element.code == e)).toList();
+            print(myCountries);
+          }
+        }
+        update();
+      });
+    }
+  }
+
   Country? country;
   List<Country> countries = [];
-  // List<Client> clients = [];
+
   setCountry(value) {
     country = value;
-    // loadClients();
   }
+
+  List<Country> myCountries = [];
 
   // void loadClients() {
   //   Client.list().then((value) => clients = value);
@@ -31,6 +51,5 @@ class SessionController extends GetxController {
 SessionController session = SessionController.instance;
 ClientController clientController = ClientController.instance;
 CountryController countryController = CountryController.instance;
-QuotationController quotationController = QuotationController.instance;
+AuthController authController = AuthController.instance;
 ContractorController contractorController = ContractorController.instance;
-ClientDashboardController clientDashboardController = ClientDashboardController.instance;

@@ -181,13 +181,14 @@ import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/pages/dashboardpage.dart';
 import 'package:ccm/pages/profile.dart';
 import 'package:ccm/pages/userList.dart';
+import 'package:ccm/pages/user_form.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'client_list.dart';
 import 'contractor_list.dart';
 import 'countries_list.dart';
-import 'dashboard.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({Key? key}) : super(key: key);
@@ -201,153 +202,212 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF3A5F85),
-        title: Text('In a world of gray, CCM provides clarity to all construction & facility projects'),
-        centerTitle: true,
-        actions: [
-          TextButton.icon(
-            onPressed: () async {
-              await authController.auth.signOut();
-            },
-            icon: Icon(
-              Icons.exit_to_app_rounded,
-              color: Colors.white,
-            ),
-            label: Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Row(
+    return Material(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SideMenu(
-            controller: page,
-            style: SideMenuStyle(
-              displayMode: SideMenuDisplayMode.auto,
-              hoverColor: Colors.blue[100],
-              selectedColor: Colors.lightBlue,
-              selectedTitleTextStyle: TextStyle(color: Colors.white),
-              selectedIconColor: Colors.white,
-              // backgroundColor: Colors.amber
-              // openSideMenuWidth: 200
-            ),
-            title: Column(
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: 150,
-                    maxWidth: 150,
-                  ),
-                  child: Image.asset(
-                    "assets/logo.png",
-                  ),
-                ),
-                Divider(
-                  indent: 8.0,
-                  endIndent: 8.0,
-                ),
-              ],
-            ),
-            footer: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Devloped by Digisailor',
-                style: TextStyle(fontSize: 15),
-              ),
-            ),
-            items: [
-              SideMenuItem(
-                priority: 0,
-                title: 'Home',
-                onTap: () {
-                  page.jumpToPage(0);
-                },
-                icon: Icon(Icons.home),
-                // badgeContent: Text(
-                //   '3',
-                //   style: TextStyle(color: Colors.white),
-                // ),
-              ),
-              SideMenuItem(
-                priority: 1,
-                title: 'Dashboard',
-                onTap: () {
-                  page.jumpToPage(1);
-                },
-                icon: Icon(Icons.dashboard_rounded),
-              ),
-              SideMenuItem(
-                priority: 2,
-                title: 'My Profile',
-                onTap: () {
-                  page.jumpToPage(2);
-                },
-                icon: Icon(Icons.account_circle),
-              ),
-              // SideMenuItem(
-              //   priority: 3,
-              //   title: 'Administration',
-              //   onTap: () => null,
-              //   icon: Icon(Icons.settings),
-              // ),
-              SideMenuItem(
-                priority: 3,
-                title: 'User',
-                onTap: () {
-                  page.jumpToPage(3);
-                },
-                icon: Icon(Icons.people),
-              ),
-              SideMenuItem(
-                priority: 4,
-                title: 'Client',
-                onTap: () {
-                  page.jumpToPage(4);
-                },
-                icon: Icon(Icons.person),
-              ),
-              SideMenuItem(
-                priority: 5,
-                title: 'Contractor',
-                onTap: () {
-                  page.jumpToPage(5);
-                },
-                icon: Icon(Icons.workspaces_rounded),
-              ),
-              // SideMenuItem(
-              //   priority: 6,
-              //   title: 'Logout',
-              //   onTap: () async {},
-              //   icon: Icon(Icons.exit_to_app),
-              // ),
-            ],
-          ),
+          Expanded(flex: 3, child: CustomDrawer(page: page)),
           Expanded(
-            child: PageView(
-              controller: page,
-              children: [
-                CountriesList(),
-                Dashboard(),
-                ProfilePage(),
-                UsersList(),
-                ClientList(),
-                ContractorList(),
+            flex: 17,
+            child: Scaffold(
+              appBar: AppBar(
+                backgroundColor: Color(0xFF3A5F85),
+                title: Text('In a world of gray, CCM provides clarity to all construction & facility projects'),
+                centerTitle: true,
+                actions: [
+                  TextButton.icon(
+                    onPressed: () async {
+                      await authController.auth.signOut();
+                    },
+                    icon: Icon(
+                      Icons.exit_to_app_rounded,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              body: PageView(
+                controller: page,
+                children: [
+                  CountriesList(),
+                  Dashboard(),
+                  GetBuilder(
+                      init: session,
+                      builder: (_) {
+                        return UserForm(user: session.user);
+                      }),
+                  UsersList(),
+                  ClientList(),
+                  ContractorList(),
 
-                // ContractorView()
-              ],
+                  // ContractorView()
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
+    // body: PageView(
+    //   controller: page,
+    //   children: [
+    //     CountriesList(),
+    //     Dashboard(),
+    //     ProfilePage(),
+    //     UsersList(),
+    //     ClientList(),
+    //     ContractorList(),
+
+    //     // ContractorView()
+    //   ],
+    // ),
   }
 }
+
+class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({
+    Key? key,
+    required this.page,
+  }) : super(key: key);
+
+  final PageController page;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: SideMenu(
+        controller: page,
+        style: SideMenuStyle(
+          backgroundColor: Colors.grey.shade100,
+          displayMode: SideMenuDisplayMode.auto,
+          hoverColor: Colors.blue.shade50,
+          selectedColor: Colors.blue.shade400,
+          selectedTitleTextStyle: TextStyle(color: Colors.white),
+          selectedIconColor: Colors.white,
+          // backgroundColor: Colors.amber
+          // openSideMenuWidth: 200
+        ),
+        title: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Image.asset(
+                  "assets/logo.png",
+                ),
+              ),
+            ),
+          ],
+        ),
+        footer: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Devloped by Digisailor',
+            style: TextStyle(fontSize: 15),
+          ),
+        ),
+        items: [
+          SideMenuItem(
+            priority: 0,
+            title: 'Home',
+            onTap: () {
+              page.jumpToPage(0);
+            },
+            icon: Icon(Icons.home),
+            // badgeContent: Text(
+            //   '3',
+            //   style: TextStyle(color: Colors.white),
+            // ),
+          ),
+          SideMenuItem(
+            priority: 1,
+            title: 'Dashboard',
+            onTap: () {
+              page.jumpToPage(1);
+            },
+            icon: Icon(Icons.dashboard_rounded),
+          ),
+          SideMenuItem(
+            priority: 2,
+            title: 'My Profile',
+            onTap: () {
+              page.jumpToPage(2);
+            },
+            icon: Icon(Icons.account_circle),
+          ),
+          // SideMenuItem(
+          //   priority: 3,
+          //   title: 'Administration',
+          //   onTap: () => null,
+          //   icon: Icon(Icons.settings),
+          // ),
+          SideMenuItem(
+            priority: 3,
+            title: 'User',
+            onTap: () {
+              page.jumpToPage(3);
+            },
+            icon: Icon(Icons.people),
+          ),
+          SideMenuItem(
+            priority: 4,
+            title: 'Client',
+            onTap: () {
+              page.jumpToPage(4);
+            },
+            icon: Icon(Icons.person),
+          ),
+          SideMenuItem(
+            priority: 5,
+            title: 'Contractor',
+            onTap: () {
+              page.jumpToPage(5);
+            },
+            icon: Icon(Icons.workspaces_rounded),
+          ),
+          // SideMenuItem(
+          //   priority: 6,
+          //   title: 'Logout',
+          //   onTap: () async {},
+          //   icon: Icon(Icons.exit_to_app),
+          // ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+
+
+//  body: Row(
+//         mainAxisAlignment: MainAxisAlignment.start,
+//         children: [
+      
+//           Expanded(
+//             child: PageView(
+//               controller: page,
+//               children: [
+//                 CountriesList(),
+//                 Dashboard(),
+//                 ProfilePage(),
+//                 UsersList(),
+//                 ClientList(),
+//                 ContractorList(),
+
+//                 // ContractorView()
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),

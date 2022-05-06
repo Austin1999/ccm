@@ -34,6 +34,7 @@ CollectionReference<Map<String, dynamic>> clients(code) => countries.doc(code).c
 DocumentReference<Map<String, dynamic>> counters = firestore.collection('Dashboard').doc('counters');
 
 CollectionReference<Map<String, dynamic>> get quotations => countries.doc(session.country!.code).collection('quotations');
+CollectionReference<Map<String, dynamic>> get trashQuotations => countries.doc(session.country!.code).collection('trashQuotations');
 
 // countries
 //                             .doc(session.country!.code)

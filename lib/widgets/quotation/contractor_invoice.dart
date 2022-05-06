@@ -231,6 +231,7 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                 onPressed: () {
                   setState(() {
                     controller.selectedInvoice = i;
+                    issuedDateController.text = controller.invoiceForm.issuedDate == null ? '' : format.format(controller.invoiceForm.issuedDate!);
                   });
                 },
                 icon: Icon(Icons.edit))),

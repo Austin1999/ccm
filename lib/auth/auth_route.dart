@@ -3,7 +3,6 @@ import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/pages/landing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/dashboard.dart';
 import '../services/firebase.dart';
 
 class AuthRouter extends StatelessWidget {
@@ -16,12 +15,12 @@ class AuthRouter extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
-            var user = snapshot.data;
-            if (user!.emailVerified) {
-              return LandingPage();
-            } else {
-              return LandingPage();
-            }
+            session.loadProfile();
+            return GetBuilder(
+                init: session,
+                builder: (context) {
+                  return LandingPage();
+                });
           } else {
             return SignIn();
           }

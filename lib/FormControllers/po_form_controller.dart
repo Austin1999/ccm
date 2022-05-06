@@ -84,7 +84,8 @@ class ContractorPoFormController {
     var invoice = invoices.elementAt(_invoiceIndex!);
     invoices.removeAt(_invoiceIndex!);
     if (invoiceForm.invoiceFormKey.currentState!.validate()) {
-      invoices.insert(_invoiceIndex!, invoiceForm.object);
+      var invoice = invoiceForm.object;
+      invoices.insert(_invoiceIndex!, invoice);
     } else {
       invoices.insert(_invoiceIndex!, invoice);
     }

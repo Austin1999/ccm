@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Flutter (Chrome)",
+            "program": "lib/main.dart",
+            "deviceId": "chrome",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--web-port=5000",
+                "--web-enable-expression-evaluation"
+            ],
+        }
+    ]
+}

@@ -49,13 +49,14 @@ class Quotation {
   double get margin => (amount - clientCredits) - (contractorAmount - contractorCredits);
   double get percent => margin * 100 / (contractorPo.fold(0, (previousValue, element) => previousValue + element.amount));
 
+  double get clientInvoiceAmount => clientInvoices.fold(0, (previousValue, element) => previousValue + element.amount);
   double get receivedAmount => clientInvoices.fold(0, (previousValue, element) => previousValue + element.closedAmount);
   double get receivableAmount => clientInvoices.fold(0, (previousValue, element) => previousValue + element.remaining);
+  double get clientCredits => clientInvoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
 
+  double get contractorInvoiceAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.invoiceAmount);
   double get paidAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.paidAmount);
   double get payableAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.totalPayables);
-
-  double get clientCredits => clientInvoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
   double get contractorCredits => contractorPo.fold(0, (previousValue, element) => previousValue + element.credits);
 
   double get contractorAmount => contractorPo.fold(0, (previousValue, element) => previousValue + element.amount);
@@ -115,6 +116,7 @@ class Quotation {
   get search {
     List<String> strings = [];
     strings.addAll(makeSearchString(number));
+    strings.addAll(makeSearchString(ccmTicketNumber));
     clientInvoices.forEach((element) {
       strings.addAll(makeSearchString(element.number));
       element.credits.forEach((element) {
@@ -137,8 +139,11 @@ class Quotation {
     List<String> returns = [];
     var length = text.length;
     if (text.length >= 3) {
-      for (int i = 2; i < length; i++) {
-        returns.add(text.substring(2, i).toLowerCase());
+      for (int i = 0; i < length; i++) {
+        var string = text.substring(0, i).toLowerCase();
+        if (string.length > 2) {
+          returns.add(string);
+        }
       }
       returns.add(text.toLowerCase());
     }
@@ -146,8 +151,26 @@ class Quotation {
     return returns;
   }
 
+  Map<String, dynamic> toDashboardData() => {
+        "id": id,
+        "amount": amount,
+        "client": client,
+        "issuedDate": issuedDate,
+        "currencyCode": currencyCode,
+        "country": session.country!.code,
+        "clientInvoiceAmount": clientInvoiceAmount,
+        "receivedAmount": receivedAmount,
+        "receivableAmount": receivableAmount,
+        "clientCredits": clientCredits,
+        "contractorInvoiceAmount": contractorInvoiceAmount,
+        "paidAmount": paidAmount,
+        "payableAmount": payableAmount,
+        "contractorCredits": contractorCredits,
+        "contractorAmount": contractorAmount,
+        "margin": margin,
+      };
+
   Map<String, dynamic> toJson() {
-    print(receivables);
     return {
       "id": id,
       "number": number,
@@ -181,28 +204,148 @@ class Quotation {
     };
   }
 
-  Future<Result> add() {
-    return quotations
-        .doc(id)
-        .set(toJson())
-        .then((value) => Result.success("Quote added successfully"))
-        .onError((error, stackTrace) => Result.error(error.toString()));
+  Future<Result> add() async {
+    var isDuplicate = false;
+    await quotations.where("number", isEqualTo: number).get().then((value) {
+      var docs = value.docs;
+      if (docs.isNotEmpty) {
+        isDuplicate = true;
+      }
+    });
+    if (isDuplicate) {
+      return Result.error("Quotation number is already taken");
+    }
+    id = await getNextQuotationId();
+
+    if (id != null && id != '0') {
+      return quotations
+          .doc(id)
+          .set(toJson())
+          .then((value) {
+            if (approvalStatus == ApprovalStatus.approved || approvalStatus == ApprovalStatus.cancelled) {
+              dashboardDataRef.doc(id).set(toDashboardData());
+
+              payables.forEach((element) {
+                payablesRef.add(element);
+              });
+              receivables.forEach((element) {
+                receivablesRef.add(element);
+              });
+            }
+          })
+          .then((value) => Result.success("Quote added successfully"))
+          .onError((error, stackTrace) => Result.error(error.toString()));
+    } else {
+      return Result.error("New quotation id cannot be fetched.. Please try again");
+    }
   }
 
-  Future<Result> update() {
+  Future<Result> update({bool? checkNumber}) async {
+    if (checkNumber ?? false) {
+      var isDuplicate = false;
+      await quotations.where("number", isEqualTo: number).get().then((value) {
+        var docs = value.docs;
+        if (docs.isNotEmpty) {
+          isDuplicate = true;
+        }
+      });
+      if (isDuplicate) {
+        return Result.error("Quotation number is already taken");
+      }
+    }
+    await Future.wait([
+      payablesRef.where("quote_id", isEqualTo: id).get().then((value) => value.docs.forEach((element) {
+            element.reference.delete();
+          })),
+      receivablesRef.where("quote_id", isEqualTo: id).get().then((value) => value.docs.forEach((element) {
+            element.reference.delete();
+          })),
+      dashboardDataRef.doc(id).delete(),
+    ]);
     return quotations
         .doc(id)
         .set(toJson())
+        .then((value) {
+          if (approvalStatus == ApprovalStatus.approved || approvalStatus == ApprovalStatus.cancelled) {
+            dashboardDataRef.doc(id).set(toDashboardData());
+            payables.forEach((element) {
+              payablesRef.add(element);
+            });
+            receivables.forEach((element) {
+              receivablesRef.add(element);
+            });
+          }
+        })
         .then((value) => Result.success("Quote updated successfully"))
         .onError((error, stackTrace) => Result.error(error.toString()));
   }
 
-  Future<Result> delete() {
+  Future<Result> delete() async {
+    await Future.wait([
+      payablesRef.where("quote_id", isEqualTo: id).get().then((value) => value.docs.forEach((element) {
+            element.reference.delete();
+          })),
+      receivablesRef.where("quote_id", isEqualTo: id).get().then((value) => value.docs.forEach((element) {
+            element.reference.delete();
+          })),
+      trashQuotations.doc(id).set(toJson()),
+    ]);
     return quotations
         .doc(id)
         .delete()
+        .then((value) => dashboardDataRef.doc(id).delete())
         .then((value) => Result.success("Quote deleted successfully"))
         .onError((error, stackTrace) => Result.error(error.toString()));
+  }
+
+  static int i = 4;
+
+  static stressBatch1() {
+    final batch = firestore.batch();
+    for (i = i; i < 250; i++) {
+      // double quoteAmount = ((i % 5) + 1) * 100;
+      // var issuedData = DateTime.now().subtract(Duration(days: i));
+      // var quotation = Quotation(
+      //   id: i.toString(),
+      //   number: "Quote $i",
+      //   client: "${(i % 5) + 1}",
+      //   amount: quoteAmount,
+      //   currencyCode: 'INR',
+      //   clientApproval: 'Via email',
+      //   issuedDate: issuedData,
+      //   description: "Test description",
+      //   approvalStatus: ApprovalStatus.values.elementAt(i % 4),
+      //   ccmTicketNumber: 'CCM-$i',
+      //   overallStatus: OverallStatus.values.elementAt(i % 3),
+      //   clientInvoices: [
+      //     Invoice(number: "INV0$i", amount: quoteAmount / 3, issuedDate: issuedData, payments: [
+      //       Payment(amount: quoteAmount * (i % 3) % (quoteAmount / 3), date: issuedData),
+      //     ], credits: []),
+      //     Invoice(number: "INV0$i+1", amount: quoteAmount / 6, issuedDate: issuedData, payments: [
+      //       Payment(amount: quoteAmount * (i % 3) % (quoteAmount / 6), date: issuedData),
+      //     ], credits: [])
+      //   ],
+      //   contractorPo: [
+      //     ContractorPo(
+      //       number: "PO1",
+      //       contractor: (i % 10).toString(),
+      //       amount: (i % 20) * ((i % 5) + 1),
+      //       issuedDate: DateTime.now().subtract(Duration(days: 1)),
+      //       quoteNumber: null,
+      //       quoteAmount: 0,
+      //       invoices: [],
+      //     )
+      //   ],
+      //   comments: [],
+      // );
+
+      var ref = quotations.doc(i.toString());
+      batch.delete(ref);
+      // batch.set(ref, quotation.toJson());
+      // batch.set(dashboardDataRef.doc(i.toString()), quotation.toDashboardData());
+      batch.delete(dashboardDataRef.doc(i.toString()));
+    }
+    batch.commit();
   }
 
   // addQuote() async {
@@ -244,6 +387,7 @@ class ContractorPo {
   DateTime? workComplete;
   List<Invoice> invoices;
 
+  double get invoiceAmount => invoices.fold(0, (previousValue, element) => previousValue + element.amount);
   double get totalPayables => invoices.fold(0, (previousValue, element) => previousValue + element.remaining);
   double get credits => invoices.fold(0, (previousValue, element) => previousValue + element.creditAmount);
   double get paidAmount => invoices.fold(0, (previousValue, element) => previousValue + element.closedAmount);

@@ -83,7 +83,7 @@ class _ContractorListState extends State<ContractorList> {
                                     elevation: 5,
                                     shadowColor: Colors.grey,
                                     child: TextFormField(
-                                      validator: (val) => val!.isEmpty ? 'Field Cannot be empty' : null,
+                                      validator: (val) => (val ?? '').isEmpty ? 'Field Cannot be empty' : null,
                                       controller: name,
                                       decoration: InputDecoration(
                                         hintText: 'Full Name',
@@ -347,6 +347,7 @@ class _ContractorListState extends State<ContractorList> {
                                         name: name.text,
                                         address: address.text,
                                         contactPerson: contactPerson.text,
+                                        email: email.text,
                                         country: countrycode.text,
                                         countryName: countryname.text,
                                         phone: phone.text);
@@ -512,133 +513,138 @@ class _ContractorListState extends State<ContractorList> {
                                     // session.country = session.countries.first;
                                     return SingleChildScrollView(
                                         scrollDirection: Axis.vertical,
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: DataTable(
-                                            columns: [
-                                              DataColumn(
-                                                label: Text(
-                                                  'Contractor Name',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Address',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Email ID',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Phone No',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Country',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              // DataColumn(
-                                              //   label: Text(
-                                              //     'CWR Country',
-                                              //     style: TextStyle(
-                                              //         fontWeight: FontWeight.bold),
-                                              //   ),
-                                              // ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Contact Person',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Delete',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                              DataColumn(
-                                                label: Text(
-                                                  'Edit',
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                              ),
-                                            ],
-                                            rows: _contractors
-                                                .where((element) => element.country == searchcountry)
-                                                .map<DataRow>(
-                                                  (e) => DataRow(
-                                                    cells: [
-                                                      DataCell(
-                                                        Text(e.name),
+                                        child: Table(
+                                          children: [
+                                            TableRow(
+                                              children: [
+                                                DataTable(
+                                                  columns: [
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Contractor Name',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
                                                       ),
-                                                      DataCell(
-                                                        Text(e.address!),
+                                                    ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Address',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
                                                       ),
-                                                      DataCell(
-                                                        Text(e.email!),
+                                                    ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Email ID',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
                                                       ),
-                                                      DataCell(
-                                                        Text(e.phone!),
+                                                    ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Phone No',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
                                                       ),
-                                                      DataCell(
-                                                        Text(e.country!),
+                                                    ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Country',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
                                                       ),
-                                                      // DataCell(
-                                                      //   Text(e.cwr!),
-                                                      // ),
-                                                      DataCell(
-                                                        Text(e.contactPerson!),
+                                                    ),
+                                                    // DataColumn(
+                                                    //   label: Text(
+                                                    //     'CWR Country',
+                                                    //     style: TextStyle(
+                                                    //         fontWeight: FontWeight.bold),
+                                                    //   ),
+                                                    // ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Contact Person',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
                                                       ),
-                                                      DataCell(
-                                                        Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
+                                                    ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Delete',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                                      ),
+                                                    ),
+                                                    DataColumn(
+                                                      label: Text(
+                                                        'Edit',
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  rows: _contractors
+                                                      .where((element) => element.country == searchcountry)
+                                                      .map<DataRow>(
+                                                        (e) => DataRow(
+                                                          cells: [
+                                                            DataCell(
+                                                              Text(e.name),
+                                                            ),
+                                                            DataCell(
+                                                              Text(e.address!),
+                                                            ),
+                                                            DataCell(
+                                                              Text(e.email!),
+                                                            ),
+                                                            DataCell(
+                                                              Text(e.phone!),
+                                                            ),
+                                                            DataCell(
+                                                              Text(e.country!),
+                                                            ),
+                                                            // DataCell(
+                                                            //   Text(e.cwr!),
+                                                            // ),
+                                                            DataCell(
+                                                              Text(e.contactPerson!),
+                                                            ),
+                                                            DataCell(
+                                                              Icon(
+                                                                Icons.delete,
+                                                                color: Colors.red,
+                                                              ),
+                                                              onTap: () {
+                                                                CoolAlert.show(
+                                                                    context: context,
+                                                                    type: CoolAlertType.confirm,
+                                                                    width: MediaQuery.of(context).size.width > 500
+                                                                        ? MediaQuery.of(context).size.width / 2
+                                                                        : MediaQuery.of(context).size.width * 0.85,
+                                                                    showCancelBtn: true,
+                                                                    onCancelBtnTap: () => Navigator.pop(context),
+                                                                    onConfirmBtnTap: () {
+                                                                      contractors.doc(e.docid).delete().then(
+                                                                            (value) => Navigator.pop(context),
+                                                                          );
+                                                                    });
+                                                              },
+                                                            ),
+                                                            DataCell(
+                                                                Icon(
+                                                                  Icons.edit,
+                                                                  // color: Colors.,
+                                                                ), onTap: () {
+                                                              addContractor(
+                                                                  isEdit: true,
+                                                                  nameval: e.name,
+                                                                  addressval: e.address,
+                                                                  emailval: e.email,
+                                                                  phoneval: e.phone,
+                                                                  cwrval: e.country,
+                                                                  contact: e.contactPerson,
+                                                                  doc_id: e.docid);
+                                                            }),
+                                                          ],
                                                         ),
-                                                        onTap: () {
-                                                          CoolAlert.show(
-                                                              context: context,
-                                                              type: CoolAlertType.confirm,
-                                                              width: MediaQuery.of(context).size.width > 500
-                                                                  ? MediaQuery.of(context).size.width / 2
-                                                                  : MediaQuery.of(context).size.width * 0.85,
-                                                              showCancelBtn: true,
-                                                              onCancelBtnTap: () => Navigator.pop(context),
-                                                              onConfirmBtnTap: () {
-                                                                contractors.doc(e.docid).delete().then(
-                                                                      (value) => Navigator.pop(context),
-                                                                    );
-                                                              });
-                                                        },
-                                                      ),
-                                                      DataCell(
-                                                          Icon(
-                                                            Icons.edit,
-                                                            // color: Colors.,
-                                                          ), onTap: () {
-                                                        addContractor(
-                                                            isEdit: true,
-                                                            nameval: e.name,
-                                                            addressval: e.address,
-                                                            emailval: e.email,
-                                                            phoneval: e.phone,
-                                                            cwrval: e.country,
-                                                            contact: e.contactPerson,
-                                                            doc_id: e.docid);
-                                                      }),
-                                                    ],
-                                                  ),
-                                                )
-                                                .toList(),
-                                          ),
+                                                      )
+                                                      .toList(),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ));
                                   } else {
                                     //   return Center(

@@ -1,67 +1,86 @@
+// To parse this JSON data, do
+//
+//     final dashboardData = dashboardDataFromJson(jsonString);
+
+import 'dart:convert';
+
+DashboardData dashboardDataFromJson(String str) => DashboardData.fromJson(json.decode(str));
+
+String dashboardDataToJson(DashboardData data) => json.encode(data.toJson());
+
 class DashboardData {
   DashboardData({
-    this.quoteAmount = 0,
-    this.clientCredits = 0,
-    this.contractorAmount = 0,
-    this.contractorCredits = 0,
-    required this.country,
     required this.id,
-    this.margin = 0,
+    this.amount = 0,
+    required this.client,
+    required this.issuedDate,
+    required this.currencyCode,
+    required this.country,
+    this.clientInvoiceAmount = 0,
+    this.receivedAmount = 0,
+    this.receivableAmount = 0,
+    this.clientCredits = 0,
+    this.contractorInvoiceAmount = 0,
     this.paidAmount = 0,
     this.payableAmount = 0,
-    this.receivableAmount = 0,
-    this.receivedAmount = 0,
-    this.clientInvoiceAmount = 0,
-    required this.currency,
-    this.quoteDate,
+    this.contractorCredits = 0,
+    this.contractorAmount = 0,
+    this.margin = 0,
   });
 
-  double quoteAmount;
-  double clientCredits;
-  double contractorAmount;
-  double contractorCredits;
-  String country;
   String id;
-  double margin;
+  double amount;
+  String client;
+  DateTime issuedDate;
+  String currencyCode;
+  String country;
+  double clientInvoiceAmount;
+  double receivedAmount;
+  double receivableAmount;
+  double clientCredits;
+  double contractorInvoiceAmount;
   double paidAmount;
   double payableAmount;
-  double receivableAmount;
-  double receivedAmount;
-  double clientInvoiceAmount;
-  String currency;
-  DateTime? quoteDate;
+  double contractorCredits;
+  double contractorAmount;
+  double margin;
 
   factory DashboardData.fromJson(Map<String, dynamic> json) => DashboardData(
-      quoteAmount: json["quoteAmount"],
-      clientCredits: json["clientCredits"],
-      contractorAmount: json["contractorAmount"],
-      contractorCredits: json["contractorCredits"],
-      country: json["country"],
-      id: json["id"],
-      margin: json["margin"],
-      paidAmount: json["paidAmount"],
-      payableAmount: json["payableAmount"],
-      receivableAmount: json["receivableAmount"],
-      receivedAmount: json["receivedAmount"],
-      clientInvoiceAmount: json["clientInvoiceAmount"] ?? 0,
-      quoteDate: json['quoteDate'] == null ? null : json['quoteDate'].toDate(),
-      currency: json["currency"]);
+        id: json["id"],
+        amount: json["amount"],
+        client: json["client"],
+        issuedDate: json["issuedDate"].toDate(),
+        currencyCode: json["currencyCode"],
+        country: json["country"],
+        clientInvoiceAmount: json["clientInvoiceAmount"] ?? 0,
+        receivedAmount: json["receivedAmount"] ?? 0,
+        receivableAmount: json["receivableAmount"] ?? 0,
+        clientCredits: json["clientCredits"] ?? 0,
+        contractorInvoiceAmount: json["contractorInvoiceAmount"] ?? 0,
+        paidAmount: json["paidAmount"] ?? 0,
+        payableAmount: json["payableAmount"] ?? 0,
+        contractorCredits: json["contractorCredits"] ?? 0,
+        contractorAmount: json["contractorAmount"] ?? 0,
+        margin: json["margin"] ?? 0,
+      );
 
   Map<String, dynamic> toJson() => {
-        "currency": currency,
-        "quoteAmount": quoteAmount,
-        "clientCredits": clientCredits,
-        "contractorAmount": contractorAmount,
-        "contractorCredits": contractorCredits,
-        "country": country,
         "id": id,
-        "margin": margin,
+        "amount": amount,
+        "client": client,
+        "issuedDate": issuedDate.toIso8601String(),
+        "currencyCode": currencyCode,
+        "country": country,
+        "clientInvoiceAmount": clientInvoiceAmount,
+        "receivedAmount": receivedAmount,
+        "receivableAmount": receivableAmount,
+        "clientCredits": clientCredits,
+        "contractorInvoiceAmount": contractorInvoiceAmount,
         "paidAmount": paidAmount,
         "payableAmount": payableAmount,
-        "receivableAmount": receivableAmount,
-        "receivedAmount": receivedAmount,
-        "clientInvoiceAmount": clientInvoiceAmount,
-        "quoteDate": quoteDate,
+        "contractorCredits": contractorCredits,
+        "contractorAmount": contractorAmount,
+        "margin": margin,
       };
 }
 

@@ -1,8 +1,7 @@
 import 'package:ccm/auth/auth_route.dart';
 import 'package:ccm/controllers/currency_controller.dart';
-import 'package:ccm/controllers/dashboard.dart';
 import 'package:ccm/controllers/getControllers.dart';
-import 'package:ccm/controllers/getx_controllers.dart' as getxcon;
+import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/firebase_options.dart';
 // import 'package:ccm/services/firebase.dart';
 // import 'package:firebase_database/firebase_database.dart';
@@ -32,9 +31,8 @@ Future<void> main() async {
 
   Get.put(CountryController());
   Get.put(ContractorController());
-  Get.put(ClientDashboardController());
-  Get.put(getxcon.AuthController());
-  Get.put(getxcon.SessionController());
+  Get.put(AuthController());
+  Get.put(SessionController());
   Get.put(CurrencyController());
   currencyController.syncResponse();
   Get.put(ClientController());

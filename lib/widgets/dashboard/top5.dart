@@ -1,29 +1,45 @@
+import 'package:ccm/controllers/currency_controller.dart';
+import 'package:ccm/controllers/dashboard.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/dashboard/AccountChart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Top5Entity extends StatelessWidget {
-  Top5Entity({Key? key, this.country, this.currency, required this.data, this.isClient = false}) : super(key: key);
+  Top5Entity({
+    Key? key,
+    this.country,
+    required this.currency,
+    required this.top5clients,
+    required this.top5contractors,
+  }) : super(key: key);
 
   final String? country;
-  final String? currency;
-  final List<AccountChartData> data;
-  final bool isClient;
+  final String currency;
+  final List<AccountChartData> top5clients;
+  final List<AccountChartData> top5contractors;
 
-  List<DataRow> getRows() {
+  List<DataRow> getRows(List<AccountChartData> data) {
     List<DataRow> rows = [];
-    data.sort(
-      (a, b) => b.amount.compareTo(a.amount),
-    );
-
     for (int i = 0; i < 5; i++) {
       if (i < data.length) {
         rows.add(
           DataRow(
             cells: [
-              DataCell(Text(clientController.getName(data[i].entity))),
               DataCell(
-                Text(data[i].amount.toStringAsFixed(2)),
+                Text(
+                  (i + 1).toString(),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              DataCell(
+                Text(
+                  data[i].entity,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              DataCell(
+                Text(data[i].amount.convert('INR', currency).toStringAsFixed(2)),
               ),
             ],
           ),
@@ -33,9 +49,8 @@ class Top5Entity extends StatelessWidget {
           DataRow(
             cells: [
               DataCell(Text('')),
-              DataCell(
-                Text(''),
-              ),
+              DataCell(Text('')),
+              DataCell(Text('')),
             ],
           ),
         );
@@ -46,19 +61,52 @@ class Top5Entity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    data.sort((a, b) => b.amount.compareTo(a.amount));
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        child: DataTable(columns: [
-          DataColumn(
-            label: Text(isClient ? 'CLIENT' : 'CONTRACTOR'),
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              child: DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text('RANK'),
+                  ),
+                  DataColumn(
+                    label: Text('CLIENT'),
+                  ),
+                  DataColumn(
+                    label: Text('RECEIVABLES'),
+                  )
+                ],
+                rows: getRows(top5clients),
+              ),
+            ),
           ),
-          DataColumn(
-            label: Text(isClient ? 'RECEIVABLES' : 'PAYABLES'),
-          )
-        ], rows: getRows()),
-      ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              child: DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text('RANK'),
+                  ),
+                  DataColumn(
+                    label: Text('CONTRACTOR'),
+                  ),
+                  DataColumn(
+                    label: Text('PAYABLES'),
+                  )
+                ],
+                rows: getRows(top5contractors),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
+    ;
   }
 }

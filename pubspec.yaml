@@ -51,6 +51,13 @@ dependencies:
   intl: ^0.17.0
   fl_chart: ^0.50.1
   charts_flutter: ^0.12.0
+  multiselect: ^0.0.4
+  getwidget: ^2.0.5
+  multi_select_flutter: ^4.1.2
+  syncfusion_flutter_xlsio: ^19.4.56-beta
+  path_provider: ^2.0.9
+  open_file: ^3.2.1
+  universal_html: ^2.0.8
 
 dev_dependencies:
   flutter_test:

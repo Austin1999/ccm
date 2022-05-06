@@ -24,8 +24,7 @@ class _AgedAccountsState extends State<AgedAccounts> {
   void initState() {
     Get.put(DashboardController(), tag: 'aged');
     controller = Get.find(tag: 'aged');
-    controller.loadAgedPayables(country: widget.country, client: widget.client);
-    controller.loadAgedReceivables(country: widget.country, client: widget.client);
+
     super.initState();
   }
 
@@ -33,8 +32,6 @@ class _AgedAccountsState extends State<AgedAccounts> {
 
   List<charts.Series<BarChartData, String>> getPayableChartData() {
     var list = controller.agedPayables.keys.map((e) => BarChartData(key: e, value: controller.agedPayables[e] ?? 0)).toList();
-    print("List length :${list.length}");
-
     return [
       charts.Series<BarChartData, String>(
           seriesColor: charts.ColorUtil.fromDartColor(Colors.deepOrange),
@@ -52,7 +49,7 @@ class _AgedAccountsState extends State<AgedAccounts> {
     return [
       charts.Series<BarChartData, String>(
           data: list,
-          labelAccessorFn: (data, index) => data.value.toStringAsFixed(2),
+          labelAccessorFn: (data, index) => data.value.convert('INR', widget.currency).toStringAsFixed(2),
           domainFn: (barData, _) => barData.key,
           id: 'agedReceivables',
           measureFn: (barData, _) => barData.value.convert('INR', widget.currency),
@@ -62,6 +59,8 @@ class _AgedAccountsState extends State<AgedAccounts> {
 
   @override
   Widget build(BuildContext context) {
+    controller.loadAgedPayables(country: widget.country, client: widget.client);
+    controller.loadAgedReceivables(country: widget.country, client: widget.client);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ConstrainedBox(
@@ -81,7 +80,7 @@ class _AgedAccountsState extends State<AgedAccounts> {
                           getReceivableChartData(),
                           animate: true,
                           vertical: false,
-                          barRendererDecorator: new charts.BarLabelDecorator<String>(labelPosition: charts.BarLabelPosition.outside),
+                          barRendererDecorator: new charts.BarLabelDecorator<String>(labelPosition: charts.BarLabelPosition.auto),
                         ),
                       ),
                     ),
@@ -97,6 +96,9 @@ class _AgedAccountsState extends State<AgedAccounts> {
                           getPayableChartData(),
                           animate: true,
                           vertical: false,
+                          barRendererDecorator: new charts.BarLabelDecorator<String>(
+                            labelPosition: charts.BarLabelPosition.auto,
+                          ),
                         ),
                       ),
                     ),

@@ -1,30 +1,36 @@
 import 'package:ccm/controllers/currency_controller.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/main.dart';
-import 'package:ccm/models/countries.dart';
 import 'package:ccm/models/dashboard/AccountChart.dart';
 import 'package:ccm/models/dashboard_data.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:get/get.dart';
 
 class DashboardController extends GetxController {
-  @override
-  void onReady() {
-    super.onReady();
-    print("Initializing.....");
-  }
-
-  double receivables = 0;
-  double payables = 0;
-  double clientCredits = 0;
-  double contractorCredits = 0;
-  double totalInvoiceAmount = 0;
-  double totalContractorInvoiceAmount = 0;
   double totalQuoteAmount = 0;
-  double totalContractorAmount = 0;
-  double totalMargin = 0;
+  double totalInvoiceAmount = 0;
+  double receivables = 0;
   double totalReceivedAmount = 0;
+  double clientCredits = 0;
+
+  double totalContractorAmount = 0;
+  double totalContractorInvoiceAmount = 0;
+  double payables = 0;
   double totalPaidAmount = 0;
+  double contractorCredits = 0;
+
+  double totalMargin = 0;
+
+  // double amount = 0;
+  // double clientInvoiceAmount = 0;
+  // double receivedAmount = 0;
+  // double receivableAmount = 0;
+  // double clientCredits = 0;
+  // double contractorInvoiceAmount = 0;
+  // double paidAmount = 0;
+  // double payableAmount = 0;
+  // double contractorCredits = 0;
+  // double contractorAmount = 0;
 
   Map<String, double> payablesContractorWise = {};
   Map<String, double> receivablesClientWise = {};
@@ -136,7 +142,7 @@ class DashboardController extends GetxController {
           totalPaidAmount += payable.closedAmount.convert(payable.currency, 'INR');
           totalContractorInvoiceAmount += payable.actualAmount.convert(payable.currency, 'INR');
         } catch (e) {
-          // payables += 0;
+          printWarning(e.toString());
         }
       });
       update();
@@ -144,43 +150,68 @@ class DashboardController extends GetxController {
   }
 
   List<AccountChartData> get topReceivables {
-    return receivablesClientWise.keys.map((e) => AccountChartData(entity: e, amount: receivablesClientWise[e]!, currency: 'INR')).toList();
+    var receivables = receivablesClientWise.keys.map((e) => AccountChartData(entity: e, amount: receivablesClientWise[e]!, currency: 'INR')).toList();
+
+    return receivables;
   }
 
   List<AccountChartData> get topPayables {
-    return payablesContractorWise.keys.map((e) => AccountChartData(entity: e, amount: receivablesClientWise[e]!, currency: 'INR')).toList();
+    var payables = payablesContractorWise.keys.map((e) => AccountChartData(entity: e, amount: payablesContractorWise[e]!, currency: 'INR')).toList();
+    return payables;
   }
 
-  loadEntityWiseData() {
+  Future<Map<String, List<AccountChartData>>> loadEntityWiseData({String? country}) async {
     receivablesClientWise = {};
-    clientController.overAllClientList.forEach((element) {
-      receivablesRef.where("entity", isEqualTo: element.docid).get().then((value) {
+    List<Future> futures = [];
+    var clientList = clientController.filteredClients(country);
+    var contractorlist = contractorController.contractorlist.toList();
+    if (country != null) {
+      clientList = clientList.where((element) => element.country == country).toList();
+      contractorlist = contractorlist.where((element) => element.country == country).toList();
+    }
+
+    clientList.forEach((element) {
+      futures.add(receivablesRef.where("entity", isEqualTo: element.docid).get().then((value) {
         value.docs.forEach((element) {
           var listElement = ListElement.fromJson(element.data());
           receivablesClientWise[listElement.entity] =
               (receivablesClientWise[listElement.entity] ?? 0) + listElement.amount.convert(listElement.currency, 'INR');
         });
-        update();
-      });
+      }));
     });
     payablesContractorWise = {};
-    contractorController.contractorlist.forEach((element) {
-      payablesRef.where("entity", isEqualTo: element.docid).get().then((value) {
+    contractorlist.forEach((element) {
+      futures.add(payablesRef.where("entity", isEqualTo: element.name).get().then((value) {
         value.docs.forEach((element) {
           var listElement = ListElement.fromJson(element.data());
           payablesContractorWise[listElement.entity] =
               (payablesContractorWise[listElement.entity] ?? 0) + listElement.amount.convert(listElement.currency, 'INR');
         });
-        update();
-      });
+      }));
     });
+
+    return Future.wait(futures).then((value) {
+      top5clients = getTop5receivables();
+      top5contractors = getTop5Payables();
+    }).then((value) => {
+          "top5clients": top5clients,
+          "top5contractors": top5contractors,
+        });
   }
 
   loadAgedPayables({String? country, String? client}) {
     Query<Map<String, dynamic>> query = payablesRef;
 
+    agedPayables['0+'] = 0;
+    agedPayables['30+'] = 0;
+    agedPayables['60+'] = 0;
+    agedPayables['90+'] = 0;
+
     if (country != null) {
       query = query.where("country", isEqualTo: country);
+    }
+    if (client != null) {
+      query = query.where("client", isEqualTo: client);
     }
     query.get().then((value) {
       value.docs.forEach((element) {
@@ -203,14 +234,22 @@ class DashboardController extends GetxController {
   loadAgedReceivables({String? country, String? client}) {
     Query<Map<String, dynamic>> query = receivablesRef;
 
+    agedReceivables['0+'] = 0;
+    agedReceivables['30+'] = 0;
+    agedReceivables['60+'] = 0;
+    agedReceivables['90+'] = 0;
+
     if (country != null) {
       query = query.where("country", isEqualTo: country);
+    }
+    if (client != null) {
+      query = query.where("client", isEqualTo: client);
     }
     query.get().then((value) {
       value.docs.forEach((element) {
         var receivable = ListElement.fromJson(element.data());
         var days = receivable.daysAged;
-        print(days);
+
         if (days < 30) {
           agedReceivables['0+'] = (agedReceivables['0+'] ?? 0) + receivable.amount;
         } else if (days < 60) {
@@ -225,17 +264,27 @@ class DashboardController extends GetxController {
     });
   }
 
-  getTop5receivables() {
-    List<AccountChartData> clients = [];
+  List<AccountChartData> top5clients = [];
+  List<AccountChartData> top5contractors = [];
 
+  List<AccountChartData> getTop5receivables() {
+    List<AccountChartData> clients = [];
     receivablesClientWise.forEach((key, value) {
       clients.add(AccountChartData(
         amount: value,
-        entity: key,
-        currency: 'INR',
+        entity: clientController.getName(key),
       ));
     });
     clients.sort(((b, a) => a.amount.compareTo(b.amount)));
+    if (clients.length < 5) {
+      return clients;
+    } else {
+      List<AccountChartData> returns = [];
+      for (int i = 0; i < 5; i++) {
+        returns.add(clients[i]);
+      }
+      return returns;
+    }
   }
 
   List<AccountChartData> getTop5Payables() {
@@ -244,22 +293,28 @@ class DashboardController extends GetxController {
       contractors.add(AccountChartData(
         amount: value,
         entity: key,
-        currency: 'INR',
       ));
     });
     contractors.sort(((b, a) => a.amount.compareTo(b.amount)));
-    printNormal(contractors.length.toString());
-    return contractors;
+    if (contractors.length < 5) {
+      return contractors;
+    } else {
+      List<AccountChartData> returns = [];
+      for (int i = 0; i < 5; i++) {
+        returns.add(contractors[i]);
+      }
+      return returns;
+    }
   }
 
   loadQuoteData({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
     clear();
     Query<Map<String, dynamic>> query = dashboardDataRef;
     if (fromDate != null) {
-      query = query.where("date", isGreaterThanOrEqualTo: fromDate);
+      query = query.where("issuedDate", isGreaterThanOrEqualTo: fromDate);
     }
     if (toDate != null) {
-      query = query.where("date", isLessThanOrEqualTo: toDate);
+      query = query.where("issuedDate", isLessThanOrEqualTo: toDate);
     }
     if (country != null) {
       query = query.where("country", isEqualTo: country);
@@ -269,10 +324,21 @@ class DashboardController extends GetxController {
     }
     query.get().then((value) {
       value.docs.map((e) => DashboardData.fromJson(e.data())).forEach((element) {
-        totalMargin += element.margin.convert(element.currency, 'INR');
-        totalContractorAmount += element.contractorAmount.convert(element.currency, 'INR');
-        totalQuoteAmount += element.quoteAmount.convert(element.currency, 'INR');
+        totalMargin += element.margin.convert(element.currencyCode, 'INR');
+        totalContractorAmount += element.contractorAmount.convert(element.currencyCode, 'INR');
+        totalQuoteAmount += element.amount.convert(element.currencyCode, 'INR');
+
+        totalInvoiceAmount += element.clientInvoiceAmount.convert(element.currencyCode, 'INR');
+        totalReceivedAmount += element.receivedAmount.convert(element.currencyCode, 'INR');
+        receivables += element.receivableAmount.convert(element.currencyCode, 'INR');
+        clientCredits += element.clientCredits.convert(element.currencyCode, 'INR');
+
+        totalContractorInvoiceAmount += element.contractorInvoiceAmount.convert(element.currencyCode, 'INR');
+        totalPaidAmount += element.paidAmount.convert(element.currencyCode, 'INR');
+        payables += element.payableAmount.convert(element.currencyCode, 'INR');
+        contractorCredits += element.contractorCredits.convert(element.currencyCode, 'INR');
       });
+      update();
     });
   }
 }

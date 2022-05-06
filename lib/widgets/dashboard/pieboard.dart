@@ -1,4 +1,5 @@
 import 'package:ccm/widgets/dashboard/piechart.dart';
+import 'package:ccm/widgets/dashboard/radialbar.dart';
 import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -36,13 +37,24 @@ class _PieBoardState extends State<PieBoard> {
     super.initState();
     Get.put((DashboardController()), tag: 'PieBoard');
     dashboard = Get.find(tag: 'PieBoard');
-    loadData();
+  }
+
+  setLAst30days() {
+    _quoteFromDate = DateTime.now().subtract(Duration(days: 30));
+    _fromDate.text = format.format(_quoteFromDate!);
+    _quoteToDate = DateTime.now();
+    _toDate.text = format.format(_quoteToDate!);
+  }
+
+  setCurrentMonth() {
+    _quoteToDate = DateTime.now();
+    _quoteFromDate = DateTime.utc(_quoteToDate!.year, _quoteToDate!.month, 1);
+    _fromDate.text = format.format(_quoteFromDate!);
+    _toDate.text = format.format(_quoteToDate!);
   }
 
   loadData() {
-    dashboard.loadReceivables(country: country, fromDate: _quoteFromDate, toDate: _quoteToDate, client: client);
-    dashboard.loadQuoteData(country: country, fromDate: _quoteFromDate, toDate: _quoteToDate, client: client);
-    dashboard.loadPayables(country: country, fromDate: _quoteFromDate, toDate: _quoteToDate, client: client);
+    dashboard.loadQuoteData(country: widget.country, fromDate: _quoteFromDate, toDate: _quoteToDate, client: widget.client);
   }
 
   late DashboardController dashboard;
@@ -57,9 +69,22 @@ class _PieBoardState extends State<PieBoard> {
     var radius = getRadius();
     return [
       PieData(label: 'Invoice Amount', value: dashboard.totalInvoiceAmount.convert('INR', currency), color: Colors.deepOrange, radius: radius),
-      PieData(label: 'Received', value: dashboard.totalReceivedAmount.convert('INR', currency), color: Colors.blue, radius: radius),
-      PieData(label: 'Receivables', value: dashboard.receivables.convert('INR', currency), color: Colors.grey, radius: radius),
+      PieData(label: 'Received', value: dashboard.totalReceivedAmount.convert('INR', currency), color: Colors.grey, radius: radius),
+      PieData(label: 'Receivables', value: dashboard.receivables.convert('INR', currency), color: Colors.blue, radius: radius),
       PieData(label: 'Credits', value: dashboard.clientCredits.convert('INR', currency), color: Colors.yellow, radius: radius),
+    ];
+  }
+
+  getTotalReceivedRemaining() {
+    var radius = getRadius();
+    return [
+      PieData(label: 'Total', value: dashboard.totalQuoteAmount.convert('INR', currency), color: Colors.deepOrange, radius: radius),
+      PieData(label: 'Received', value: dashboard.totalReceivedAmount.convert('INR', currency), color: Colors.grey, radius: radius),
+      PieData(
+          label: 'Remaining',
+          value: (dashboard.totalQuoteAmount - dashboard.totalReceivedAmount).convert('INR', currency),
+          color: Colors.blue,
+          radius: radius),
     ];
   }
 
@@ -77,17 +102,30 @@ class _PieBoardState extends State<PieBoard> {
   getPayablesVsReceivables() {
     var radius = getRadius();
     return [
-      PieData(label: 'Payables', value: dashboard.payables.convert('INR', currency), color: Colors.grey, radius: radius),
-      PieData(label: 'Receivables', value: dashboard.receivables.convert('INR', currency), color: Colors.blue, radius: radius),
+      // PieData(label: 'Payables', value: dashboard.payables.convert('INR', currency), color: Colors.grey, radius: radius),
+      // PieData(label: 'Receivables', value: dashboard.receivables.convert('INR', currency), color: Colors.blue, radius: radius),
+      PieData(
+          label: 'Payables',
+          value: (dashboard.totalContractorAmount - dashboard.totalPaidAmount).convert('INR', currency),
+          color: Colors.grey,
+          radius: radius),
+      PieData(
+          label: 'Receivables',
+          value: (dashboard.totalQuoteAmount - dashboard.totalReceivedAmount).convert('INR', currency),
+          color: Colors.blue,
+          radius: radius),
     ];
   }
 
   getQuoteStatement() {
     var radius = getRadius();
+
     return [
-      PieData(label: 'Quote Amount', value: dashboard.totalQuoteAmount.convert('INR', currency), color: Colors.grey, radius: radius),
-      PieData(label: 'Contactor Amount', value: dashboard.totalContractorAmount.convert('INR', currency), color: Colors.blue, radius: radius),
+      PieData(label: 'Contractor credits', value: dashboard.contractorCredits.convert('INR', currency), color: Colors.yellow, radius: radius),
+      PieData(label: 'Client credits', value: dashboard.clientCredits.convert('INR', currency), color: Colors.green, radius: radius),
       PieData(label: 'Margin Amount', value: dashboard.totalMargin.convert('INR', currency), color: Colors.deepOrange, radius: radius),
+      PieData(label: 'Contactor Amount', value: dashboard.totalContractorAmount.convert('INR', currency), color: Colors.blue, radius: radius),
+      PieData(label: 'Quote Amount', value: dashboard.totalQuoteAmount.convert('INR', currency), color: Colors.grey, radius: radius),
     ];
   }
 
@@ -96,6 +134,7 @@ class _PieBoardState extends State<PieBoard> {
 
   @override
   Widget build(BuildContext context) {
+    loadData();
     return GetBuilder(
         init: dashboard,
         builder: (_) {
@@ -141,12 +180,35 @@ class _PieBoardState extends State<PieBoard> {
                         },
                         controler: _toDate,
                       ),
-                      Container(),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.bottom,
+                        child: ButtonBar(
+                          alignment: MainAxisAlignment.start,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    setCurrentMonth();
+
+                                    loadData();
+                                  });
+                                },
+                                child: Text("Current month")),
+                            ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    setLAst30days();
+                                    loadData();
+                                  });
+                                },
+                                child: Text("last 30 days"))
+                          ],
+                        ),
+                      ),
                       Container(),
                     ])
                   ],
                 ),
-                Divider(),
                 Table(
                   children: [
                     TableRow(
@@ -154,7 +216,40 @@ class _PieBoardState extends State<PieBoard> {
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: PieStatement(
-                            // chartData: getChartData(map),
+                            header: Text('QUOTATION STATEMENT', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                            chartData: getTotalReceivedRemaining(),
+                            footer: Card(
+                              color: Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                                child: Text("Margin ${dashboard.totalMargin.convert('INR', currency).toStringAsFixed(2)}"),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 8),
+                        //   child: PieStatement(
+                        //       header: Text('QUOTATION ', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                        //       chartData: getQuoteStatement()),
+                        // ),
+
+                        // RadialBar(
+                        //     header: Text('QUOTATION STATEMENT', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                        //     dataSource: getQuoteStatement()),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: PieStatement(
+                              header: Text('PAYABLES / RECEIVABLES', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                              chartData: getPayablesVsReceivables()),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: PieStatement(
                             header: Text('CLIENT INVOICE STATEMENT', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
                             chartData: getClientChartData(),
                           ),
@@ -164,22 +259,6 @@ class _PieBoardState extends State<PieBoard> {
                           child: PieStatement(
                               header: Text('CONTRACTOR INVOICE STATEMENT', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
                               chartData: getContractorChartData()),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: PieStatement(
-                              header: Text('PAYABLES / RECEIVABLES', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
-                              chartData: getPayablesVsReceivables()),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: PieStatement(
-                              header: Text('QUOTATION ', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
-                              chartData: getQuoteStatement()),
                         ),
                       ],
                     ),

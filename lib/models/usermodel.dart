@@ -7,7 +7,7 @@ UserModel clientFromJson(String str) => UserModel.fromJson(json.decode(str), '')
 String clientToJson(UserModel data) => json.encode(data.toJson());
 
 class UserModel {
-  UserModel({required this.name, this.address, this.email, this.phone, this.fullname, this.docid, this.role});
+  UserModel({required this.name, this.address, this.email, this.phone, this.fullname, this.docid, this.role, required this.country});
 
   String name;
   String? address;
@@ -16,17 +16,21 @@ class UserModel {
   String? role;
   String? fullname;
   String? docid;
+  List<dynamic> country;
 
   factory UserModel.fromJson(Map<String, dynamic> json, doc_id) => UserModel(
-      name: json["name"],
-      address: json["address"],
-      email: json["email"],
-      phone: json["phone"],
-      role: json["role"] ?? '',
-      docid: doc_id,
-      fullname: json["fullname"] ?? '');
+        name: json["name"],
+        address: json["address"],
+        email: json["email"],
+        phone: json["phone"],
+        role: json["role"] ?? '',
+        docid: doc_id,
+        fullname: json["fullname"] ?? '',
+        country: (json["country"] ?? []),
+      );
 
-  Map<String, dynamic> toJson() => {"name": name, "address": address, "email": email, "phone": phone, "role": role, "fullname": fullname};
+  Map<String, dynamic> toJson() =>
+      {"name": name, "address": address, "email": email, "phone": phone, "role": role, "fullname": fullname, "country": country};
 
   Future<dynamic> add() async {
     return await contractors

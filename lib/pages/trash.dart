@@ -1,10 +1,7 @@
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/models/response.dart';
-import 'package:ccm/pages/quotatio_form_wrapper.dart';
 import 'package:ccm/pages/quotation_form.dart';
-import 'package:ccm/pages/trash.dart';
-import 'package:ccm/services/excel_syncfustion.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/invoice_list.dart';
 import 'package:ccm/widgets/quotation/multiselect.dart';
@@ -12,25 +9,22 @@ import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:ccm/widgets/widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/getControllers.dart';
 
-class CwrSummary extends StatefulWidget {
-  CwrSummary({Key? key}) : super(key: key);
+class CwrTrashSummary extends StatefulWidget {
+  CwrTrashSummary({Key? key}) : super(key: key);
 
   @override
-  State<CwrSummary> createState() => _CwrSummaryState();
+  State<CwrTrashSummary> createState() => _CwrTrashSummaryState();
 }
 
-class _CwrSummaryState extends State<CwrSummary> {
+class _CwrTrashSummaryState extends State<CwrTrashSummary> {
   @override
   void initState() {
-    Get.put(ClientController());
-    overallStatus = OverallStatus.pending;
-    approvalStatus = ApprovalStatus.pending;
+    // Get.put(ClientController());
     filter();
     super.initState();
   }
@@ -45,10 +39,8 @@ class _CwrSummaryState extends State<CwrSummary> {
   late Query<Map<String, dynamic>> query;
   List<Quotation> quotationList = [];
 
-  List<Quotation> quotes = [];
-
   filter() {
-    query = quotations;
+    query = trashQuotations;
     if (fromDate != null) {
       query = query.where('issuedDate', isGreaterThanOrEqualTo: fromDate);
     }
@@ -72,16 +64,11 @@ class _CwrSummaryState extends State<CwrSummary> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Quotation.stressBatch1();
-        },
-      ),
       appBar: AppBar(
           backgroundColor: Color(0xFF3A5F85),
           centerTitle: true,
           title: Text(
-            "In a world of gray, CCM provides clarity to all construction & facility projects.",
+            "TRASHED QUOTES",
           )),
       backgroundColor: Color(0xFFFAFAFA),
       body: Column(
@@ -101,14 +88,6 @@ class _CwrSummaryState extends State<CwrSummary> {
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: () {
-                      Get.to(() => QuotationForm());
-                    },
-                    child: Icon(Icons.add)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                    onPressed: () {
                       setState(() {
                         searchController.clear();
                         fromDate = null;
@@ -119,23 +98,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                       filter();
                     },
                     child: Icon(Icons.filter_alt_off)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                    onPressed: () {
-                      Get.to(() => CwrTrashSummary());
-                    },
-                    child: Icon(Icons.delete)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                    onPressed: () {
-                      ExcelService.createExcelForquote(quotes);
-                    },
-                    child: Icon(CupertinoIcons.arrow_down_doc_fill)),
-              ),
+              )
             ],
           ),
           Card(
@@ -236,7 +199,6 @@ class _CwrSummaryState extends State<CwrSummary> {
                         subtitle: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Card(
-                            elevation: 8,
                             color: Colors.white,
                             child: DropDownMultiSelect(
                                 options: clientController.clientlist.map((e) => e.name).toList(),
@@ -262,7 +224,7 @@ class _CwrSummaryState extends State<CwrSummary> {
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
               if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
                 var docs = snapshot.data?.docs ?? [];
-
+                List<Quotation> quotes = [];
                 try {
                   quotes = docs.map((e) => Quotation.fromJson(e.data())).toList();
                 } catch (e) {
@@ -290,7 +252,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                             showFirstLastButtons: true,
                             rowsPerPage: 10,
                             columns: [
-                              DataColumn(label: Text('Edit')),
+                              DataColumn(label: Text('Restore')),
                               DataColumn(label: Text('Invoice')),
                               DataColumn(label: Text('Child Quotes')),
                               DataColumn(label: Text('Quote')),
@@ -303,7 +265,6 @@ class _CwrSummaryState extends State<CwrSummary> {
                               DataColumn(label: Text('Margin')),
                               DataColumn(label: Text('CCM Ticket')),
                               DataColumn(label: Text('Completion Date')),
-                              DataColumn(label: Text('Delete')),
                             ],
                             source: source,
                           ),
@@ -416,132 +377,112 @@ class QuoteDatasource extends DataTableSource {
     assert(index >= 0);
     if (index >= quoteList.length) return null;
     final e = quoteList[index];
-    return DataRow.byIndex(
-        color: MaterialStateProperty.all(e.completionDate != null ? Colors.lightGreen.shade100 : Colors.white),
-        index: index,
-        cells: [
-          DataCell(IconButton(
-              onPressed: () {
-                Get.to(() => QuotationForm(quotation: e));
-              },
-              icon: Icon(
-                Icons.edit,
-                color: Colors.indigo,
-              ))),
-          DataCell(IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      List<Widget> children = [];
-                      children.add(Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Client Invoices".toUpperCase()),
-                      ));
-                      children.add(InvoiceList(invoices: e.clientInvoices, poNumber: e.clientApproval));
-                      children.add(const Divider());
-                      children.add(Text("Contractor Invoices".toUpperCase()));
-                      e.contractorPo.forEach((element) {
-                        children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
-                        children.add(const Divider());
-                      });
-                      return Dialog(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: children,
-                        ),
-                      );
-                    });
-              },
-              icon: Icon(
-                Icons.insert_drive_file,
-                color: Colors.indigo,
-              ))),
-          DataCell(IconButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return FutureBuilder<List<DataRow>>(
-                          future: getChildQuotes(e.number),
-                          builder: (context, snapshot) {
-                            List<DataRow> rows = [];
-                            if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
-                              rows = snapshot.data ?? [];
+    return DataRow.byIndex(index: index, cells: [
+      DataCell(IconButton(
+          onPressed: () {
+            var future = trashQuotations.doc(e.id).delete().then((value) => e.add());
+            showFutureDialog(context: context, future: future);
+          },
+          icon: Icon(
+            Icons.restore,
+            color: Colors.indigo,
+          ))),
+      DataCell(IconButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  List<Widget> children = [];
+                  children.add(Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Client Invoices".toUpperCase()),
+                  ));
+                  children.add(InvoiceList(invoices: e.clientInvoices, poNumber: e.clientApproval));
+                  children.add(const Divider());
+                  children.add(Text("Contractor Invoices".toUpperCase()));
+                  e.contractorPo.forEach((element) {
+                    children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
+                    children.add(const Divider());
+                  });
+                  return Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: children,
+                    ),
+                  );
+                });
+          },
+          icon: Icon(
+            Icons.insert_drive_file,
+            color: Colors.indigo,
+          ))),
+      DataCell(IconButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return FutureBuilder<List<DataRow>>(
+                      future: getChildQuotes(e.number),
+                      builder: (context, snapshot) {
+                        List<DataRow> rows = [];
+                        if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                          rows = snapshot.data ?? [];
 
-                              if (rows.isEmpty) {
-                                return Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    AlertDialog(
-                                      content: Center(
-                                        child: Text("No child quotes available"),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
-
-                              return AlertDialog(
-                                content: DataTable(columns: [
-                                  DataColumn(label: Text('Edit')),
-                                  DataColumn(label: Text('Invoice')),
-                                  DataColumn(label: Text('Quote')),
-                                  DataColumn(label: Text('Issued on')),
-                                  DataColumn(label: Text('Client')),
-                                  DataColumn(label: Text('Description')),
-                                  DataColumn(label: Text('Amount')),
-                                  DataColumn(label: Text('status')),
-                                  DataColumn(label: Text('Client PO')),
-                                  DataColumn(label: Text('Margin')),
-                                  DataColumn(label: Text('CCM Ticket')),
-                                  DataColumn(label: Text('Completion Date')),
-                                  DataColumn(label: Text('Delete')),
-                                ], rows: rows),
-                              );
-                            }
-                            if (snapshot.hasError) {
-                              return AlertDialog(content: Center(child: Text("Error occurred, Please try again..")));
-                            }
-                            return Center(
-                              child: CircularProgressIndicator(),
+                          if (rows.isEmpty) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AlertDialog(
+                                  content: Center(
+                                    child: Text("No child quotes available"),
+                                  ),
+                                ),
+                              ],
                             );
-                          });
-                    });
-              },
-              icon: Icon(
-                Icons.view_agenda,
-                color: Colors.indigo,
-              ))),
-          DataCell(SelectableText(e.number)),
-          DataCell(SelectableText(format.format(e.issuedDate))),
-          DataCell(SelectableText(clientController.getName(e.client))),
-          DataCell(SelectableText(e.description)),
-          DataCell(
-            Align(
-              alignment: Alignment.centerRight,
-              child: SelectableText(
-                e.amount.toStringAsFixed(2),
-                textAlign: TextAlign.right,
-              ),
-            ),
-          ),
-          DataCell(SelectableText(e.approvalStatus.toString().split('.').last.toUpperCase())),
-          DataCell(SelectableText(e.clientApproval.toString())),
-          DataCell(Align(alignment: Alignment.centerRight, child: SelectableText(e.margin.toStringAsFixed(2)))),
-          DataCell(SelectableText(e.ccmTicketNumber.toString())),
-          DataCell(SelectableText(e.completionDate == null ? '' : format.format(e.completionDate!))),
-          DataCell(IconButton(
-              onPressed: () {
-                var future = e.delete();
-                showFutureDialog(context: context, future: future);
-              },
-              icon: Icon(
-                Icons.delete,
-                color: Colors.red,
-              ))),
-        ]);
+                          }
+
+                          return AlertDialog(
+                            content: DataTable(columns: [
+                              DataColumn(label: Text('Restore')),
+                              DataColumn(label: Text('Invoice')),
+                              DataColumn(label: Text('Quote')),
+                              DataColumn(label: Text('Issued on')),
+                              DataColumn(label: Text('Client')),
+                              DataColumn(label: Text('Description')),
+                              DataColumn(label: Text('Amount')),
+                              DataColumn(label: Text('status')),
+                              DataColumn(label: Text('Client PO')),
+                              DataColumn(label: Text('Margin')),
+                              DataColumn(label: Text('CCM Ticket')),
+                              DataColumn(label: Text('Completion Date')),
+                            ], rows: rows),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return AlertDialog(content: Center(child: Text("Error occurred, Please try again..")));
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      });
+                });
+          },
+          icon: Icon(
+            Icons.view_agenda,
+            color: Colors.indigo,
+          ))),
+      DataCell(SelectableText(e.number)),
+      DataCell(SelectableText(format.format(e.issuedDate))),
+      DataCell(SelectableText(clientController.getName(e.client))),
+      DataCell(SelectableText(e.description)),
+      DataCell(SelectableText(e.amount.toString())),
+      DataCell(SelectableText(e.approvalStatus.toString().split('.').last.toUpperCase())),
+      DataCell(SelectableText(e.clientApproval.toString())),
+      DataCell(SelectableText(e.margin.toStringAsFixed(2))),
+      DataCell(SelectableText(e.ccmTicketNumber.toString())),
+      DataCell(SelectableText(e.completionDate == null ? '' : format.format(e.completionDate!))),
+    ]);
   }
 
   @override
@@ -565,10 +506,11 @@ class QuoteDatasource extends DataTableSource {
           cells: [
             DataCell(IconButton(
                 onPressed: () {
-                  Get.to(() => QuotationForm(quotation: q));
+                  var future = trashQuotations.doc(q.id).delete().then((value) => q.add());
+                  showFutureDialog(context: context, future: future);
                 },
                 icon: Icon(
-                  Icons.edit,
+                  Icons.restore,
                   color: Colors.indigo,
                 ))),
             DataCell(IconButton(
@@ -610,15 +552,6 @@ class QuoteDatasource extends DataTableSource {
             DataCell(SelectableText(q.margin.toStringAsFixed(2))),
             DataCell(SelectableText(q.ccmTicketNumber.toString())),
             DataCell(SelectableText(q.completionDate == null ? '' : format.format(q.completionDate!))),
-            DataCell(IconButton(
-                onPressed: () {
-                  var future = quotations.doc(q.id).delete().then((value) => Result.success("Deleted Successfully"));
-                  showFutureDialog(context: context, future: future);
-                },
-                icon: Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ))),
           ],
         );
         rows.add(row);
