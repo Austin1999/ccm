@@ -108,119 +108,127 @@ class _UsersListState extends State<UsersList> {
                                     // session = _tempCountries;
                                     session.country = session.countries.first;
                                     return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: DataTable(
-                                        columns: [
-                                          DataColumn(
-                                            label: Text(
-                                              'Contractor Name',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Address',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Email ID',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Phone No',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Role',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'FullName',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Delete',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Edit',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
+                                      scrollDirection: Axis.vertical,
+                                      child: Table(
+                                        children: [
+                                          TableRow(
+                                            children: [
+                                              DataTable(
+                                                columns: [
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Contractor Name',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Address',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Email ID',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Phone No',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Role',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'FullName',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Delete',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Edit',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ],
+                                                rows: _clients
+                                                    .map<DataRow>(
+                                                      (e) => DataRow(
+                                                        cells: [
+                                                          DataCell(
+                                                            Text(e.name),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.address!),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.email!),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.phone!),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.role!),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.fullname!),
+                                                          ),
+                                                          DataCell(
+                                                            Icon(
+                                                              Icons.delete,
+                                                              color: Colors.red,
+                                                            ),
+                                                            onTap: () {
+                                                              CoolAlert.show(
+                                                                context: context,
+                                                                type: CoolAlertType.confirm,
+                                                                width: MediaQuery.of(context).size.width > 500
+                                                                    ? MediaQuery.of(context).size.width / 2
+                                                                    : MediaQuery.of(context).size.width * 0.85,
+                                                                showCancelBtn: true,
+                                                                onCancelBtnTap: () => Navigator.pop(context),
+                                                                onConfirmBtnTap: () {
+                                                                  userscollection.doc(e.docid).delete().then(
+                                                                        (value) => Navigator.pop(context),
+                                                                      );
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                          DataCell(
+                                                              Icon(
+                                                                Icons.edit,
+                                                                // color: Colors.,
+                                                              ), onTap: () {
+                                                            showDialog(
+                                                                context: context,
+                                                                builder: (context) {
+                                                                  return UserForm(
+                                                                    user: e,
+                                                                  );
+                                                                });
+                                                          }),
+                                                        ],
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ),
+                                            ],
                                           ),
                                         ],
-                                        rows: _clients
-                                            .map<DataRow>(
-                                              (e) => DataRow(
-                                                cells: [
-                                                  DataCell(
-                                                    Text(e.name),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.address!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.email!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.phone!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.role!),
-                                                  ),
-                                                  DataCell(
-                                                    Text(e.fullname!),
-                                                  ),
-                                                  DataCell(
-                                                    Icon(
-                                                      Icons.delete,
-                                                      color: Colors.red,
-                                                    ),
-                                                    onTap: () {
-                                                      CoolAlert.show(
-                                                        context: context,
-                                                        type: CoolAlertType.confirm,
-                                                        width: MediaQuery.of(context).size.width > 500
-                                                            ? MediaQuery.of(context).size.width / 2
-                                                            : MediaQuery.of(context).size.width * 0.85,
-                                                        showCancelBtn: true,
-                                                        onCancelBtnTap: () => Navigator.pop(context),
-                                                        onConfirmBtnTap: () {
-                                                          userscollection.doc(e.docid).delete().then(
-                                                                (value) => Navigator.pop(context),
-                                                              );
-                                                        },
-                                                      );
-                                                    },
-                                                  ),
-                                                  DataCell(
-                                                      Icon(
-                                                        Icons.edit,
-                                                        // color: Colors.,
-                                                      ), onTap: () {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return UserForm(
-                                                            user: e,
-                                                          );
-                                                        });
-                                                  }),
-                                                ],
-                                              ),
-                                            )
-                                            .toList(),
                                       ),
                                     );
                                   } else {

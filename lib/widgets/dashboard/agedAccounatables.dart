@@ -65,7 +65,7 @@ class _AgedAccountsState extends State<AgedAccounts> {
       padding: const EdgeInsets.all(16.0),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: 300,
+          maxHeight: 400,
         ),
         child: GetBuilder(
             init: controller,
@@ -76,11 +76,30 @@ class _AgedAccountsState extends State<AgedAccounts> {
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: charts.BarChart(
-                          getReceivableChartData(),
-                          animate: true,
-                          vertical: false,
-                          barRendererDecorator: new charts.BarLabelDecorator<String>(labelPosition: charts.BarLabelPosition.auto),
+                        child: Table(
+                          children: [
+                            TableRow(children: [
+                              Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text('AGED RECEIVABLES', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                                  )),
+                            ]),
+                            TableRow(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(maxHeight: 320),
+                                  child: charts.BarChart(
+                                    getReceivableChartData(),
+                                    animate: true,
+                                    vertical: false,
+                                    barRendererDecorator: new charts.BarLabelDecorator<String>(labelPosition: charts.BarLabelPosition.auto),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -92,13 +111,32 @@ class _AgedAccountsState extends State<AgedAccounts> {
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: charts.BarChart(
-                          getPayableChartData(),
-                          animate: true,
-                          vertical: false,
-                          barRendererDecorator: new charts.BarLabelDecorator<String>(
-                            labelPosition: charts.BarLabelPosition.auto,
-                          ),
+                        child: Table(
+                          children: [
+                            TableRow(children: [
+                              Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text('AGED PAYABLES', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                                  )),
+                            ]),
+                            TableRow(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(maxHeight: 320),
+                                  child: charts.BarChart(
+                                    getPayableChartData(),
+                                    animate: true,
+                                    vertical: false,
+                                    barRendererDecorator: new charts.BarLabelDecorator<String>(
+                                      labelPosition: charts.BarLabelPosition.auto,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),

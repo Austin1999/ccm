@@ -67,19 +67,35 @@ class Top5Entity extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
-              child: DataTable(
-                columns: [
-                  DataColumn(
-                    label: Text('RANK'),
+              child: Table(
+                children: [
+                  TableRow(children: [
+                    Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text('Top 5 Clients on Aged Receivables', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                        )),
+                  ]),
+                  TableRow(
+                    children: [
+                      DataTable(
+                        columns: [
+                          DataColumn(
+                            label: Text('RANK'),
+                          ),
+                          DataColumn(
+                            label: Text('CLIENT'),
+                          ),
+                          DataColumn(
+                            label: Text('RECEIVABLES'),
+                          )
+                        ],
+                        rows: getRows(top5clients),
+                      ),
+                    ],
                   ),
-                  DataColumn(
-                    label: Text('CLIENT'),
-                  ),
-                  DataColumn(
-                    label: Text('RECEIVABLES'),
-                  )
                 ],
-                rows: getRows(top5clients),
               ),
             ),
           ),
@@ -88,19 +104,35 @@ class Top5Entity extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
-              child: DataTable(
-                columns: [
-                  DataColumn(
-                    label: Text('RANK'),
+              child: Table(
+                children: [
+                  TableRow(children: [
+                    Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text('Top 5 Vendors on Aged Payables', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                        )),
+                  ]),
+                  TableRow(
+                    children: [
+                      DataTable(
+                        columns: [
+                          DataColumn(
+                            label: Text('RANK'),
+                          ),
+                          DataColumn(
+                            label: Text('CONTRACTOR'),
+                          ),
+                          DataColumn(
+                            label: Text('PAYABLES'),
+                          )
+                        ],
+                        rows: getRows(top5contractors),
+                      ),
+                    ],
                   ),
-                  DataColumn(
-                    label: Text('CONTRACTOR'),
-                  ),
-                  DataColumn(
-                    label: Text('PAYABLES'),
-                  )
                 ],
-                rows: getRows(top5contractors),
               ),
             ),
           ),
