@@ -22,7 +22,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    country = session.country?.code;
+    country = 'IN';
     currency = session.country?.currencyCode ?? 'SGD';
 
     // dashboard.loadData();

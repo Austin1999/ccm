@@ -6,7 +6,6 @@ import 'package:ccm/controllers/getx_controllers.dart';
 
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/pages/comments.dart';
-import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/client_invoice.dart';
 import 'package:ccm/widgets/quotation/client_quotation.dart';
 import 'package:ccm/widgets/quotation/contractor_quotation.dart';

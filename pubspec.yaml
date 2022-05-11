@@ -54,10 +54,13 @@ dependencies:
   multiselect: ^0.0.4
   getwidget: ^2.0.5
   multi_select_flutter: ^4.1.2
+<<<<<<< HEAD
   syncfusion_flutter_xlsio: ^19.4.56-beta
   path_provider: ^2.0.9
   open_file: ^3.2.1
   universal_html: ^2.0.8
+=======
+>>>>>>> 1631c1d05516fc0b2b60b7712bfe591b5c6fd567
 
 dev_dependencies:
   flutter_test:
