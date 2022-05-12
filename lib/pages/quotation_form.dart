@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 
 import '../widgets/quotation/invoice_list.dart';
 import '../widgets/quotation/quote_date_picker.dart';
+import '../services/firebase.dart';
 
 class QuotationForm extends StatefulWidget {
   QuotationForm({Key? key, this.quotation}) : super(key: key);
