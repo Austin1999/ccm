@@ -58,6 +58,7 @@ dependencies:
   path_provider: ^2.0.9
   open_file: ^3.2.1
   universal_html: ^2.0.8
+  screenshot: ^1.2.3
 
 dev_dependencies:
   flutter_test:

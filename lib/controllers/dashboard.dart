@@ -161,7 +161,6 @@ class DashboardController extends GetxController {
   }
 
   Future<Map<String, List<AccountChartData>>> loadEntityWiseData({String? country}) async {
-    receivablesClientWise = {};
     List<Future> futures = [];
     var clientList = clientController.filteredClients(country);
     var contractorlist = contractorController.contractorlist.toList();
@@ -169,24 +168,28 @@ class DashboardController extends GetxController {
       clientList = clientList.where((element) => element.country == country).toList();
       contractorlist = contractorlist.where((element) => element.country == country).toList();
     }
-
+    receivablesClientWise = {};
     clientList.forEach((element) {
       futures.add(receivablesRef.where("entity", isEqualTo: element.docid).get().then((value) {
+        receivablesClientWise.remove(element.docid);
         value.docs.forEach((element) {
           var listElement = ListElement.fromJson(element.data());
           receivablesClientWise[listElement.entity] =
               (receivablesClientWise[listElement.entity] ?? 0) + listElement.amount.convert(listElement.currency, 'INR');
         });
+        update();
       }));
     });
     payablesContractorWise = {};
     contractorlist.forEach((element) {
       futures.add(payablesRef.where("entity", isEqualTo: element.name).get().then((value) {
+        payablesContractorWise.remove(element.name);
         value.docs.forEach((element) {
           var listElement = ListElement.fromJson(element.data());
           payablesContractorWise[listElement.entity] =
               (payablesContractorWise[listElement.entity] ?? 0) + listElement.amount.convert(listElement.currency, 'INR');
         });
+        update();
       }));
     });
 

@@ -29,8 +29,8 @@ class _CwrSummaryState extends State<CwrSummary> {
   @override
   void initState() {
     Get.put(ClientController());
-    overallStatus = OverallStatus.pending;
-    approvalStatus = ApprovalStatus.pending;
+    // overallStatus = OverallStatus.;
+    // approvalStatus = ApprovalStatus.pending;
     filter();
     super.initState();
   }
