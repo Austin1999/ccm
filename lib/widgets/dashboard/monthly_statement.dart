@@ -97,7 +97,6 @@ class _MonthlyStatementState extends State<MonthlyStatement> {
   List<BarChartData> receivables = [];
 
   loadData() async {
-    clear();
     Query<Map<String, dynamic>> query = dashboardDataRef;
     query = query.where('issuedDate', isGreaterThanOrEqualTo: fromDate);
     query = query..where('issuedDate', isLessThanOrEqualTo: DateTime.now());
@@ -109,13 +108,10 @@ class _MonthlyStatementState extends State<MonthlyStatement> {
     }
     await query.get().then((value) {
       print("Values Length = ${value.docs.length}");
+      clear();
       try {
         value.docs.forEach((element) {
           var data = DashboardData.fromJson(element.data());
-          print(data.amount);
-          print((data.issuedDate.month + 6) % 12);
-          print(months[(data.issuedDate.month + 6) % 12]);
-
           total[(data.issuedDate.month + 6) % 12].value += data.amount.convert(data.currencyCode, widget.currency);
           received[(data.issuedDate.month + 6) % 12].value += data.receivedAmount.convert(data.currencyCode, widget.currency);
           // receivables[(data.issuedDate.month + 6)%12].value += data.receivableAmount.convert(data.currencyCode, widget.currency);

@@ -79,11 +79,11 @@ class _PieBoardState extends State<PieBoard> {
     var radius = getRadius();
     return [
       PieData(label: 'Total', value: dashboard.totalQuoteAmount.convert('INR', currency), color: Colors.deepOrange, radius: radius),
-      PieData(label: 'Received', value: dashboard.totalReceivedAmount.convert('INR', currency), color: Colors.grey, radius: radius),
+      PieData(label: 'Received', value: dashboard.totalReceivedAmount.convert('INR', currency), color: Colors.blue, radius: radius),
       PieData(
           label: 'Remaining',
           value: (dashboard.totalQuoteAmount - dashboard.totalReceivedAmount).convert('INR', currency),
-          color: Colors.blue,
+          color: Colors.grey,
           radius: radius),
     ];
   }

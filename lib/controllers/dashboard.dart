@@ -80,7 +80,6 @@ class DashboardController extends GetxController {
   }
 
   loadReceivables({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
-    clear();
     Query<Map<String, dynamic>> query = receivablesRef;
     // if (fromDate != null) {
     //   query = query.where("date", isGreaterThanOrEqualTo: fromDate.millisecondsSinceEpoch);
@@ -101,6 +100,7 @@ class DashboardController extends GetxController {
       query = query.where("entity", isEqualTo: client);
     }
     query.get().then((value) {
+      clear();
       value.docs.forEach((element) {
         var receivable = ListElement.fromJson(element.data());
         receivables += receivable.amount.convert(receivable.currency, 'INR');
@@ -113,7 +113,6 @@ class DashboardController extends GetxController {
   }
 
   loadPayables({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
-    clear();
     Query<Map<String, dynamic>> query = payablesRef;
     // if (fromDate != null) {
     //   query = query.where("date", isGreaterThanOrEqualTo: fromDate);
@@ -134,6 +133,7 @@ class DashboardController extends GetxController {
       query = query.where("client", isEqualTo: client);
     }
     query.get().then((value) {
+      clear();
       value.docs.forEach((element) {
         var payable = ListElement.fromJson(element.data());
         try {
@@ -202,11 +202,6 @@ class DashboardController extends GetxController {
   loadAgedPayables({String? country, String? client}) {
     Query<Map<String, dynamic>> query = payablesRef;
 
-    agedPayables['0+'] = 0;
-    agedPayables['30+'] = 0;
-    agedPayables['60+'] = 0;
-    agedPayables['90+'] = 0;
-
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
@@ -214,6 +209,11 @@ class DashboardController extends GetxController {
       query = query.where("client", isEqualTo: client);
     }
     query.get().then((value) {
+      agedPayables['0+'] = 0;
+      agedPayables['30+'] = 0;
+      agedPayables['60+'] = 0;
+      agedPayables['90+'] = 0;
+
       value.docs.forEach((element) {
         var payable = ListElement.fromJson(element.data());
         var days = payable.daysAged;
@@ -234,11 +234,6 @@ class DashboardController extends GetxController {
   loadAgedReceivables({String? country, String? client}) {
     Query<Map<String, dynamic>> query = receivablesRef;
 
-    agedReceivables['0+'] = 0;
-    agedReceivables['30+'] = 0;
-    agedReceivables['60+'] = 0;
-    agedReceivables['90+'] = 0;
-
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
@@ -246,6 +241,10 @@ class DashboardController extends GetxController {
       query = query.where("client", isEqualTo: client);
     }
     query.get().then((value) {
+      agedReceivables['0+'] = 0;
+      agedReceivables['30+'] = 0;
+      agedReceivables['60+'] = 0;
+      agedReceivables['90+'] = 0;
       value.docs.forEach((element) {
         var receivable = ListElement.fromJson(element.data());
         var days = receivable.daysAged;
@@ -308,7 +307,6 @@ class DashboardController extends GetxController {
   }
 
   loadQuoteData({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
-    clear();
     Query<Map<String, dynamic>> query = dashboardDataRef;
     if (fromDate != null) {
       query = query.where("issuedDate", isGreaterThanOrEqualTo: fromDate);
@@ -323,6 +321,7 @@ class DashboardController extends GetxController {
       query = query.where("client", isEqualTo: client);
     }
     query.get().then((value) {
+      clear();
       value.docs.map((e) => DashboardData.fromJson(e.data())).forEach((element) {
         totalMargin += element.margin.convert(element.currencyCode, 'INR');
         totalContractorAmount += element.contractorAmount.convert(element.currencyCode, 'INR');

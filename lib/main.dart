@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
         cardTheme: CardTheme(color: Color(0xFFE8F3FA)),
         // elevatedButtonTheme : ElevatedButtonThemeData(style: ButtonStyle(backgroundColor: Color(0xFF29588C),))
       ),
+
       home: AuthRouter(),
       // home: Dashboard(),
     );
