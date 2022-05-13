@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ccm/FormControllers/user_form_controller.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/models/countries.dart';
@@ -136,7 +138,9 @@ class _UserFormState extends State<UserForm> {
                     if (user == null) {
                       future = userscollection.add(_controller.object.toJson()).then((value) => Result.success("Profile created successfully"));
                       try {
-                        authController.auth.resetPassword(email: _controller.object.email!);
+                        Timer(Duration(seconds: 5), () {
+                          authController.auth.resetPassword(email: _controller.object.email!);
+                        });
                       } catch (e) {}
                     } else {
                       future = userscollection
