@@ -26,7 +26,6 @@ class SessionController extends GetxController {
           } else {
             var list = countryController.countrylist.toList();
             myCountries = user!.country.map((e) => list.firstWhere((element) => element.code == e)).toList();
-            print(myCountries);
           }
         }
         update();

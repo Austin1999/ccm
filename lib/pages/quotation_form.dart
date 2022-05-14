@@ -29,7 +29,6 @@ class QuotationForm extends StatefulWidget {
 class _QuotationFormState extends State<QuotationForm> {
   @override
   void initState() {
-    print("initalizing state");
     super.initState();
     if (widget.quotation != null) {
       timer = Timer.periodic(Duration(seconds: 5), (timer) {
@@ -66,7 +65,7 @@ class _QuotationFormState extends State<QuotationForm> {
 
     for (int i = 0; i < relatedQuotes.length; i++) {
       var e = relatedQuotes[i];
-      print(i);
+
       rows.add(
         DataRow(
           color: MaterialStateProperty.all(selectedIndex == i ? Colors.grey.shade300 : Colors.white),

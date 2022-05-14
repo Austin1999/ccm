@@ -42,7 +42,7 @@ class _QuotationFormListState extends State<QuotationFormList> {
 
     for (int i = 0; i < relatedQuotes.length; i++) {
       var e = relatedQuotes[i];
-      print(i);
+
       rows.add(
         DataRow(
           color: MaterialStateProperty.all(i == selectedIndex ? Colors.grey.shade300 : Colors.white),

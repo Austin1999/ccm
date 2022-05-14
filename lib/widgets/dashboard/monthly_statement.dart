@@ -9,6 +9,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
+List<String> months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 class MonthlyStatement extends StatefulWidget {
   const MonthlyStatement({Key? key, this.country, required this.currency, this.client}) : super(key: key);
 
@@ -27,69 +42,22 @@ class _MonthlyStatementState extends State<MonthlyStatement> {
     clear();
   }
 
+  List<String> get monthsShifted {
+    List<String> list = [];
+    int currentMonth = DateTime.now().month;
+    list = months.sublist(currentMonth);
+    list.addAll(months.sublist(0, currentMonth));
+    return list;
+  }
+
   String? get country => widget.country;
   String get currency => widget.currency;
   String? get client => widget.client;
 
-  get months => [
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-      ];
-
   clear() {
-    total = [
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-    ].map((e) => BarChartData(key: e, value: 0)).toList();
-    received = [
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-    ].map((e) => BarChartData(key: e, value: 0)).toList();
-
-    receivables = [
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-    ].map((e) => BarChartData(key: e, value: 0)).toList();
+    total = monthsShifted.map((e) => BarChartData(key: e, value: 0)).toList();
+    received = monthsShifted.map((e) => BarChartData(key: e, value: 0)).toList();
+    receivables = monthsShifted.map((e) => BarChartData(key: e, value: 0)).toList();
   }
 
   List<BarChartData> total = [];
@@ -107,26 +75,26 @@ class _MonthlyStatementState extends State<MonthlyStatement> {
       query = query.where('client', isEqualTo: client);
     }
     await query.get().then((value) {
-      print("Values Length = ${value.docs.length}");
       clear();
       try {
         value.docs.forEach((element) {
           var data = DashboardData.fromJson(element.data());
-          total[(data.issuedDate.month + 6) % 12].value += data.amount.convert(data.currencyCode, widget.currency);
-          received[(data.issuedDate.month + 6) % 12].value += data.receivedAmount.convert(data.currencyCode, widget.currency);
+          total[(data.issuedDate.month + DateTime.now().month + 1) % 12].value += data.amount.convert(data.currencyCode, widget.currency);
+          received[(data.issuedDate.month + DateTime.now().month + 1) % 12].value += data.receivedAmount.convert(data.currencyCode, widget.currency);
           // receivables[(data.issuedDate.month + 6)%12].value += data.receivableAmount.convert(data.currencyCode, widget.currency);
-          receivables[(data.issuedDate.month + 6) % 12].value += (data.amount - data.receivedAmount).convert(data.currencyCode, widget.currency);
+          receivables[(data.issuedDate.month + DateTime.now().month + 1) % 12].value +=
+              (data.amount - data.receivedAmount).convert(data.currencyCode, widget.currency);
         });
       } catch (e) {
         printError(info: e.toString());
       }
-      print(total.map((e) => e.value).toList());
     });
   }
 
   DateTime get fromDate {
     DateTime date = DateTime.now().subtract(Duration(days: 365));
-    return date;
+
+    return DateTime.utc(date.year, date.month);
   }
 
   @override
