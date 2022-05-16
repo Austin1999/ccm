@@ -12,8 +12,21 @@ class AuthController extends GetxController {
 
 class SessionController extends GetxController {
   static SessionController instance = Get.find();
+  @override
+  onInit() {
+    super.onInit();
+    listenAuth();
+  }
 
   UserModel? user;
+
+  listenAuth() {
+    authController.auth.authStateChanges().listen((event) {
+      loadProfile();
+      authController.update();
+      update();
+    });
+  }
 
   loadProfile() {
     if (authController.auth.currentUser != null) {
@@ -30,6 +43,9 @@ class SessionController extends GetxController {
         }
         update();
       });
+    } else {
+      user = null;
+      update();
     }
   }
 

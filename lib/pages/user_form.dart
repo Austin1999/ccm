@@ -75,9 +75,11 @@ class _UserFormState extends State<UserForm> {
                           title: 'Role',
                           items: ["User", "Admin"].map((e) => DropdownMenuItem(value: e == "Admin", child: Text(e))).toList(),
                           value: _controller.isAdmin,
-                          onChanged: (value) {
-                            _controller.isAdmin = value;
-                          },
+                          onChanged: (session.user?.role ?? "User") != "Admin"
+                              ? null
+                              : (value) {
+                                  _controller.isAdmin = value;
+                                },
                         ),
                       ]),
                     ],

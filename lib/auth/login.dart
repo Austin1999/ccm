@@ -1,7 +1,9 @@
 import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/pages/countries_list.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignIn extends StatefulWidget {
   SignIn({Key? key}) : super(key: key);
@@ -163,7 +165,7 @@ class _SignInState extends State<SignIn> {
                                 context: context,
                                 type: CoolAlertType.loading);
                             authController.auth.signInWithEmailAndPassword(username.text, password.text).then((value) {
-                              Navigator.pop(context);
+                              Get.offAll(CountriesList());
                             }, onError: (e) {
                               Navigator.pop(context);
                               return showDialog(

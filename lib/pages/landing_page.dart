@@ -177,6 +177,7 @@
 //   }
 // }
 
+import 'package:ccm/auth/login.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/main.dart';
 import 'package:ccm/pages/client_list.dart';
@@ -198,19 +199,25 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          AnimatedContainer(
-            duration: Duration(seconds: 1),
-            child: CustomDrawer(),
-          ),
-          Expanded(
-            flex: 17,
-            child: child,
-          ),
-        ],
-      ),
+      body: GetBuilder(
+          init: authController,
+          builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                authController.auth.currentUser == null
+                    ? Container()
+                    : AnimatedContainer(
+                        duration: Duration(seconds: 1),
+                        child: CustomDrawer(),
+                      ),
+                Expanded(
+                  flex: 17,
+                  child: child,
+                ),
+              ],
+            );
+          }),
     );
   }
 }
@@ -294,19 +301,25 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         },
                         leading: Icon(Icons.account_circle),
                       ),
-                      SideTile(
-                        isCollapsed: isCollapsed,
-                        selected: selectedIndex == 3,
-                        title: Text('User'),
-                        onTap: () {
-                          // page.jumpToPage(3);
-                          Get.offAll(() => UsersList());
-                          setState(() {
-                            selectedIndex = 3;
-                          });
-                        },
-                        leading: Icon(Icons.people),
-                      ),
+                      GetBuilder(
+                          init: session,
+                          builder: (context) {
+                            return (session.user?.role ?? "User") != "Admin"
+                                ? Container()
+                                : SideTile(
+                                    isCollapsed: isCollapsed,
+                                    selected: selectedIndex == 3,
+                                    title: Text('User'),
+                                    onTap: () {
+                                      // page.jumpToPage(3);
+                                      Get.offAll(() => UsersList());
+                                      setState(() {
+                                        selectedIndex = 3;
+                                      });
+                                    },
+                                    leading: Icon(Icons.people),
+                                  );
+                          }),
                       SideTile(
                         isCollapsed: isCollapsed,
                         selected: selectedIndex == 4,
@@ -338,8 +351,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         title: Text('Log out'),
                         onTap: () {
                           authController.auth.signOut().then((value) {
-                            Get.offAll(MyApp());
-                            setState(() {});
+                            Get.offAll(SignIn());
                           });
                         },
                         leading: Icon(Icons.logout),
