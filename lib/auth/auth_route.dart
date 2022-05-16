@@ -2,11 +2,12 @@ import 'package:ccm/auth/login.dart';
 import 'package:ccm/controllers/getx_controllers.dart';
 import 'package:ccm/pages/landing_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../services/firebase.dart';
 
 class AuthRouter extends StatelessWidget {
-  const AuthRouter({Key? key}) : super(key: key);
+  const AuthRouter({Key? key, required this.child}) : super(key: key);
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +17,7 @@ class AuthRouter extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
             session.loadProfile();
-            return GetBuilder(
-                init: session,
-                builder: (context) {
-                  return LandingPage();
-                });
+            return LandingPage(child: child);
           } else {
             return SignIn();
           }

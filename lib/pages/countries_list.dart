@@ -140,6 +140,7 @@ class _CountriesListState extends State<CountriesList> {
                                         crossAxisCount: 5,
                                         childAspectRatio: 4,
                                         children: session.myCountries
+                                            .where((element) => _tempCountries.contains(element))
                                             .map((e) => InkWell(
                                                 onTap: () {
                                                   session.country = e;
