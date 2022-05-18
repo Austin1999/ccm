@@ -178,13 +178,16 @@ class _DashboardState extends State<Dashboard> {
                         }),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         child: MonthlyStatement(
                           currency: currency,
                           country: country,
                           client: client,
                         ),
                       ),
+                      SizedBox(
+                        height: 16,
+                      )
                     ],
                   ),
                 ),

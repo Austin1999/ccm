@@ -83,7 +83,10 @@ class _AgedAccountsState extends State<AgedAccounts> {
                                   alignment: Alignment.center,
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
-                                    child: Text('AGED RECEIVABLES', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                                    child: Text(
+                                      'AGED RECEIVABLES',
+                                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20),
+                                    ),
                                   )),
                             ]),
                             TableRow(
@@ -94,7 +97,13 @@ class _AgedAccountsState extends State<AgedAccounts> {
                                     getReceivableChartData(),
                                     animate: true,
                                     vertical: false,
-                                    barRendererDecorator: new charts.BarLabelDecorator<String>(labelPosition: charts.BarLabelPosition.auto),
+                                    barRendererDecorator: new charts.BarLabelDecorator<String>(
+                                        labelPosition: charts.BarLabelPosition.auto,
+                                        insideLabelStyleSpec: charts.TextStyleSpec(
+                                          fontSize: 16,
+                                          fontWeight: 'BOLD',
+                                          color: charts.Color(r: 255, g: 255, b: 255),
+                                        )),
                                   ),
                                 ),
                               ],
@@ -118,7 +127,10 @@ class _AgedAccountsState extends State<AgedAccounts> {
                                   alignment: Alignment.center,
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
-                                    child: Text('AGED PAYABLES', style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20)),
+                                    child: Text(
+                                      'AGED PAYABLES',
+                                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20),
+                                    ),
                                   )),
                             ]),
                             TableRow(
@@ -130,8 +142,9 @@ class _AgedAccountsState extends State<AgedAccounts> {
                                     animate: true,
                                     vertical: false,
                                     barRendererDecorator: new charts.BarLabelDecorator<String>(
-                                      labelPosition: charts.BarLabelPosition.auto,
-                                    ),
+                                        labelPosition: charts.BarLabelPosition.auto,
+                                        insideLabelStyleSpec:
+                                            charts.TextStyleSpec(fontSize: 16, fontWeight: 'BOLD', color: charts.Color(r: 0, g: 0, b: 0))),
                                   ),
                                 ),
                               ],

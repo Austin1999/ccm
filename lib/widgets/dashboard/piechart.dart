@@ -13,12 +13,7 @@ class PieStatement extends StatelessWidget {
     List<PieChartSectionData> data = [];
     chartData.forEach((element) {
       if (element.value != 0) {
-        data.add(PieChartSectionData(
-          value: element.value,
-          color: element.color,
-          radius: element.radius,
-          title: element.value.toStringAsFixed(2),
-        ));
+        data.add(PieChartSectionData(value: element.value, color: element.color, radius: element.radius, showTitle: false));
       }
     });
     if (data.isEmpty) {

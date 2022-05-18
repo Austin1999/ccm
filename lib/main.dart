@@ -51,7 +51,15 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return LandingPage(child: child ?? CountriesList());
       },
-      home: authController.auth.currentUser == null ? SignIn() : CountriesList(),
+      home: GetBuilder(
+          init: authController,
+          builder: (context) {
+            if (authController.auth.currentUser == null) {
+              return SignIn();
+            } else {
+              return CountriesList();
+            }
+          }),
     );
   }
 }

@@ -17,6 +17,10 @@ class UserModel {
   String? fullname;
   String? docid;
   List<dynamic> country;
+  String? clientQuote;
+  String? clientInvoice;
+  String? quoteClient;
+  String? quoteInvoice;
 
   factory UserModel.fromJson(Map<String, dynamic> json, doc_id) => UserModel(
         name: json["name"],
