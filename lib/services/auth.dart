@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 class Auth {
   final _firebaseAuth = FirebaseAuth.instance;
 
-  @override
   Stream<User?> authStateChanges() => _firebaseAuth.authStateChanges();
 
   Stream<bool> checkUserVerified() async* {
@@ -18,11 +17,8 @@ class Auth {
     }
   }
 
-  @override
   User? get currentUser => _firebaseAuth.currentUser;
 
-  @override
-  @override
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     final userCredential = await _firebaseAuth.signInWithCredential(
       EmailAuthProvider.credential(email: email, password: password),
@@ -31,7 +27,6 @@ class Auth {
     return userCredential.user;
   }
 
-  @override
   Future<User?> createUserWithEmailAndPassword(String email, String password) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
@@ -46,8 +41,6 @@ class Auth {
     });
   }
 
-  @override
-  @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }

@@ -1,15 +1,10 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/client.dart';
-import 'package:ccm/models/countries.dart';
 import 'package:ccm/services/firebase.dart';
-import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:shimmer/shimmer.dart';
-
-import 'countries_list.dart';
 
 class ClientList extends StatefulWidget {
   const ClientList({Key? key}) : super(key: key);
@@ -22,13 +17,19 @@ class _ClientListState extends State<ClientList> {
   @override
   void initState() {
     super.initState();
-    _selectedCountry = session.country ?? session.countries.first;
   }
 
-  late Country _selectedCountry;
+  List<Client> get clientList {
+    if (searchcountry == null) {
+      return clientController.overAllClientList;
+    } else {
+      return clientController.overAllClientList.where((element) => element.country == searchcountry).toList();
+    }
+  }
+
   String searchclient = '';
-  String searchcountry = session.countries.first.code;
-  addClient({required isEdit, nameval, addressval, required cwrval, emailval, phoneval, contact, doc_id}) {
+  String? searchcountry;
+  addClient({required isEdit, nameval, addressval, required cwrval, emailval, phoneval, contact, docId}) {
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
     TextEditingController cwr = TextEditingController(text: cwrval);
@@ -147,7 +148,7 @@ class _ClientListState extends State<ClientList> {
                                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                           child: DropdownButton(
                                               value: cwr.text,
-                                              items: session.countries
+                                              items: session.sessionCountries
                                                   .map((e) => DropdownMenuItem(
                                                         child: Text(e.name),
                                                         value: e.code,
@@ -341,7 +342,7 @@ class _ClientListState extends State<ClientList> {
                                       email: email.text,
                                       phone: phone.text,
                                       cwr: cwr.text,
-                                      docid: doc_id,
+                                      docid: docId,
                                     );
 
                                     isEdit
@@ -453,15 +454,10 @@ class _ClientListState extends State<ClientList> {
                                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                         child: DropdownButton(
                                             value: searchcountry,
-                                            items: session.countries
-                                                .map((e) => DropdownMenuItem(
-                                                      child: Text(e.name),
-                                                      value: e.code,
-                                                    ))
-                                                .toList(),
+                                            items: getCountryDropdown(),
                                             onChanged: (String? value) {
                                               setState(() {
-                                                searchcountry = value!;
+                                                searchcountry = value;
                                               });
                                             },
                                             hint: Text("Select item")),
@@ -481,204 +477,140 @@ class _ClientListState extends State<ClientList> {
                             SizedBox(
                               height: 20,
                             ),
-                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                                stream: countries
-                                    .doc(searchcountry)
-                                    .collection('clients')
-                                    .where('email', isGreaterThanOrEqualTo: searchclient.toLowerCase(), isLessThan: searchclient.toLowerCase() + 'z')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
-                                    List<Client> _clients = [];
-
-                                    _clients = snapshot.data!.docs.map((e) {
-                                      // docid = e.id;
-                                      return Client.fromJson(e.data(), e.id);
-                                    }).toList();
-                                    // session = _tempCountries;
-                                    // session.country = session.countries.first;
-                                    return SingleChildScrollView(
-                                        scrollDirection: Axis.vertical,
-                                        child: Table(
-                                          children: [
-                                            TableRow(
-                                              children: [
-                                                DataTable(
-                                                  columns: [
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Client Name',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Address',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Email ID',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Phone No',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Country',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'CWR Country',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Contact Person',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Delete',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                    DataColumn(
-                                                      label: Text(
-                                                        'Edit',
-                                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                  rows: _clients
-                                                      .map<DataRow>(
-                                                        (e) => DataRow(
-                                                          cells: [
-                                                            DataCell(
-                                                              Text(e.name),
-                                                            ),
-                                                            DataCell(
-                                                              Text(e.address!),
-                                                            ),
-                                                            DataCell(
-                                                              Text(e.email!),
-                                                            ),
-                                                            DataCell(
-                                                              Text(e.phone!),
-                                                            ),
-                                                            DataCell(
-                                                              Text(e.country!),
-                                                            ),
-                                                            DataCell(
-                                                              Text(e.cwr!),
-                                                            ),
-                                                            DataCell(
-                                                              Text(e.contactPerson!),
-                                                            ),
-                                                            DataCell(
-                                                              Icon(
-                                                                Icons.delete,
-                                                                color: Colors.red,
-                                                              ),
-                                                              onTap: () {
-                                                                CoolAlert.show(
-                                                                    context: context,
-                                                                    type: CoolAlertType.confirm,
-                                                                    width: MediaQuery.of(context).size.width > 500
-                                                                        ? MediaQuery.of(context).size.width / 2
-                                                                        : MediaQuery.of(context).size.width * 0.85,
-                                                                    showCancelBtn: true,
-                                                                    onCancelBtnTap: () => Navigator.pop(context),
-                                                                    onConfirmBtnTap: () async {
-                                                                      await countries
-                                                                          .doc(session.country!.code)
-                                                                          .collection('clients')
-                                                                          .doc(e.docid)
-                                                                          .delete();
-                                                                      // .whenComplete(() =>
-                                                                      Navigator.pop(context);
-                                                                      // );
-                                                                    });
-                                                              },
-                                                            ),
-                                                            DataCell(
-                                                                Icon(
-                                                                  Icons.edit,
-                                                                  // color: Colors.,
-                                                                ), onTap: () {
-                                                              addClient(
-                                                                  isEdit: true,
-                                                                  nameval: e.name,
-                                                                  addressval: e.address,
-                                                                  emailval: e.email,
-                                                                  phoneval: e.phone,
-                                                                  cwrval: e.country,
-                                                                  contact: e.contactPerson,
-                                                                  doc_id: e.docid);
-                                                            }),
-                                                          ],
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                                ),
-                                              ],
+                            SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Table(
+                                  children: [
+                                    TableRow(
+                                      children: [
+                                        DataTable(
+                                          columns: [
+                                            DataColumn(
+                                              label: Text(
+                                                'Client Name',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Address',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Email ID',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Phone No',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Country',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'CWR Country',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Contact Person',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Delete',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Edit',
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
                                             ),
                                           ],
-                                        ));
-                                  } else {
-                                    //   return Center(
-                                    //     child: CircularProgressIndicator(),
-                                    //   );
-                                    // }
-                                    return Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      // enabled: _enabled,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context).size.width * 0.55,
-                                              child: Card(
-                                                  color: Colors.white,
-                                                  elevation: 5,
-                                                  child: TextFormField(
-                                                    decoration: InputDecoration(
-                                                        suffixIcon: Icon(Icons.search), border: OutlineInputBorder(borderSide: BorderSide.none)),
-                                                  )),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          GridView.builder(
-                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 5,
-                                              childAspectRatio: 4,
-                                            ),
-                                            itemCount: 35,
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index) {
-                                              return CountryCard(text: "", code: "");
-                                            }, // crossAxisCount: 5,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                }),
+                                          rows: clientList
+                                              .map<DataRow>(
+                                                (e) => DataRow(
+                                                  cells: [
+                                                    DataCell(
+                                                      Text(e.name),
+                                                    ),
+                                                    DataCell(
+                                                      Text(e.address!),
+                                                    ),
+                                                    DataCell(
+                                                      Text(e.email!),
+                                                    ),
+                                                    DataCell(
+                                                      Text(e.phone!),
+                                                    ),
+                                                    DataCell(
+                                                      Text(e.country!),
+                                                    ),
+                                                    DataCell(
+                                                      Text(e.cwr!),
+                                                    ),
+                                                    DataCell(
+                                                      Text(e.contactPerson!),
+                                                    ),
+                                                    DataCell(
+                                                      Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red,
+                                                      ),
+                                                      onTap: () {
+                                                        CoolAlert.show(
+                                                            context: context,
+                                                            type: CoolAlertType.confirm,
+                                                            width: MediaQuery.of(context).size.width > 500
+                                                                ? MediaQuery.of(context).size.width / 2
+                                                                : MediaQuery.of(context).size.width * 0.85,
+                                                            showCancelBtn: true,
+                                                            onCancelBtnTap: () => Navigator.pop(context),
+                                                            onConfirmBtnTap: () async {
+                                                              await countries.doc(session.country!.code).collection('clients').doc(e.docid).delete();
+                                                              // .whenComplete(() =>
+                                                              Navigator.pop(context);
+                                                              // );
+                                                            });
+                                                      },
+                                                    ),
+                                                    DataCell(
+                                                        Icon(
+                                                          Icons.edit,
+                                                          // color: Colors.,
+                                                        ), onTap: () {
+                                                      addClient(
+                                                          isEdit: true,
+                                                          nameval: e.name,
+                                                          addressval: e.address,
+                                                          emailval: e.email,
+                                                          phoneval: e.phone,
+                                                          cwrval: e.country,
+                                                          contact: e.contactPerson,
+                                                          docId: e.docid);
+                                                    }),
+                                                  ],
+                                                ),
+                                              )
+                                              .toList(),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ))
                           ],
                         ),
                       ),
@@ -689,6 +621,17 @@ class _ClientListState extends State<ClientList> {
             ),
           ),
         ));
+  }
+
+  List<DropdownMenuItem<String>> getCountryDropdown() {
+    var list = session.sessionCountries
+        .map((e) => DropdownMenuItem(
+              child: Text(e.name),
+              value: e.code,
+            ))
+        .toList();
+    list.add(DropdownMenuItem(child: Text('All Countries')));
+    return list;
   }
 }
 

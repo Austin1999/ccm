@@ -1,4 +1,4 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/usermodel.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController fullname = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController phone = TextEditingController();
-  var uid = authController.auth.currentUser!.uid;
+  var uid = session.auth.currentUser!.uid;
 
   @override
   void initState() {

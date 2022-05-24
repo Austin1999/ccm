@@ -22,7 +22,7 @@ class QuoteTextBox extends StatelessWidget {
       ),
       trailing: trailing,
       subtitle: Card(
-        color: Colors.white,
+        color: readOnly ? Colors.grey.shade200 : Colors.white,
         elevation: 5,
         shadowColor: Colors.grey,
         child: TextFormField(

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:ccm/models/client.dart';
 import 'package:ccm/models/response.dart';
 
 import '../services/firebase.dart' as firebase;

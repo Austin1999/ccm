@@ -1,8 +1,8 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/comment.dart';
-import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CommentsList extends StatefulWidget {
   CommentsList({Key? key, required this.comments}) : super(key: key);
@@ -17,6 +17,8 @@ class _CommentsListState extends State<CommentsList> {
   final TextEditingController controller = TextEditingController();
 
   var _scrollController = ScrollController();
+
+  FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -59,7 +61,27 @@ class _CommentsListState extends State<CommentsList> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CustomTextFormField(
+                        focusNode: _focusNode,
+                        autofocus: true,
                         controller: controller,
+                        onFieldSubmitted: (p1) {
+                          setState(() {
+                            widget.comments.add(Comment(
+                              comment: controller.text,
+                              label: session.auth.currentUser!.displayName ?? '',
+                              uid: session.auth.currentUser!.uid,
+                              date: DateTime.now(),
+                            ));
+                            _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              curve: Curves.easeOut,
+                              duration: const Duration(milliseconds: 100),
+                            );
+
+                            _focusNode.requestFocus();
+                            controller.clear();
+                          });
+                        },
                       ),
                     ),
                     const Divider(),
@@ -72,8 +94,8 @@ class _CommentsListState extends State<CommentsList> {
                             setState(() {
                               widget.comments.add(Comment(
                                 comment: controller.text,
-                                label: authController.auth.currentUser!.displayName ?? '',
-                                uid: authController.auth.currentUser!.uid,
+                                label: session.auth.currentUser!.displayName ?? '',
+                                uid: session.auth.currentUser!.uid,
                                 date: DateTime.now(),
                               ));
                               _scrollController.animateTo(
@@ -81,6 +103,9 @@ class _CommentsListState extends State<CommentsList> {
                                 curve: Curves.easeOut,
                                 duration: const Duration(milliseconds: 100),
                               );
+
+                              _focusNode.requestFocus();
+                              controller.clear();
                             });
                           },
                           child: Text("Submit"),
@@ -108,25 +133,27 @@ class _CommentsListState extends State<CommentsList> {
       // ));
       listTiles.add(Padding(
         padding: EdgeInsets.only(
-          left: (authController.auth.currentUser!.uid != widget.comments[i].uid) ? 0 : 40,
-          right: (authController.auth.currentUser!.uid == widget.comments[i].uid) ? 0 : 40,
+          left: (session.auth.currentUser!.uid != widget.comments[i].uid) ? 0 : 40,
+          right: (session.auth.currentUser!.uid == widget.comments[i].uid) ? 0 : 40,
         ),
         child: Card(
           child: ListTile(
-            // leading: authController.auth.currentUser!.uid == widget.comments[i].uid ? Container() : null,
+            // leading: session.auth.currentUser!.uid == widget.comments[i].uid ? Container() : null,
             title: Text(widget.comments[i].comment, style: TextStyle(color: Colors.black)),
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: Align(alignment: Alignment.centerRight, child: Text(format.format(widget.comments[i].date))),
+              child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(widget.comments[i].label + " ~ " + DateFormat.yMd().add_jm().format(widget.comments[i].date))),
             ),
-            // trailing: authController.auth.currentUser!.uid == widget.comments[i].uid ? null : Container(),
+            // trailing: session.auth.currentUser!.uid == widget.comments[i].uid ? null : Container(),
           ),
         ),
       ));
 
       // Map<int, TableColumnWidth>? columnWidths;
-      // if (authController.auth.currentUser!.uid == widget.comments[i].uid) {
-      //   if (widget.comments[i].uid == authController.auth.currentUser!.uid) {
+      // if (session.auth.currentUser!.uid == widget.comments[i].uid) {
+      //   if (widget.comments[i].uid == session.auth.currentUser!.uid) {
       //     columnWidths = {
       //       0: FlexColumnWidth(0),
       //       1: FlexColumnWidth(8),

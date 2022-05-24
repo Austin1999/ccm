@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/services/firebase.dart';
 
@@ -20,7 +19,7 @@ class Contractor {
   String? contactPerson;
   String? docid;
 
-  factory Contractor.fromJson(Map<String, dynamic> json, doc_id) => Contractor(
+  factory Contractor.fromJson(Map<String, dynamic> json, docId) => Contractor(
       name: json["name"],
       address: json["address"],
       country: json["country"],
@@ -28,7 +27,7 @@ class Contractor {
       payable: json['payable'] ?? 0,
       phone: json["phone"],
       countryName: json["countryName"] ?? '',
-      docid: doc_id,
+      docid: docId,
       contactPerson: json["contactPerson"] ?? '');
 
   Map<String, dynamic> toJson() => {

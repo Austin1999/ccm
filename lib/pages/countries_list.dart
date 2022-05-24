@@ -1,4 +1,4 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/countries.dart';
 
 import 'package:flutter/material.dart';
@@ -15,7 +15,6 @@ class CountriesList extends StatefulWidget {
 
 class _CountriesListState extends State<CountriesList> {
   TextEditingController searchcon = TextEditingController();
-  RxList _tempCountries = RxList([]);
   String search = '';
   late String _selectedCountry;
   @override
@@ -114,103 +113,29 @@ class _CountriesListState extends State<CountriesList> {
                             SizedBox(
                               height: 20,
                             ),
-                            Obx(() {
-                              if (countryController.countrylist.isEmpty) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Center(
-                                    child: Text(
-                                      'No Countries found',
-                                      style: Theme.of(context).textTheme.headline4,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                _tempCountries = countryController.countrylist
-                                    .where((element) => element.name.toLowerCase().contains(search.toLowerCase()))
-                                    .toList()
-                                    .obs;
-
-                                return GetBuilder(
-                                    init: session,
-                                    builder: (_) {
-                                      session.loadProfile();
-                                      return GridView.count(
-                                        shrinkWrap: true,
-                                        crossAxisCount: 5,
-                                        childAspectRatio: 4,
-                                        children: session.myCountries
-                                            .where((element) => _tempCountries.contains(element))
-                                            .map((e) => InkWell(
-                                                onTap: () {
-                                                  session.country = e;
-
-                                                  // Get.put(ContractorController());
-                                                  Get.to(() => CwrSummary());
-                                                },
-                                                child: CountryCard(text: e.name, code: e.code.toLowerCase())))
-                                            .toList(),
-                                        //         );
-                                        // } else {
-                                        //   return Center(
-                                        //     child: CircularProgressIndicator(),
-                                        //   );
-                                        // }
-                                        // return Shimmer.fromColors(
-                                        //   baseColor: Colors.grey[300]!,
-                                        //   highlightColor: Colors.grey[100]!,
-                                        //   // enabled: _enabled,
-                                        //   child: Column(
-                                        //     crossAxisAlignment:
-                                        //         CrossAxisAlignment.start,
-                                        //     children: [
-                                        //       Padding(
-                                        //         padding: const EdgeInsets.all(8.0),
-                                        //         child: SizedBox(
-                                        //           width: MediaQuery.of(context)
-                                        //                   .size
-                                        //                   .width *
-                                        //               0.55,
-                                        //           child: Card(
-                                        //               color: Colors.white,
-                                        //               elevation: 5,
-                                        //               child: TextFormField(
-                                        //                 decoration: InputDecoration(
-                                        //                     suffixIcon:
-                                        //                         Icon(Icons.search),
-                                        //                     border:
-                                        //                         OutlineInputBorder(
-                                        //                             borderSide:
-                                        //                                 BorderSide
-                                        //                                     .none)),
-                                        //               )),
-                                        //         ),
-                                        //       ),
-                                        //       SizedBox(
-                                        //         height: 20,
-                                        //       ),
-                                        //       GridView.builder(
-                                        //         gridDelegate:
-                                        //             SliverGridDelegateWithFixedCrossAxisCount(
-                                        //           crossAxisCount: 5,
-                                        //           childAspectRatio: 4,
-                                        //         ),
-                                        //         itemCount: 35,
-                                        //         shrinkWrap: true,
-                                        //         itemBuilder: (context, index) {
-                                        //           return CountryCard(
-                                        //               text: "", code: "");
-                                        //         }, // crossAxisCount: 5,
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        // );
-                                        // }
-                                        // }
-                                      );
-                                    });
-                              }
-                            }),
+                            GetBuilder(
+                                init: session,
+                                builder: (_) {
+                                  printInfo(info: (session.user?.country).toString());
+                                  return session.user == null
+                                      ? Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : GridView.count(
+                                          shrinkWrap: true,
+                                          crossAxisCount: 5,
+                                          childAspectRatio: 4,
+                                          children: session.sessionCountries
+                                              .where((element) => session.user!.country.contains(element.code))
+                                              .map((e) => InkWell(
+                                                  onTap: () {
+                                                    session.country = e;
+                                                    Get.to(() => CwrSummary());
+                                                  },
+                                                  child: CountryCard(text: e.name, code: e.code.toLowerCase())))
+                                              .toList(),
+                                        );
+                                })
                           ],
                         ),
                       ),
@@ -252,6 +177,23 @@ class CountryCard extends StatelessWidget {
     );
   }
 }
+
+// return GridView.count(
+//                                               shrinkWrap: true,
+//                                               crossAxisCount: 5,
+//                                               childAspectRatio: 4,
+//                                               children: session.myCountries
+//                                                   .where((element) => _tempCountries.contains(element))
+//                                                   .map((e) => InkWell(
+//                                                       onTap: () {
+//                                                         session.country = e;
+
+//                                                         // Get.put(ContractorController());
+//                                                         Get.to(() => CwrSummary());
+//                                                       },
+//                                                       child: CountryCard(text: e.name, code: e.code.toLowerCase())))
+//                                                   .toList(),
+//                                             );
 
 // class AddCountry extends StatefulWidget {
 //   AddCountry({Key? key}) : super(key: key);

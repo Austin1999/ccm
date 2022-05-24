@@ -178,7 +178,7 @@
 // }
 
 import 'package:ccm/auth/login.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/pages/client_list.dart';
 import 'package:ccm/pages/contractor_list.dart';
 import 'package:ccm/pages/countries_list.dart';
@@ -198,12 +198,12 @@ class LandingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder(
-          init: authController,
+          init: session,
           builder: (context) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                authController.auth.currentUser == null
+                session.auth.currentUser == null
                     ? Container()
                     : AnimatedContainer(
                         duration: Duration(seconds: 1),
@@ -348,7 +348,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         isCollapsed: isCollapsed,
                         title: Text('Log out'),
                         onTap: () {
-                          authController.auth.signOut().then((value) {
+                          session.auth.signOut().then((value) {
                             Get.offAll(SignIn());
                           });
                         },

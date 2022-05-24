@@ -2,8 +2,7 @@
 //
 //     final client = clientFromJson(jsonString);
 
-import 'dart:convert';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/services/firebase.dart';
 
@@ -23,14 +22,14 @@ class Client {
   String? contactPerson;
   String? docid;
 
-  factory Client.fromJson(Map<String, dynamic> json, doc_id) => Client(
+  factory Client.fromJson(Map<String, dynamic> json, docId) => Client(
       name: json["name"],
       address: json["address"],
       country: json["country"],
       email: json["email"],
       phone: json["phone"],
       cwr: json["cwr"] ?? '',
-      docid: doc_id,
+      docid: docId,
       contactPerson: json["contactPerson"] ?? '');
 
   Map<String, dynamic> toJson() => {

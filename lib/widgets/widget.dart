@@ -10,6 +10,9 @@ class CustomTextFormField extends StatelessWidget {
     this.sufix,
     this.controller,
     this.suffixIcon,
+    this.onFieldSubmitted,
+    this.autofocus = false,
+    this.focusNode,
   }) : super(key: key);
 
   final String? labelText;
@@ -18,6 +21,9 @@ class CustomTextFormField extends StatelessWidget {
   final String? hintText;
   final TextEditingController? controller;
   final Widget? suffixIcon;
+  final bool autofocus;
+  final void Function(String)? onFieldSubmitted;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +32,9 @@ class CustomTextFormField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
+          focusNode: focusNode,
+          autofocus: autofocus,
+          onFieldSubmitted: onFieldSubmitted,
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(

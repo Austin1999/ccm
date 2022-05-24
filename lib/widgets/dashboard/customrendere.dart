@@ -1,13 +1,11 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:math' as math;
 import 'dart:math';
-
-import 'package:meta/meta.dart' show required;
 
 import "package:charts_common/common.dart"
     show Color, GraphicsFactory, TextDirection, TextElement, TextStyle, ChartCanvas, TextStyleSpec, ImmutableBarRendererElement, BarRendererDecorator;
 import "package:charts_common/src/data/series.dart" show AccessorFn;
-import "package:charts_flutter/src/chart_canvas.dart" as Canvasee;
-import "package:charts_common/common.dart" as comm;
 /* import '../../common/color.dart' show Color;
 import '../../common/graphics_factory.dart' show GraphicsFactory;
 import '../../common/text_element.dart' show TextDirection, TextElement;
@@ -132,7 +130,7 @@ class BarLabelDecoratorWorkAround<D> extends BarRendererDecorator<D> {
       // Set the max width, text style, and text direction.
       labelElements = labelElements.map((labelElement) => labelElement
         ..textStyle = calculatedLabelPosition == BarLabelPosition.inside ? datumInsideLabelStyle : datumOutsideLabelStyle
-        ..maxWidth = bounds.width
+        ..maxWidth = labelElement.text.length * 16
         ..textDirection = rtl ? TextDirection.rtl : TextDirection.ltr);
 
       // Total label height depends on the label element's text style.
@@ -168,8 +166,8 @@ class BarLabelDecoratorWorkAround<D> extends BarRendererDecorator<D> {
         }
 
         // Center the label inside the bar.
-        int labelX = (bounds.left + bounds.width / 2 - labelElement.measurement.verticalSliceWidth / 2).round();
-        labelX = labelX + (labelElement.measurement.horizontalSliceWidth / 2.5).round();
+        final labelX = (bounds.left + bounds.width / 2 - labelElement.measurement.verticalSliceWidth / 2).round();
+
         canvas.drawText(labelElement, labelX, labelY, rotation: -math.pi / 2);
         labelsDrawn += 1;
       }

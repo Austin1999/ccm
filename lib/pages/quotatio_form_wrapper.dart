@@ -3,7 +3,7 @@ import 'package:ccm/pages/quotation_form.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../controllers/getx_controllers.dart';
+import '../controllers/sessionController.dart';
 import '../models/quote.dart';
 import '../services/firebase.dart';
 import '../widgets/quotation/invoice_list.dart';
@@ -99,7 +99,7 @@ class _QuotationFormListState extends State<QuotationFormList> {
   Future<List<Quotation>> populateQuotes() async {
     List<Quotation> relatedQuotes = [];
     if (widget.quotation != null) {
-      var list = relatedQuotes = await quotations.where('parentQuote', isEqualTo: widget.quotation!.number).get().then((value) {
+      relatedQuotes = await quotations.where('parentQuote', isEqualTo: widget.quotation!.number).get().then((value) {
         return value.docs.map((e) => Quotation.fromJson(e.data())).toList();
       });
       relatedQuotes.insert(0, widget.quotation!);

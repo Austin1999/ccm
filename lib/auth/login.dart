@@ -1,4 +1,4 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/pages/countries_list.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
@@ -145,7 +145,7 @@ class _SignInState extends State<SignIn> {
                                     actions: [
                                       ElevatedButton(
                                           onPressed: () {
-                                            authController.auth.resetPassword(email: controller.text);
+                                            session.auth.resetPassword(email: controller.text);
                                             Navigator.of(context).pop();
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(SnackBar(content: Text("A Reset link will be sent to the provided mail")));
@@ -164,7 +164,7 @@ class _SignInState extends State<SignIn> {
                                     : MediaQuery.of(context).size.width * 0.85,
                                 context: context,
                                 type: CoolAlertType.loading);
-                            authController.auth.signInWithEmailAndPassword(username.text, password.text).then((value) {
+                            session.auth.signInWithEmailAndPassword(username.text, password.text).then((value) {
                               Get.offAll(CountriesList());
                             }, onError: (e) {
                               Navigator.pop(context);

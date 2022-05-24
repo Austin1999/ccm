@@ -1,11 +1,9 @@
-import 'package:ccm/auth/auth_route.dart';
 import 'package:ccm/auth/login.dart';
 import 'package:ccm/controllers/currency_controller.dart';
-import 'package:ccm/controllers/getControllers.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/getControllers_list.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/firebase_options.dart';
 import 'package:ccm/pages/countries_list.dart';
-import 'package:ccm/services/firebase.dart';
 // import 'package:ccm/services/firebase.dart';
 // import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +26,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  Get.put(CountryController());
-  Get.put(ContractorController());
-  Get.put(AuthController());
+
   Get.put(SessionController());
+  Get.put(ContractorController());
   Get.put(CurrencyController());
   currencyController.syncResponse();
   Get.put(ClientController());
@@ -52,9 +49,9 @@ class MyApp extends StatelessWidget {
         return LandingPage(child: child ?? CountriesList());
       },
       home: GetBuilder(
-          init: authController,
+          init: session,
           builder: (context) {
-            if (authController.auth.currentUser == null) {
+            if (session.auth.currentUser == null) {
               return SignIn();
             } else {
               return CountriesList();

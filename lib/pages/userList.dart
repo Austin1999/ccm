@@ -1,14 +1,9 @@
-import 'package:ccm/controllers/getx_controllers.dart';
-import 'package:ccm/models/client.dart';
-import 'package:ccm/models/countries.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/usermodel.dart';
 import 'package:ccm/pages/user_form.dart';
 import 'package:ccm/services/firebase.dart';
-import 'package:ccm/widgets/widget.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'countries_list.dart';
@@ -24,10 +19,8 @@ class _UsersListState extends State<UsersList> {
   @override
   void initState() {
     super.initState();
-    _selectedCountry = session.country ?? session.countries.first;
+    // Get.put(CountryController());
   }
-
-  late Country _selectedCountry;
 
   String searchclient = '';
   @override
@@ -106,7 +99,7 @@ class _UsersListState extends State<UsersList> {
                                       return UserModel.fromJson(e.data(), e.id);
                                     }).toList();
                                     // session = _tempCountries;
-                                    session.country = session.countries.first;
+                                    session.country = session.sessionCountries.first;
                                     return SingleChildScrollView(
                                       scrollDirection: Axis.vertical,
                                       child: Table(
@@ -181,7 +174,7 @@ class _UsersListState extends State<UsersList> {
                                                             Text(e.phone!),
                                                           ),
                                                           DataCell(
-                                                            Text(e.role!),
+                                                            Text(e.role ?? false ? "User" : "Admin"),
                                                           ),
                                                           DataCell(
                                                             Text(e.fullname!),

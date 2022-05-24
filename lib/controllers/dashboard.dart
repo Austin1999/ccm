@@ -1,5 +1,5 @@
 import 'package:ccm/controllers/currency_controller.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/main.dart';
 import 'package:ccm/models/dashboard/AccountChart.dart';
 import 'package:ccm/models/dashboard_data.dart';

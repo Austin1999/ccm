@@ -1,13 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:ccm/controllers/dashboard.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/widgets/dashboard/pieboard.dart';
 import 'package:ccm/widgets/dashboard/top5.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:universal_html/html.dart';
@@ -16,15 +13,8 @@ import '../controllers/currency_controller.dart';
 import '../models/dashboard/AccountChart.dart';
 import '../widgets/dashboard/agedAccounatables.dart';
 import '../widgets/dashboard/monthly_statement.dart';
-import 'dart:ui' as ui;
 
-import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({Key? key}) : super(key: key);
@@ -46,8 +36,6 @@ class _DashboardState extends State<Dashboard> {
   late String currency;
   late String? country;
   String? client;
-
-  final GlobalKey _globalKey = new GlobalKey();
 
   final _screenshotController = ScreenshotController();
   List<int> bytes = [];
@@ -213,7 +201,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   List<DropdownMenuItem<String>> getCountryList() {
-    var list = countryController.countrylist
+    var list = session.sessionCountries
         .map((element) => DropdownMenuItem(
               child: Text(element.name),
               value: element.code,

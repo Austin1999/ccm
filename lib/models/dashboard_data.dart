@@ -90,7 +90,7 @@ class ListElement {
     required this.date,
     required this.entity,
     this.credits = 0.0,
-    required this.quote_id,
+    required this.quoteId,
     required this.currency,
     required this.actualAmount,
     required this.closedAmount,
@@ -103,7 +103,7 @@ class ListElement {
   DateTime date;
   String entity;
   double credits;
-  String quote_id;
+  String quoteId;
   String currency;
   double actualAmount;
   double closedAmount;
@@ -118,7 +118,7 @@ class ListElement {
         date: DateTime.fromMillisecondsSinceEpoch(json["date"]),
         entity: json["entity"],
         credits: json["credits"] ?? 0,
-        quote_id: json["quote_id"] ?? '',
+        quoteId: json["quote_id"] ?? '',
         currency: json["currency"] ?? '',
         actualAmount: json["actualAmount"],
         closedAmount: json["closedAmount"],
@@ -132,7 +132,7 @@ class ListElement {
         "date": date.millisecondsSinceEpoch,
         "entity": entity,
         "credits": credits,
-        "quote_id": quote_id,
+        "quote_id": quoteId,
         "currency": currency,
         "actualAmount": actualAmount,
         "closedAmount": closedAmount,

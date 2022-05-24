@@ -1,7 +1,6 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/models/response.dart';
-import 'package:ccm/pages/quotatio_form_wrapper.dart';
 import 'package:ccm/pages/quotation_form.dart';
 import 'package:ccm/pages/trash.dart';
 import 'package:ccm/services/excel_syncfustion.dart';
@@ -11,12 +10,12 @@ import 'package:ccm/widgets/quotation/multiselect.dart';
 import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
+import 'package:ccm/widgets/quotation/showInvoices.dart';
 import 'package:ccm/widgets/widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../controllers/getControllers.dart';
+import '../controllers/getControllers_list.dart';
 
 class CwrSummary extends StatefulWidget {
   CwrSummary({Key? key}) : super(key: key);
@@ -85,6 +84,7 @@ class _CwrSummaryState extends State<CwrSummary> {
           )),
       backgroundColor: Color(0xFFFAFAFA),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -103,7 +103,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                     onPressed: () {
                       Get.to(() => QuotationForm());
                     },
-                    child: Icon(Icons.add)),
+                    child: Text("Add")),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -115,10 +115,11 @@ class _CwrSummaryState extends State<CwrSummary> {
                         toDate = null;
                         overallStatus = null;
                         approvalStatus = null;
+                        selectedItems = [];
                       });
                       filter();
                     },
-                    child: Icon(Icons.filter_alt_off)),
+                    child: Text("Clear Filter")),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -126,7 +127,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                     onPressed: () {
                       Get.to(() => CwrTrashSummary());
                     },
-                    child: Icon(Icons.delete)),
+                    child: Text("Trash")),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -134,7 +135,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                     onPressed: () {
                       ExcelService.createExcelForquote(quotes);
                     },
-                    child: Icon(CupertinoIcons.arrow_down_doc_fill)),
+                    child: Text("Export")),
               ),
             ],
           ),
@@ -257,125 +258,70 @@ class _CwrSummaryState extends State<CwrSummary> {
               ),
             ),
           ),
-          StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: query.snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
-                var docs = snapshot.data?.docs ?? [];
+          ConstrainedBox(
+            constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width * 15 / 17, maxWidth: MediaQuery.of(context).size.width * 16 / 17),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: query.snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active && snapshot.hasData) {
+                    var docs = snapshot.data?.docs ?? [];
 
-                try {
-                  quotes = docs.map((e) => Quotation.fromJson(e.data())).toList();
-                } catch (e) {
-                  quotes = [];
-                }
+                    try {
+                      quotes = docs.map((e) => Quotation.fromJson(e.data())).toList();
+                    } catch (e) {
+                      quotes = [];
+                    }
 
-                if (selectedItems.isNotEmpty) {
-                  var temp = [];
-                  temp = selectedItems.map((e) => clientController.getIdByName(e).docid).toList();
-                  quotes = quotes.where((element) => temp.contains(element.client)).toList();
-                }
+                    if (selectedItems.isNotEmpty) {
+                      var temp = [];
+                      temp = selectedItems.map((e) => clientController.getIdByName(e).docid).toList();
+                      quotes = quotes.where((element) => temp.contains(element.client)).toList();
+                    }
 
-                var source = QuoteDatasource(quotes, context);
+                    var source = QuoteDatasource(quotes, context);
 
-                return Theme(
-                  data: Theme.of(context).copyWith(
-                    cardTheme: CardTheme(color: Colors.white),
-                    cardColor: Colors.white,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: PaginatedDataTable(
-                            showFirstLastButtons: true,
-                            rowsPerPage: 10,
-                            columns: [
-                              DataColumn(label: Text('Edit')),
-                              DataColumn(label: Text('Invoice')),
-                              DataColumn(label: Text('Child Quotes')),
-                              DataColumn(label: Text('Quote')),
-                              DataColumn(label: Text('Issued on')),
-                              DataColumn(label: Text('Client')),
-                              DataColumn(label: Text('Description')),
-                              DataColumn(label: Text('Amount')),
-                              DataColumn(label: Text('status')),
-                              DataColumn(label: Text('Client PO')),
-                              DataColumn(label: Text('Margin')),
-                              DataColumn(label: Text('CCM Ticket')),
-                              DataColumn(label: Text('Completion Date')),
-                              DataColumn(label: Text('Delete')),
-                            ],
-                            source: source,
-                          ),
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        cardTheme: CardTheme(color: Colors.white),
+                        cardColor: Colors.white,
+                      ),
+                      child: Expanded(
+                        child: PaginatedDataTable(
+                          showCheckboxColumn: true,
+                          showFirstLastButtons: true,
+                          rowsPerPage: 10,
+                          columns: [
+                            DataColumn(label: Text('Edit')),
+                            DataColumn(label: Text('Invoice')),
+                            DataColumn(label: Text('Child Quotes')),
+                            DataColumn(label: Text('Quote')),
+                            DataColumn(label: Text('Issued on')),
+                            DataColumn(label: Text('Client')),
+                            DataColumn(label: Text('Description')),
+                            DataColumn(label: Text('Amount')),
+                            DataColumn(label: Text('status')),
+                            DataColumn(label: Text('Client PO')),
+                            DataColumn(label: Text('Margin')),
+                            DataColumn(label: Text('CCM Ticket')),
+                            DataColumn(label: Text('Completion Date')),
+                            DataColumn(label: Text('Delete')),
+                          ],
+                          source: source,
                         ),
                       ),
-                    ],
-                  ),
-                );
-
-                // return SingleChildScrollView(
-                //   child: DataTable(
-                //       columns: [
-                // DataColumn(label: Text('Edit')),
-                // DataColumn(label: Text('Invoice')),
-                // DataColumn(label: Text('Quote')),
-                // DataColumn(label: Text('Issued on')),
-                // DataColumn(label: Text('Client')),
-                // DataColumn(label: Text('Description')),
-                // DataColumn(label: Text('Amount')),
-                // DataColumn(label: Text('status')),
-                // DataColumn(label: Text('Client PO')),
-                // DataColumn(label: Text('Margin')),
-                // DataColumn(label: Text('CCM Ticket')),
-                // DataColumn(label: Text('Completion Date')),
-                // DataColumn(label: Text('Delete')),
-                //       ],
-                //       rows: quotes
-                //           .map((e) => DataRow(cells: [
-                //                 DataCell(IconButton(
-                //                     onPressed: () {
-                //                       Get.to(() => QuotationForm(quotation: e));
-                //                     },
-                //                     icon: Icon(
-                //                       Icons.edit,
-                //                       color: Colors.indigo,
-                //                     ))),
-                //                 DataCell(IconButton(
-                //                     onPressed: () {},
-                //                     icon: Icon(
-                //                       Icons.insert_drive_file,
-                //                       color: Colors.indigo,
-                //                     ))),
-                //                 DataCell(Text(e.number)),
-                //                 DataCell(Text(format.format(e.issuedDate))),
-                //                 DataCell(Text(e.client)),
-                //                 DataCell(Text(e.description)),
-                //                 DataCell(Text(e.amount.toString())),
-                //                 DataCell(Text(e.approvalStatus.toString().split('.').last.toUpperCase())),
-                //                 DataCell(Text(e.clientApproval.toString())),
-                //                 DataCell(Text(e.margin.toStringAsFixed(2))),
-                //                 DataCell(Text(e.ccmTicketNumber.toString())),
-                //                 DataCell(Text(e.completionDate == null ? '' : format.format(e.completionDate!))),
-                //                 DataCell(IconButton(
-                //                     onPressed: () {
-                //                       var future = quotations.doc(e.id).delete().then((value) => Result.success("Deleted Successfully"));
-                //                       showFutureDialog(context: context, future: future);
-                //                     },
-                //                     icon: Icon(
-                //                       Icons.delete,
-                //                       color: Colors.red,
-                //                     ))),
-                //               ]))
-                //           .toList()),
-                // );
-              }
-              if (snapshot.hasError) {
-                print(snapshot.error);
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    print(snapshot.error);
+                  }
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -433,23 +379,28 @@ class QuoteDatasource extends DataTableSource {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      List<Widget> children = [];
-                      children.add(Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Client Invoices".toUpperCase()),
-                      ));
-                      children.add(InvoiceList(invoices: e.clientInvoices, poNumber: e.clientApproval));
-                      children.add(const Divider());
-                      children.add(Text("Contractor Invoices".toUpperCase()));
-                      e.contractorPo.forEach((element) {
-                        children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
-                        children.add(const Divider());
+                      // List<Widget> children = [];
+                      // children.add(Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: Text("Client Invoices".toUpperCase()),
+                      // ));
+                      // children.add(InvoiceList(invoices: e.clientInvoices, poNumber: e.clientApproval));
+                      // children.add(const Divider());
+                      // children.add(Text("Contractor Invoices".toUpperCase()));
+                      // e.contractorPo.forEach((element) {
+                      //   children.add(InvoiceList(invoices: element.invoices, poNumber: element.number));
+                      //   children.add(const Divider());
+                      // });
+
+                      var contractorInvoices = e.contractorPo.fold<List<Invoice>>([], (t, e) {
+                        t.addAll(e.invoices);
+                        return t;
                       });
+
                       return Dialog(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: children,
-                        ),
+                        insetPadding: EdgeInsets.symmetric(
+                            horizontal: MediaQuery.of(context).size.width / 10, vertical: MediaQuery.of(context).size.height / 10),
+                        child: InvoiceSummmary(clientInvoices: e.clientInvoices, contractorInvoices: contractorInvoices),
                       );
                     });
               },

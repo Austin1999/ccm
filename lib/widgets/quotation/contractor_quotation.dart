@@ -1,5 +1,5 @@
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/widgets/quotation/contractor_invoice.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
@@ -133,6 +133,9 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                           controller: contractorForm.amount,
                           hintText: 'PO Amount',
                           validator: _amountValidator,
+                          onChanged: (p1) {
+                            contractorForm.quoteAmount.text = contractorForm.amount.text;
+                          },
                         ),
                         QuoteDateBox(
                           hintText: 'PO Issued Date',
@@ -144,7 +147,7 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                               context: context,
                               initialDate: contractorForm.issuedDate ?? DateTime.now(),
                               firstDate: DateTime.utc(2000),
-                              lastDate: DateTime.utc(2100),
+                              lastDate: DateTime.now(),
                             ).then((value) {
                               setState(() {
                                 contractorForm.issuedDate = value;
@@ -168,7 +171,7 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                             await showDatePicker(
                               context: context,
                               initialDate: contractorForm.workCommence ?? DateTime.now(),
-                              firstDate: DateTime.utc(2010),
+                              firstDate: contractorForm.issuedDate ?? DateTime.utc(2010),
                               lastDate: DateTime.utc(2050),
                             ).then((value) {
                               setState(() {
@@ -185,8 +188,8 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                           onPressed: () async {
                             await showDatePicker(
                               context: context,
-                              initialDate: contractorForm.workComplete ?? DateTime.now(),
-                              firstDate: DateTime.utc(2010),
+                              initialDate: contractorForm.workComplete ?? contractorForm.workCommence ?? DateTime.now(),
+                              firstDate: contractorForm.workCommence ?? contractorForm.issuedDate ?? DateTime.utc(2010),
                               lastDate: DateTime.utc(2050),
                             ).then((value) {
                               setState(() {

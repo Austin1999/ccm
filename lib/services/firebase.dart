@@ -7,15 +7,15 @@ export './auth.dart';
 
 import 'dart:io';
 
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/firebase_database.dart' as x;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
-final databaseRef = FirebaseDatabase.instance.ref();
+final databaseRef = x.FirebaseDatabase.instance.ref();
 // final databaseRef = FirebaseDatabase.instance.refFromURL("http://localhost:9000/?ns=ccm-web-4cd3d");
 final FirebaseFunctions functions = FirebaseFunctions.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -32,6 +32,8 @@ CollectionReference<Map<String, dynamic>> receivablesRef = firestore.collection(
 CollectionReference<Map<String, dynamic>> dashboardDataRef = firestore.collection('DashboardData');
 CollectionReference<Map<String, dynamic>> clients(code) => countries.doc(code).collection("clients");
 DocumentReference<Map<String, dynamic>> counters = firestore.collection('Dashboard').doc('counters');
+
+Query<Map<String, dynamic>> allClientsRef = firestore.collectionGroup('clients');
 
 CollectionReference<Map<String, dynamic>> get quotations => countries.doc(session.country!.code).collection('quotations');
 CollectionReference<Map<String, dynamic>> get trashQuotations => countries.doc(session.country!.code).collection('trashQuotations');

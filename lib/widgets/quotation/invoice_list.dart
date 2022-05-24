@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../../models/quote.dart';
@@ -14,16 +16,20 @@ class InvoiceList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        color: Colors.white,
-        child: DataTable(columns: [
-          DataColumn(label: Text('PO')),
-          DataColumn(label: Text('Number')),
-          DataColumn(label: Text('Amount')),
-          DataColumn(label: Text('Issued Date')),
-          DataColumn(label: Text('Paid/Received Amount')),
-          DataColumn(label: Text('Last Received Date')),
-          DataColumn(label: Text('Credit Amount')),
-        ], rows: getSource()),
+        child: DataTable(
+          headingRowColor: MaterialStateProperty.all(Colors.blue.shade100),
+          headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
+          columns: [
+            DataColumn(label: Text('PO Number')),
+            DataColumn(label: Text('Invoice Number')),
+            DataColumn(label: Text('Amount')),
+            DataColumn(label: Text('Issued Date')),
+            DataColumn(label: Text('Paid/Received Amount')),
+            DataColumn(label: Text('Last Received Date')),
+            DataColumn(label: Text('Credit Amount')),
+          ],
+          rows: getSource(),
+        ),
       ),
     );
   }
@@ -33,7 +39,7 @@ class InvoiceList extends StatelessWidget {
     for (int i = 0; i < invoices.length; i++) {
       var e = invoices[i];
       datarows.add(DataRow(cells: [
-        DataCell(Text(poNumber)),
+        DataCell(Text(e.poNumber ?? '')),
         DataCell(Text(e.number)),
         DataCell(Text(e.amount.toString())),
         DataCell(Text(format.format(e.issuedDate))),

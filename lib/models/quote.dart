@@ -1,4 +1,4 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/comment.dart';
 import 'package:ccm/models/dashboard_data.dart';
 import 'package:ccm/models/response.dart';
@@ -69,7 +69,7 @@ class Quotation {
           date: e.issuedDate,
           credits: e.creditAmount,
           entity: client,
-          quote_id: id ?? '',
+          quoteId: id ?? '',
           currency: currencyCode ?? '',
           country: session.country!.code,
           quoteDate: issuedDate,
@@ -82,7 +82,7 @@ class Quotation {
     List<Map<String, dynamic>> payables = [];
     contractorPo.forEach((element) {
       payables.addAll(element.payables.map((e) {
-        e.quote_id = id ?? '';
+        e.quoteId = id ?? '';
         e.currency = currencyCode ?? '';
         e.country = session.country!.code;
         e.quoteDate = issuedDate;
@@ -186,7 +186,7 @@ class Quotation {
       "currencyCode": currencyCode,
       "parentQuote": parentQuote,
       "category": category,
-      "clientInvoices": List<dynamic>.from(clientInvoices.map((x) => x.toJson())),
+      "clientInvoices": List<dynamic>.from(clientInvoices.map((x) => x.toJson(no: number))),
       "contractorPo": List<dynamic>.from(contractorPo.map((x) => x.toJson())),
       "comments": List<dynamic>.from(comments.map((x) => x.toJson())),
       "search": search,
@@ -421,7 +421,7 @@ class ContractorPo {
         "quoteAmount": quoteAmount,
         "workCommence": workCommence,
         "workComplete": workComplete,
-        "invoices": List<dynamic>.from(invoices.map((x) => x.toJson())),
+        "invoices": List<dynamic>.from(invoices.map((x) => x.toJson(no: number))),
         "paidAmount": paidAmount,
         "credits": credits,
         "totalPayables": totalPayables,
@@ -437,6 +437,7 @@ class Invoice {
     required this.issuedDate,
     required this.payments,
     required this.credits,
+    this.poNumber,
   });
 
   String? id;
@@ -446,6 +447,7 @@ class Invoice {
   DateTime issuedDate;
   List<Payment> payments;
   List<Credit> credits;
+  String? poNumber;
 
   DateTime? get lastReceivedDate => payments.isEmpty
       ? null
@@ -467,7 +469,7 @@ class Invoice {
       date: issuedDate,
       entity: '',
       credits: creditAmount,
-      quote_id: '',
+      quoteId: '',
       currency: '',
       country: '',
       client: '');
@@ -477,20 +479,22 @@ class Invoice {
         amount: json["amount"],
         taxNumber: json["taxNumber"],
         issuedDate: json["issuedDate"].toDate(),
+        poNumber: json["poNumber"],
         payments: List<Payment>.from(json["payments"].map((x) => Payment.fromJson(x))),
         credits: List<Credit>.from(json["credits"].map((x) => Credit.fromJson(x))),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson({String? no}) => {
         "number": number,
         "amount": amount,
         "taxNumber": taxNumber,
         "issuedDate": issuedDate,
         "payments": List<dynamic>.from(payments.map((x) => x.toJson())),
         "credits": List<dynamic>.from(credits.map((x) => x.toJson())),
+        "poNumber": no,
         "closedAmount": closedAmount,
         "creditAmount": creditAmount,
-        "remaining": remaining
+        "remaining": remaining,
       };
 }
 

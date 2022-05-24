@@ -1,7 +1,5 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/quote.dart';
-import 'package:ccm/models/response.dart';
-import 'package:ccm/pages/quotation_form.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/invoice_list.dart';
 import 'package:ccm/widgets/quotation/multiselect.dart';
@@ -10,9 +8,6 @@ import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../controllers/getControllers.dart';
 
 class CwrTrashSummary extends StatefulWidget {
   CwrTrashSummary({Key? key}) : super(key: key);

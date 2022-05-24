@@ -1,4 +1,3 @@
-import 'package:ccm/models/client.dart';
 import 'package:flutter/material.dart';
 
 class QuoteDropdown<T> extends StatelessWidget {
@@ -25,7 +24,7 @@ class QuoteDropdown<T> extends StatelessWidget {
         width: double.infinity,
         height: 60,
         child: Card(
-          color: Colors.white,
+          color: onChanged == null ? Colors.grey.shade200 : Colors.white,
           elevation: 5,
           shadowColor: Colors.grey,
           child: DropdownButtonFormField(

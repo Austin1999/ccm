@@ -18,7 +18,7 @@ class QuoteDate extends StatelessWidget {
       ),
       subtitle: Card(
         elevation: 5,
-        color: Colors.white,
+        color: onPressed == null ? Colors.grey.shade200 : Colors.white,
         shadowColor: Colors.grey,
         child: SizedBox(
           width: double.infinity,
@@ -81,7 +81,7 @@ class QuoteDateBox extends StatelessWidget {
       ),
       trailing: trailing,
       subtitle: Card(
-        color: Colors.white,
+        color: onPressed == null ? Colors.grey.shade200 : Colors.white,
         elevation: 5,
         shadowColor: Colors.grey,
         child: SizedBox(

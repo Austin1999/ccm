@@ -1,10 +1,8 @@
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-
-import 'dashboard.dart';
 
 class CurrencyController extends GetxController {
   @override
@@ -26,7 +24,6 @@ class CurrencyController extends GetxController {
 
   double convert(double number, String from, String to) {
     double exchangRate = rates[to] / rates[from];
-
     return number * exchangRate;
   }
 

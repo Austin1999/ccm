@@ -1,6 +1,5 @@
 import 'package:ccm/controllers/currency_controller.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'dart:ui';
 
 import 'package:ccm/controllers/dashboard.dart';
 import 'package:ccm/models/dashboard/BarChart.dart';

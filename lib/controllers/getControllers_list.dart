@@ -1,38 +1,9 @@
-import 'package:ccm/main.dart';
 import 'package:ccm/models/client.dart';
 import 'package:ccm/models/contractor.dart';
-import 'package:ccm/models/countries.dart';
-
-import 'package:ccm/models/user.dart' as userval;
 import 'package:ccm/services/firebase.dart';
 import 'package:get/get.dart';
 
-import 'getx_controllers.dart';
-
-class UserController extends GetxController {
-  static UserController instance = Get.find();
-  userval.User? user;
-}
-
-UserController userController = UserController.instance;
-
-class CountryController extends GetxController {
-  static CountryController instance = Get.find();
-  RxList<Country> countrylist = RxList<Country>([]);
-
-  @override
-  void onReady() {
-    // TODO: implement onReady
-    super.onReady();
-    countrylist.bindStream(getCountries());
-  }
-
-  Stream<List<Country>> getCountries() {
-    var countrieslist = countries.snapshots().map((query) => query.docs.map((e) => Country.fromJson(e.data())).toList());
-    session.countries = countrylist;
-    return countrieslist;
-  }
-}
+import 'sessionController.dart';
 
 class ClientController extends GetxController {
   static ClientController instance = Get.find();
@@ -77,21 +48,40 @@ class ClientController extends GetxController {
 
 class ContractorController extends GetxController {
   static ContractorController instance = Get.find();
-  RxList<Contractor> contractorlist = RxList<Contractor>([]);
-
-  @override
-  void onReady() {
-    // TODO: implement onReady
-    super.onReady();
-    contractorlist.bindStream(getContractor());
+  List<Contractor> get contractorlist {
+    var list = overAllContractorList.where((element) => element.country == session.country?.code).toList();
+    return list;
   }
 
-  Stream<List<Contractor>> getContractor() {
-    return contractors
-        // .where('country', isEqualTo: session.country!.code)
-        .snapshots()
-        .map((query) => query.docs.map((e) {
-              return Contractor.fromJson(e.data(), e.id);
-            }).toList());
+  List<Contractor> overAllContractorList = [];
+
+  Iterable<Contractor> filteredcontractors(String? country) {
+    if (country == null) {
+      return overAllContractorList;
+    } else {
+      return overAllContractorList.where((element) => element.country == country);
+    }
+  }
+
+  Contractor getIdByName(String name) {
+    var contractor = contractorlist.firstWhere((element) => element.name == name);
+
+    return contractor;
+  }
+
+  @override
+  void onInit() {
+    listenAllcontractors();
+    super.onInit();
+  }
+
+  listenAllcontractors() {
+    contractors.snapshots().listen((event) {
+      overAllContractorList = event.docs.map((e) => Contractor.fromJson(e.data(), e.id)).toList();
+    });
+  }
+
+  String getName(String id) {
+    return overAllContractorList.firstWhere((element) => element.docid == id).name;
   }
 }

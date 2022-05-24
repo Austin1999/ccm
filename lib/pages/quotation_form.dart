@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
-import 'package:ccm/controllers/getControllers.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/getControllers_list.dart';
+import 'package:ccm/controllers/sessionController.dart';
 
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/pages/comments.dart';
@@ -32,11 +32,11 @@ class _QuotationFormState extends State<QuotationForm> {
     super.initState();
     if (widget.quotation != null) {
       timer = Timer.periodic(Duration(seconds: 5), (timer) {
-        databaseRef.child('session').child(widget.quotation!.id.toString()).child(authController.auth.currentUser!.uid).set({
+        databaseRef.child('session').child(widget.quotation!.id.toString()).child(session.auth.currentUser!.uid).set({
           "time": DateTime.now().millisecondsSinceEpoch,
           "quote": widget.quotation!.id,
-          "uid": authController.auth.currentUser!.uid,
-          "name": authController.auth.currentUser!.displayName
+          "uid": session.auth.currentUser!.uid,
+          "name": session.auth.currentUser!.displayName
         });
       });
     }
@@ -107,8 +107,9 @@ class _QuotationFormState extends State<QuotationForm> {
                 icon: Icon(Icons.insert_drive_file_outlined))),
             DataCell(IconButton(
                 onPressed: () {
+                  _formState.selectedQuotation = e;
                   _formState.controller = QuotationFormController.fromQuotation(e);
-                  _formState.notifyChildrens();
+
                   _formState.update();
                   setstate(() {
                     selectedIndex = i;
@@ -132,7 +133,7 @@ class _QuotationFormState extends State<QuotationForm> {
     if (widget.quotation != null) {
       databaseRef.child('session').child(widget.quotation!.id.toString()).onChildChanged.listen((event) {
         var value = event.snapshot.value as Map<String, dynamic>;
-        if (value["uid"] != authController.auth.currentUser!.uid) {
+        if (value["uid"] != session.auth.currentUser!.uid) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Another user has opened this quote")));
         }
       });
@@ -171,7 +172,8 @@ class _QuotationFormState extends State<QuotationForm> {
                 if (widget.quotation == null) {
                   future = quotation.add();
                 } else {
-                  future = quotation.update(checkNumber: quotation.number != widget.quotation!.number);
+                  printInfo(info: quotation.number + " " + _formState.selectedQuotation!.number);
+                  future = quotation.update(checkNumber: quotation.number != _formState.selectedQuotation!.number);
                 }
                 showFutureDialog(context: context, future: future);
               }

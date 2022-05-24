@@ -1,13 +1,11 @@
 import 'package:ccm/FormControllers/quotation_form_controller.dart';
 import 'package:ccm/controllers/currency_controller.dart';
-import 'package:ccm/controllers/getx_controllers.dart';
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:intl_phone_field/countries.dart' as list;
 
 import 'quote_date_picker.dart';
 
@@ -32,6 +30,10 @@ class _ClientQuotationState extends State<ClientQuotation> {
     jobCompletionDateController.text = controller.completionDate == null ? '' : format.format(controller.completionDate!);
     controller.currencyCode = controller.currencyCode ?? session.country!.currencyCode;
     super.initState();
+
+    if (session.user?.quoteClient ?? false) {
+      readOnly = false;
+    }
   }
 
   static const _categoryList = [
@@ -55,13 +57,6 @@ class _ClientQuotationState extends State<ClientQuotation> {
           ))
       .toList();
 
-  String? _requiredValidator(String? number) {
-    if ((number ?? '').isEmpty) {
-      return 'Field should not be empty';
-    }
-    return null;
-  }
-
   String? _amountValidator(String? p1) {
     try {
       double.parse(p1.toString());
@@ -71,6 +66,8 @@ class _ClientQuotationState extends State<ClientQuotation> {
 
     return null;
   }
+
+  bool readOnly = true;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +111,12 @@ class _ClientQuotationState extends State<ClientQuotation> {
                       },
                     ),
                     QuoteTypeAhead(
+                        validator: (p0) {
+                          if (controller.number.text == p0) {
+                            return 'This is current quote number';
+                          }
+                          return null;
+                        },
                         onSelected: (val) {
                           setState(() {
                             controller.parentQuote = val;
@@ -142,6 +145,7 @@ class _ClientQuotationState extends State<ClientQuotation> {
                 children: [
                   TableRow(children: [
                     QuoteTextBox(
+                      readOnly: readOnly,
                       controller: widget.controller.number,
                       hintText: 'Quotation',
                       validator: (val) {
@@ -161,13 +165,16 @@ class _ClientQuotationState extends State<ClientQuotation> {
                       },
                       items: clientController.clientlist.map((element) => DropdownMenuItem(child: Text(element.name), value: element.docid)).toList(),
                       value: controller.client,
-                      onChanged: (String? value) {
-                        setState(() {
-                          controller.client = value ?? controller.client;
-                        });
-                      },
+                      onChanged: readOnly
+                          ? null
+                          : (String? value) {
+                              setState(() {
+                                controller.client = value ?? controller.client;
+                              });
+                            },
                     ),
                     QuoteTextBox(
+                      readOnly: readOnly,
                       validator: _amountValidator,
                       controller: widget.controller.amount,
                       hintText: 'Quote Amount',
@@ -189,6 +196,7 @@ class _ClientQuotationState extends State<ClientQuotation> {
                       },
                     ),
                     QuoteTextBox(
+                      readOnly: readOnly,
                       controller: widget.controller.clientApproval,
                       hintText: 'Client Approval',
                     ),
@@ -205,29 +213,37 @@ class _ClientQuotationState extends State<ClientQuotation> {
                         }
                         return null;
                       },
-                      onPressed: () async {
-                        await showDatePicker(
-                          context: context,
-                          initialDate: controller.issuedDate ?? DateTime.now(),
-                          firstDate: DateTime.utc(2000),
-                          lastDate: DateTime.utc(2100),
-                        ).then((value) {
-                          setState(() {
-                            controller.issuedDate = value ?? controller.issuedDate;
-                            quoteIssuedDateController.text = controller.issuedDate == null ? '' : format.format(controller.issuedDate!);
-                          });
-                        });
-                      },
+                      onPressed: readOnly
+                          ? null
+                          : () async {
+                              await showDatePicker(
+                                context: context,
+                                initialDate: controller.issuedDate ?? DateTime.now(),
+                                firstDate: DateTime.utc(2000),
+                                lastDate: DateTime.utc(2100),
+                              ).then((value) {
+                                setState(() {
+                                  controller.issuedDate = value ?? controller.issuedDate;
+                                  quoteIssuedDateController.text = controller.issuedDate == null ? '' : format.format(controller.issuedDate!);
+                                });
+                              });
+                            },
                     ),
-                    QuoteTextBox(controller: widget.controller.description, hintText: 'Description'),
+                    QuoteTextBox(
+                      controller: widget.controller.description,
+                      hintText: 'Description',
+                      readOnly: readOnly,
+                    ),
                     QuoteDropdown<ApprovalStatus>(
                       value: controller.approvalStatus,
                       title: 'Approval Status',
-                      onChanged: (value) {
-                        setState(() {
-                          controller.approvalStatus = value ?? controller.approvalStatus;
-                        });
-                      },
+                      onChanged: readOnly
+                          ? null
+                          : (value) {
+                              setState(() {
+                                controller.approvalStatus = value ?? controller.approvalStatus;
+                              });
+                            },
                       selectedItemBuilder: (context) {
                         return ApprovalStatus.values.map((e) {
                           return SizedBox(height: 52, child: Text(e.toString().split('.').last.toUpperCase()));
@@ -248,34 +264,44 @@ class _ClientQuotationState extends State<ClientQuotation> {
                     ),
                   ]),
                   TableRow(children: [
-                    QuoteTextBox(controller: widget.controller.ccmTicketNumber, hintText: 'CCM Ticket Number'),
+                    QuoteTextBox(
+                      controller: widget.controller.ccmTicketNumber,
+                      hintText: 'CCM Ticket Number',
+                      readOnly: readOnly,
+                    ),
                     QuoteDateBox(
+                      readOnly: readOnly,
                       hintText: 'Job Completion Date',
                       controler: jobCompletionDateController,
                       title: 'Job Completion Date',
-                      onPressed: () async {
-                        await showDatePicker(
-                          context: context,
-                          initialDate: controller.completionDate ?? DateTime.now(),
-                          firstDate: DateTime.utc(2000),
-                          lastDate: DateTime.utc(2100),
-                        ).then((value) {
-                          setState(() {
-                            controller.completionDate = value ?? controller.completionDate;
-                            jobCompletionDateController.text = controller.completionDate == null ? '' : format.format(controller.completionDate!);
-                          });
-                        });
-                      },
+                      onPressed: readOnly
+                          ? null
+                          : () async {
+                              await showDatePicker(
+                                context: context,
+                                initialDate: controller.completionDate ?? DateTime.now(),
+                                firstDate: DateTime.utc(2000),
+                                lastDate: DateTime.utc(2100),
+                              ).then((value) {
+                                setState(() {
+                                  controller.completionDate = value ?? controller.completionDate;
+                                  jobCompletionDateController.text =
+                                      controller.completionDate == null ? '' : format.format(controller.completionDate!);
+                                });
+                              });
+                            },
                     ),
                     Container(),
                     QuoteDropdown<OverallStatus>(
                       value: controller.overallStatus,
                       title: 'Overall Status',
-                      onChanged: (value) {
-                        setState(() {
-                          controller.overallStatus = value ?? controller.overallStatus;
-                        });
-                      },
+                      onChanged: readOnly
+                          ? null
+                          : (value) {
+                              setState(() {
+                                controller.overallStatus = value ?? controller.overallStatus;
+                              });
+                            },
                       items: OverallStatus.values.map((e) {
                         return DropdownMenuItem(
                           child: Text(e.toString().split('.').last.toUpperCase()),
