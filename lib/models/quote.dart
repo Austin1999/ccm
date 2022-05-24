@@ -290,6 +290,7 @@ class Quotation {
           })),
       trashQuotations.doc(id).set(toJson()),
     ]);
+
     return quotations
         .doc(id)
         .delete()

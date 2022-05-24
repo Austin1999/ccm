@@ -5,12 +5,13 @@ import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/countries.dart';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/models/usermodel.dart';
+import 'package:ccm/pages/countries_list.dart';
 import 'package:ccm/services/firebase.dart';
+import 'package:ccm/widgets/multiSelect.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class UserForm extends StatefulWidget {
   UserForm({Key? key, this.user}) : super(key: key);
@@ -60,19 +61,17 @@ class _UserFormState extends State<UserForm> {
               flex: 5,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Table(
                     children: [
                       TableRow(children: [
                         QuoteTextBox(controller: _controller.name, hintText: 'Name'),
                         QuoteTextBox(controller: _controller.email, hintText: 'Email'),
-                      ]),
-                      TableRow(children: [
                         QuoteTextBox(controller: _controller.address, hintText: 'Address'),
-                        QuoteTextBox(controller: _controller.phone, hintText: 'Phone'),
                       ]),
                       TableRow(children: [
-                        Container(),
+                        QuoteTextBox(controller: _controller.phone, hintText: 'Phone'),
                         QuoteDropdown(
                           title: 'Role',
                           items: ["User", "Admin"].map((e) => DropdownMenuItem(value: e == "Admin", child: Text(e))).toList(),
@@ -85,156 +84,114 @@ class _UserFormState extends State<UserForm> {
                                 }
                               : null,
                         ),
+                        (!(_controller.isAdmin ?? false))
+                            ? Container()
+                            : Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: ListTile(
+                                  title: Text("Country"),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 4),
+                                    child: Card(
+                                      elevation: 8,
+                                      color: Colors.white,
+                                      child: MultiSelect<Country>(
+                                          options: session.sessionCountries.toList(),
+                                          selectedValues: _controller.country,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _controller.country = value;
+                                            });
+                                          },
+                                          whenEmpty: 'None selected'),
+                                    ),
+                                  ),
+                                ),
+                              ),
                       ]),
                     ],
                   ),
                   Divider(),
-                  (_controller.isAdmin ?? false)
+                  (!(_controller.isAdmin ?? false))
                       ? Container()
                       : Table(
                           children: [
-                            TableRow(
-                              children: [
-                                Table(
-                                  children: [
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("Client Quotation"),
-                                        trailing: Checkbox(
-                                            value: _controller.quoteClient,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.quoteClient = !_controller.quoteClient;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("Client Invoices"),
-                                        trailing: Checkbox(
-                                            value: _controller.invoiceClient,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.invoiceClient = !_controller.invoiceClient;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("Contractor Quotation"),
-                                        trailing: Checkbox(
-                                            value: _controller.quoteContractor,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.quoteContractor = !_controller.quoteContractor;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("Contractor Invoices"),
-                                        trailing: Checkbox(
-                                            value: _controller.invoiceContractor,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.invoiceContractor = !_controller.invoiceContractor;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                  ],
-                                ),
-                                Table(
-                                  children: [
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("View Clients"),
-                                        trailing: Checkbox(
-                                            value: _controller.viewClient,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.viewClient = !_controller.viewClient;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("View Contractors"),
-                                        trailing: Checkbox(
-                                            value: _controller.viewContractor,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.viewContractor = !_controller.viewContractor;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                    TableRow(children: [
-                                      ListTile(
-                                        title: Text("View Dashboard"),
-                                        trailing: Checkbox(
-                                            value: _controller.viewDashboard,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _controller.viewDashboard = !_controller.viewDashboard;
-                                              });
-                                            }),
-                                      ),
-                                      Container(),
-                                    ]),
-                                  ],
-                                )
-                              ],
-                            ),
+                            TableRow(children: [
+                              ListTile(
+                                title: Text("Client Quotation"),
+                                trailing: Checkbox(
+                                    value: _controller.quoteClient,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _controller.quoteClient = !_controller.quoteClient;
+                                      });
+                                    }),
+                              ),
+                              ListTile(
+                                title: Text("Contractor Quotation"),
+                                trailing: Checkbox(
+                                    value: _controller.quoteContractor,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _controller.quoteContractor = !_controller.quoteContractor;
+                                      });
+                                    }),
+                              ),
+                              ListTile(
+                                title: Text("View Clients / Contractors"),
+                                trailing: Checkbox(
+                                    value: _controller.viewClient && _controller.viewContractor,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _controller.viewClient = _controller.viewContractor = val ?? _controller.viewContractor;
+                                      });
+                                    }),
+                              ),
+                            ]),
+                            TableRow(children: [
+                              ListTile(
+                                title: Text("Client Invoices"),
+                                trailing: Checkbox(
+                                    value: _controller.invoiceClient,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _controller.invoiceClient = !_controller.invoiceClient;
+                                      });
+                                    }),
+                              ),
+                              ListTile(
+                                title: Text("Contractor Invoices"),
+                                trailing: Checkbox(
+                                    value: _controller.invoiceContractor,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _controller.invoiceContractor = !_controller.invoiceContractor;
+                                      });
+                                    }),
+                              ),
+                              ListTile(
+                                title: Text("View Dashboard"),
+                                trailing: Checkbox(
+                                    value: _controller.viewDashboard,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _controller.viewDashboard = !_controller.viewDashboard;
+                                      });
+                                    }),
+                              ),
+                            ]),
                           ],
                         ),
                   Divider(),
-                  GetBuilder(
-                      init: session,
-                      builder: (_) {
-                        return StatefulBuilder(builder: (context, setstate) {
-                          List<Country> list = session.sessionCountries.toList();
-                          print(list);
-                          return Wrap(
-                              alignment: WrapAlignment.start,
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              children: list
-                                  .map(
-                                    (e) => Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: ChoiceChip(
-                                        label:
-                                            Text(e.name, style: TextStyle(color: _controller.country.contains(e.code) ? Colors.white : Colors.black)),
-                                        selected: _controller.country.contains(e.code),
-                                        tooltip: e.code,
-                                        selectedColor: Colors.blue,
-                                        onSelected: (val) {
-                                          if (val == true) {
-                                            setstate(() {
-                                              _controller.country.add(e.code);
-                                            });
-                                          } else {
-                                            setstate(() {
-                                              _controller.country.removeWhere((element) => element == e.code);
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                  .toList());
-                        });
-                      })
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Wrap(
+                      runAlignment: WrapAlignment.spaceEvenly,
+                      children: _controller.country
+                          .map((e) => SizedBox(width: 230, height: 83.33, child: CountryCard(text: e.name, code: e.code)))
+                          .toList(),
+                    ),
+                  )
                 ],
               ),
             ),

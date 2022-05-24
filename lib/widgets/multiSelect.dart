@@ -1,8 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'dart:math';
-
-import 'package:ccm/models/client.dart';
 import 'package:flutter/material.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -36,15 +33,15 @@ class _SelectRow extends StatelessWidget {
 /// A Dropdown multiselect menu
 ///
 ///
-class DropDownMultiSelect extends StatefulWidget {
+class MultiSelect<T> extends StatefulWidget {
   /// The options form which a user can select
-  final List<Client> options;
+  final List<T> options;
 
   /// Selected Values
-  final List<Client> selectedValues;
+  final List<T> selectedValues;
 
   /// This function is called whenever a value changes
-  final Function(List<Client>) onChanged;
+  final Function(List<T>) onChanged;
 
   /// defines whether the field is dense
   final bool isDense;
@@ -59,12 +56,12 @@ class DropDownMultiSelect extends StatefulWidget {
   final String? whenEmpty;
 
   /// a function to build custom childern
-  final Widget Function(List<Client> selectedValues)? childBuilder;
+  final Widget Function(List<T> selectedValues)? childBuilder;
 
   /// a function to build custom menu items
-  final Widget Function(Client option)? menuItembuilder;
+  final Widget Function(T option)? menuItembuilder;
 
-  const DropDownMultiSelect({
+  const MultiSelect({
     Key? key,
     required this.options,
     required this.selectedValues,
@@ -77,10 +74,10 @@ class DropDownMultiSelect extends StatefulWidget {
     this.decoration,
   }) : super(key: key);
   @override
-  _DropDownMultiSelectState createState() => _DropDownMultiSelectState();
+  _MultiSelectState createState() => _MultiSelectState<T>();
 }
 
-class _DropDownMultiSelectState extends State<DropDownMultiSelect> {
+class _MultiSelectState<T> extends State<MultiSelect<T>> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -92,12 +89,12 @@ class _DropDownMultiSelectState extends State<DropDownMultiSelect> {
               : Align(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                    child: Text(widget.selectedValues.fold<String>('', (previousValue, element) => previousValue + ',' + element.name)),
+                    child: Text(widget.selectedValues.fold<String>('', (previousValue, element) => previousValue + ',' + element.toString())),
                   ),
                   alignment: Alignment.centerLeft)),
           Align(
             alignment: Alignment.centerLeft,
-            child: DropdownButtonFormField<Client>(
+            child: DropdownButtonFormField<T>(
               isExpanded: true,
               decoration: widget.decoration != null
                   ? widget.decoration
@@ -121,13 +118,13 @@ class _DropDownMultiSelectState extends State<DropDownMultiSelect> {
                     .toList();
               },
               items: widget.options
-                  .map((x) => DropdownMenuItem<Client>(
+                  .map((x) => DropdownMenuItem<T>(
                         child: _theState.rebuilder(() {
                           return widget.menuItembuilder != null
                               ? widget.menuItembuilder!(x)
                               : _SelectRow(
                                   selected: widget.selectedValues.contains(x),
-                                  text: x.name,
+                                  text: x.toString(),
                                   onChange: (isSelected) {
                                     if (isSelected) {
                                       var ns = widget.selectedValues;

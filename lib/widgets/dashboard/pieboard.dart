@@ -8,11 +8,11 @@ import '../../controllers/dashboard.dart';
 import '../../models/pieChartData.dart';
 
 class PieBoard extends StatefulWidget {
-  PieBoard({Key? key, required this.currency, this.country, this.client}) : super(key: key);
+  PieBoard({Key? key, required this.currency, this.country, required this.client}) : super(key: key);
 
   final String currency;
   final String? country;
-  final String? client;
+  final List<String> client;
 
   @override
   State<PieBoard> createState() => _PieBoardState();
@@ -21,7 +21,7 @@ class PieBoard extends StatefulWidget {
 class _PieBoardState extends State<PieBoard> {
   String get currency => widget.currency;
   String? get country => widget.country;
-  String? get client => widget.client;
+  List<String> get client => widget.client;
 
   // ignore: unused_field
   DateTime? _invoiceFromDate;
@@ -53,7 +53,7 @@ class _PieBoardState extends State<PieBoard> {
   }
 
   loadData() {
-    dashboard.loadQuoteData(country: widget.country, fromDate: _quoteFromDate, toDate: _quoteToDate, client: widget.client);
+    dashboard.loadQuoteData(country: widget.country, fromDate: _quoteFromDate, toDate: _quoteToDate, clients: widget.client);
   }
 
   late DashboardController dashboard;

@@ -187,28 +187,28 @@ class _CwrTrashSummaryState extends State<CwrTrashSummary> {
                       },
                       items: approvalStatusItems(),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: ListTile(
-                        title: Text("Clients"),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Card(
-                            color: Colors.white,
-                            child: DropDownMultiSelect(
-                                options: clientController.clientlist.map((e) => e.name).toList(),
-                                selectedValues: selectedItems,
-                                onChanged: (val) {
-                                  setState(() {
-                                    selectedItems = val;
-                                  });
-                                },
-                                decoration: InputDecoration(border: OutlineInputBorder(), fillColor: Colors.white),
-                                whenEmpty: 'Select client'),
-                          ),
-                        ),
-                      ),
-                    )
+                    // Padding(
+                    //   padding: const EdgeInsets.only(top: 4),
+                    //   child: ListTile(
+                    //     title: Text("Clients"),
+                    //     subtitle: Padding(
+                    //       padding: const EdgeInsets.symmetric(vertical: 4),
+                    //       child: Card(
+                    //         color: Colors.white,
+                    //         child: DropDownMultiSelect(
+                    //             options: clientController.clientlist.map((e) => e.name).toList(),
+                    //             selectedValues: selectedItems,
+                    //             onChanged: (val) {
+                    //               setState(() {
+                    //                 selectedItems = val;
+                    //               });
+                    //             },
+                    //             decoration: InputDecoration(border: OutlineInputBorder(), fillColor: Colors.white),
+                    //             whenEmpty: 'Select client'),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // )
                   ])
                 ],
               ),

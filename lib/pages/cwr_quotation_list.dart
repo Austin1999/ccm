@@ -1,4 +1,5 @@
 import 'package:ccm/controllers/sessionController.dart';
+import 'package:ccm/models/client.dart';
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/models/response.dart';
 import 'package:ccm/pages/quotation_form.dart';
@@ -14,6 +15,7 @@ import 'package:ccm/widgets/quotation/showInvoices.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../controllers/getControllers_list.dart';
 
@@ -34,7 +36,7 @@ class _CwrSummaryState extends State<CwrSummary> {
     super.initState();
   }
 
-  List<String> selectedItems = [];
+  List<Client> selectedItems = [];
 
   final searchController = TextEditingController();
   DateTime? fromDate;
@@ -240,7 +242,7 @@ class _CwrSummaryState extends State<CwrSummary> {
                             elevation: 8,
                             color: Colors.white,
                             child: DropDownMultiSelect(
-                                options: clientController.clientlist.map((e) => e.name).toList(),
+                                options: clientController.clientlist.toList(),
                                 selectedValues: selectedItems,
                                 onChanged: (val) {
                                   setState(() {
@@ -258,10 +260,12 @@ class _CwrSummaryState extends State<CwrSummary> {
               ),
             ),
           ),
-          ConstrainedBox(
-            constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width * 15 / 17, maxWidth: MediaQuery.of(context).size.width * 16 / 17),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width,
+              ),
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: query.snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
@@ -276,7 +280,7 @@ class _CwrSummaryState extends State<CwrSummary> {
 
                     if (selectedItems.isNotEmpty) {
                       var temp = [];
-                      temp = selectedItems.map((e) => clientController.getIdByName(e).docid).toList();
+                      temp = selectedItems.map((e) => e.docid).toList();
                       quotes = quotes.where((element) => temp.contains(element.client)).toList();
                     }
 
@@ -466,7 +470,7 @@ class QuoteDatasource extends DataTableSource {
                 color: Colors.indigo,
               ))),
           DataCell(SelectableText(e.number)),
-          DataCell(SelectableText(format.format(e.issuedDate))),
+          DataCell(SelectableText(DateFormat('MM-dd-yyyy').format(e.issuedDate))),
           DataCell(SelectableText(clientController.getName(e.client))),
           DataCell(SelectableText(e.description)),
           DataCell(
@@ -482,7 +486,7 @@ class QuoteDatasource extends DataTableSource {
           DataCell(SelectableText(e.clientApproval.toString())),
           DataCell(Align(alignment: Alignment.centerRight, child: SelectableText(e.margin.toStringAsFixed(2)))),
           DataCell(SelectableText(e.ccmTicketNumber.toString())),
-          DataCell(SelectableText(e.completionDate == null ? '' : format.format(e.completionDate!))),
+          DataCell(SelectableText(e.completionDate == null ? '' : DateFormat('MM-dd-yyyy').format(e.completionDate!))),
           DataCell(IconButton(
               onPressed: () {
                 var future = e.delete();
@@ -552,7 +556,7 @@ class QuoteDatasource extends DataTableSource {
                   color: Colors.indigo,
                 ))),
             DataCell(SelectableText(q.number)),
-            DataCell(SelectableText(format.format(q.issuedDate))),
+            DataCell(SelectableText(DateFormat('MM-dd-yyyy').format(q.issuedDate))),
             DataCell(SelectableText(clientController.getName(q.client))),
             DataCell(SelectableText(q.description)),
             DataCell(SelectableText(q.amount.toString())),
@@ -560,7 +564,7 @@ class QuoteDatasource extends DataTableSource {
             DataCell(SelectableText(q.clientApproval.toString())),
             DataCell(SelectableText(q.margin.toStringAsFixed(2))),
             DataCell(SelectableText(q.ccmTicketNumber.toString())),
-            DataCell(SelectableText(q.completionDate == null ? '' : format.format(q.completionDate!))),
+            DataCell(SelectableText(q.completionDate == null ? '' : DateFormat('MM-dd-yyyy').format(q.completionDate!))),
             DataCell(IconButton(
                 onPressed: () {
                   var future = quotations.doc(q.id).delete().then((value) => Result.success("Deleted Successfully"));

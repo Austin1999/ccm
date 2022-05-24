@@ -17,9 +17,21 @@ class Country {
     required this.code,
   });
 
+  bool operator ==(other) {
+    if (other is Country) {
+      return this.code == other.code;
+    } else
+      return false;
+  }
+
   String name;
   String? currencyCode;
   String code;
+
+  @override
+  String toString() {
+    return name;
+  }
 
   factory Country.fromJson(Map<String, dynamic> json) => Country(
         name: json["name"],

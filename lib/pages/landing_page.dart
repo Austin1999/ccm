@@ -302,7 +302,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       GetBuilder(
                           init: session,
                           builder: (context) {
-                            return (session.user?.role ?? "User") != "Admin"
+                            return !(session.user?.role ?? false)
                                 ? Container()
                                 : SideTile(
                                     isCollapsed: isCollapsed,

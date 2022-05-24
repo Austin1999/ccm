@@ -79,14 +79,8 @@ class DashboardController extends GetxController {
     };
   }
 
-  loadReceivables({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
+  loadReceivables({DateTime? fromDate, DateTime? toDate, String? country, List<String>? clients}) {
     Query<Map<String, dynamic>> query = receivablesRef;
-    // if (fromDate != null) {
-    //   query = query.where("date", isGreaterThanOrEqualTo: fromDate.millisecondsSinceEpoch);
-    // }
-    // if (toDate != null) {
-    //   query = query.where("date", isLessThanOrEqualTo: toDate.millisecondsSinceEpoch);
-    // }
     if (fromDate != null) {
       query = query.where("quoteDate", isGreaterThanOrEqualTo: fromDate);
     }
@@ -96,30 +90,38 @@ class DashboardController extends GetxController {
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
-    if (client != null) {
-      query = query.where("entity", isEqualTo: client);
-    }
-    query.get().then((value) {
-      clear();
-      value.docs.forEach((element) {
-        var receivable = ListElement.fromJson(element.data());
-        receivables += receivable.amount.convert(receivable.currency, 'INR');
-        clientCredits += receivable.credits.convert(receivable.currency, 'INR');
-        totalReceivedAmount += receivable.closedAmount.convert(receivable.currency, 'INR');
-        totalInvoiceAmount += receivable.actualAmount.convert(receivable.currency, 'INR');
+    if (clients != null) {
+      query.get().then((value) {
+        clear();
+        value.docs.forEach((element) {
+          if (clients.contains(element["client"])) {
+            var receivable = ListElement.fromJson(element.data());
+            receivables += receivable.amount.convert(receivable.currency, 'INR');
+            clientCredits += receivable.credits.convert(receivable.currency, 'INR');
+            totalReceivedAmount += receivable.closedAmount.convert(receivable.currency, 'INR');
+            totalInvoiceAmount += receivable.actualAmount.convert(receivable.currency, 'INR');
+          }
+        });
+        update();
       });
-      update();
-    });
+    } else {
+      query.get().then((value) {
+        clear();
+        value.docs.forEach((element) {
+          var receivable = ListElement.fromJson(element.data());
+          receivables += receivable.amount.convert(receivable.currency, 'INR');
+          clientCredits += receivable.credits.convert(receivable.currency, 'INR');
+          totalReceivedAmount += receivable.closedAmount.convert(receivable.currency, 'INR');
+          totalInvoiceAmount += receivable.actualAmount.convert(receivable.currency, 'INR');
+        });
+        update();
+      });
+    }
   }
 
-  loadPayables({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
+  loadPayables({DateTime? fromDate, DateTime? toDate, String? country, List<String>? clients}) {
     Query<Map<String, dynamic>> query = payablesRef;
-    // if (fromDate != null) {
-    //   query = query.where("date", isGreaterThanOrEqualTo: fromDate);
-    // }
-    // if (toDate != null) {
-    //   query = query.where("date", isLessThanOrEqualTo: toDate);
-    // }
+
     if (fromDate != null) {
       query = query.where("quoteDate", isGreaterThanOrEqualTo: fromDate);
     }
@@ -129,24 +131,41 @@ class DashboardController extends GetxController {
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
-    if (client != null) {
-      query = query.where("client", isEqualTo: client);
-    }
-    query.get().then((value) {
-      clear();
-      value.docs.forEach((element) {
-        var payable = ListElement.fromJson(element.data());
-        try {
-          payables += payable.amount.convert(payable.currency, 'INR');
-          contractorCredits += payable.credits.convert(payable.currency, 'INR');
-          totalPaidAmount += payable.closedAmount.convert(payable.currency, 'INR');
-          totalContractorInvoiceAmount += payable.actualAmount.convert(payable.currency, 'INR');
-        } catch (e) {
-          printWarning(e.toString());
-        }
+    if (clients != null) {
+      query.get().then((value) {
+        clear();
+        value.docs.forEach((element) {
+          if (clients.contains(element["client"])) {
+            var payable = ListElement.fromJson(element.data());
+            try {
+              payables += payable.amount.convert(payable.currency, 'INR');
+              contractorCredits += payable.credits.convert(payable.currency, 'INR');
+              totalPaidAmount += payable.closedAmount.convert(payable.currency, 'INR');
+              totalContractorInvoiceAmount += payable.actualAmount.convert(payable.currency, 'INR');
+            } catch (e) {
+              printWarning(e.toString());
+            }
+          }
+        });
+        update();
       });
-      update();
-    });
+    } else {
+      query.get().then((value) {
+        clear();
+        value.docs.forEach((element) {
+          var payable = ListElement.fromJson(element.data());
+          try {
+            payables += payable.amount.convert(payable.currency, 'INR');
+            contractorCredits += payable.credits.convert(payable.currency, 'INR');
+            totalPaidAmount += payable.closedAmount.convert(payable.currency, 'INR');
+            totalContractorInvoiceAmount += payable.actualAmount.convert(payable.currency, 'INR');
+          } catch (e) {
+            printWarning(e.toString());
+          }
+        });
+        update();
+      });
+    }
   }
 
   List<AccountChartData> get topReceivables {
@@ -202,64 +221,86 @@ class DashboardController extends GetxController {
         });
   }
 
-  loadAgedPayables({String? country, String? client}) {
+  loadAgedPayables({String? country, required List<String> clients}) {
     Query<Map<String, dynamic>> query = payablesRef;
 
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
-    if (client != null) {
-      query = query.where("client", isEqualTo: client);
-    }
+    // if (clients != null) {
+    //   query = query.where("client", isEqualTo: clients);
+    // }
     query.get().then((value) {
       agedPayables['0+'] = 0;
       agedPayables['30+'] = 0;
       agedPayables['60+'] = 0;
       agedPayables['90+'] = 0;
 
+      // if (clients.isNotEmpty) {
+
+      // } else {
+      //   value.docs.forEach((element) {
+      //     var payable = ListElement.fromJson(element.data());
+      //     var days = payable.daysAged;
+      //     if (days < 30) {
+      //       agedPayables['0+'] = (agedPayables['0+'] ?? 0) + payable.amount;
+      //     } else if (days < 60) {
+      //       agedPayables['30+'] = (agedPayables['30+'] ?? 0) + payable.amount;
+      //     } else if (days < 90) {
+      //       agedPayables['60+'] = (agedPayables['60+'] ?? 0) + payable.amount;
+      //     } else {
+      //       agedPayables['90+'] = (agedPayables['90+'] ?? 0) + payable.amount;
+      //     }
+      //   });
+      // }
+
       value.docs.forEach((element) {
-        var payable = ListElement.fromJson(element.data());
-        var days = payable.daysAged;
-        if (days < 30) {
-          agedPayables['0+'] = (agedPayables['0+'] ?? 0) + payable.amount;
-        } else if (days < 60) {
-          agedPayables['30+'] = (agedPayables['30+'] ?? 0) + payable.amount;
-        } else if (days < 90) {
-          agedPayables['60+'] = (agedPayables['60+'] ?? 0) + payable.amount;
-        } else {
-          agedPayables['90+'] = (agedPayables['90+'] ?? 0) + payable.amount;
+        if (clients.contains(element["client"])) {
+          var payable = ListElement.fromJson(element.data());
+          var days = payable.daysAged;
+          if (days < 30) {
+            agedPayables['0+'] = (agedPayables['0+'] ?? 0) + payable.amount;
+          } else if (days < 60) {
+            agedPayables['30+'] = (agedPayables['30+'] ?? 0) + payable.amount;
+          } else if (days < 90) {
+            agedPayables['60+'] = (agedPayables['60+'] ?? 0) + payable.amount;
+          } else {
+            agedPayables['90+'] = (agedPayables['90+'] ?? 0) + payable.amount;
+          }
         }
       });
+
       update();
     });
   }
 
-  loadAgedReceivables({String? country, String? client}) {
+  loadAgedReceivables({String? country, required List<String> clients}) {
     Query<Map<String, dynamic>> query = receivablesRef;
 
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
-    if (client != null) {
-      query = query.where("client", isEqualTo: client);
-    }
+    // if (clients != null) {
+    //   query = query.where("client", isEqualTo: clients);
+    // }
     query.get().then((value) {
       agedReceivables['0+'] = 0;
       agedReceivables['30+'] = 0;
       agedReceivables['60+'] = 0;
       agedReceivables['90+'] = 0;
       value.docs.forEach((element) {
-        var receivable = ListElement.fromJson(element.data());
-        var days = receivable.daysAged;
-
-        if (days < 30) {
-          agedReceivables['0+'] = (agedReceivables['0+'] ?? 0) + receivable.amount;
-        } else if (days < 60) {
-          agedReceivables['30+'] = (agedReceivables['30+'] ?? 0) + receivable.amount;
-        } else if (days < 90) {
-          agedReceivables['60+'] = (agedReceivables['60+'] ?? 0) + receivable.amount;
-        } else {
-          agedReceivables['90+'] = (agedReceivables['90+'] ?? 0) + receivable.amount;
+        if (clients.contains(element["client"])) {
+          var receivable = ListElement.fromJson(element.data());
+          var days = receivable.daysAged;
+          if (days < 30) {
+            agedReceivables['0+'] = (agedReceivables['0+'] ?? 0) + receivable.amount;
+          } else if (days < 60) {
+            agedReceivables['30+'] = (agedReceivables['30+'] ?? 0) + receivable.amount;
+          } else if (days < 90) {
+            agedReceivables['60+'] = (agedReceivables['60+'] ?? 0) + receivable.amount;
+          } else {
+            agedReceivables['90+'] = (agedReceivables['90+'] ?? 0) + receivable.amount;
+          }
         }
       });
       update();
@@ -309,7 +350,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  loadQuoteData({DateTime? fromDate, DateTime? toDate, String? country, String? client}) {
+  loadQuoteData({DateTime? fromDate, DateTime? toDate, String? country, List<String>? clients}) {
     Query<Map<String, dynamic>> query = dashboardDataRef;
     if (fromDate != null) {
       query = query.where("issuedDate", isGreaterThanOrEqualTo: fromDate);
@@ -320,27 +361,46 @@ class DashboardController extends GetxController {
     if (country != null) {
       query = query.where("country", isEqualTo: country);
     }
-    if (client != null) {
-      query = query.where("client", isEqualTo: client);
-    }
-    query.get().then((value) {
-      clear();
-      value.docs.map((e) => DashboardData.fromJson(e.data())).forEach((element) {
-        totalMargin += element.margin.convert(element.currencyCode, 'INR');
-        totalContractorAmount += element.contractorAmount.convert(element.currencyCode, 'INR');
-        totalQuoteAmount += element.amount.convert(element.currencyCode, 'INR');
+    if (clients == null) {
+      query.get().then((value) {
+        clear();
+        value.docs.map((e) => DashboardData.fromJson(e.data())).forEach((element) {
+          totalMargin += element.margin.convert(element.currencyCode, 'INR');
+          totalContractorAmount += element.contractorAmount.convert(element.currencyCode, 'INR');
+          totalQuoteAmount += element.amount.convert(element.currencyCode, 'INR');
 
-        totalInvoiceAmount += element.clientInvoiceAmount.convert(element.currencyCode, 'INR');
-        totalReceivedAmount += element.receivedAmount.convert(element.currencyCode, 'INR');
-        receivables += element.receivableAmount.convert(element.currencyCode, 'INR');
-        clientCredits += element.clientCredits.convert(element.currencyCode, 'INR');
+          totalInvoiceAmount += element.clientInvoiceAmount.convert(element.currencyCode, 'INR');
+          totalReceivedAmount += element.receivedAmount.convert(element.currencyCode, 'INR');
+          receivables += element.receivableAmount.convert(element.currencyCode, 'INR');
+          clientCredits += element.clientCredits.convert(element.currencyCode, 'INR');
 
-        totalContractorInvoiceAmount += element.contractorInvoiceAmount.convert(element.currencyCode, 'INR');
-        totalPaidAmount += element.paidAmount.convert(element.currencyCode, 'INR');
-        payables += element.payableAmount.convert(element.currencyCode, 'INR');
-        contractorCredits += element.contractorCredits.convert(element.currencyCode, 'INR');
+          totalContractorInvoiceAmount += element.contractorInvoiceAmount.convert(element.currencyCode, 'INR');
+          totalPaidAmount += element.paidAmount.convert(element.currencyCode, 'INR');
+          payables += element.payableAmount.convert(element.currencyCode, 'INR');
+          contractorCredits += element.contractorCredits.convert(element.currencyCode, 'INR');
+        });
+        update();
       });
-      update();
-    });
+    } else {
+      query.get().then((value) {
+        clear();
+        value.docs.map((e) => DashboardData.fromJson(e.data())).forEach((element) {
+          if (clients.contains(element.client)) {
+            totalMargin += element.margin.convert(element.currencyCode, 'INR');
+            totalContractorAmount += element.contractorAmount.convert(element.currencyCode, 'INR');
+            totalQuoteAmount += element.amount.convert(element.currencyCode, 'INR');
+            totalInvoiceAmount += element.clientInvoiceAmount.convert(element.currencyCode, 'INR');
+            totalReceivedAmount += element.receivedAmount.convert(element.currencyCode, 'INR');
+            receivables += element.receivableAmount.convert(element.currencyCode, 'INR');
+            clientCredits += element.clientCredits.convert(element.currencyCode, 'INR');
+            totalContractorInvoiceAmount += element.contractorInvoiceAmount.convert(element.currencyCode, 'INR');
+            totalPaidAmount += element.paidAmount.convert(element.currencyCode, 'INR');
+            payables += element.payableAmount.convert(element.currencyCode, 'INR');
+            contractorCredits += element.contractorCredits.convert(element.currencyCode, 'INR');
+          }
+        });
+        update();
+      });
+    }
   }
 }

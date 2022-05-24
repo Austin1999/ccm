@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AgedAccounts extends StatefulWidget {
-  const AgedAccounts({Key? key, this.currency = 'SGD', this.country, this.client}) : super(key: key);
+  const AgedAccounts({Key? key, this.currency = 'SGD', this.country, required this.client}) : super(key: key);
 
   final String currency;
   final String? country;
-  final String? client;
+  final List<String> client;
 
   @override
   State<AgedAccounts> createState() => _AgedAccountsState();
@@ -33,13 +33,14 @@ class _AgedAccountsState extends State<AgedAccounts> {
     var list = controller.agedPayables.keys.map((e) => BarChartData(key: e, value: controller.agedPayables[e] ?? 0)).toList();
     return [
       charts.Series<BarChartData, String>(
-          seriesColor: charts.ColorUtil.fromDartColor(Colors.deepOrange),
-          labelAccessorFn: (data, index) => data.value.convert('INR', widget.currency).toStringAsFixed(2),
-          data: list,
-          domainFn: (barData, _) => barData.key,
-          id: 'agedPayables',
-          measureFn: (barData, _) => barData.value.convert('INR', widget.currency),
-          displayName: 'Aged Payables')
+        seriesColor: charts.ColorUtil.fromDartColor(Colors.deepOrange),
+        labelAccessorFn: (data, index) => data.value.convert('INR', widget.currency).toStringAsFixed(2),
+        data: list,
+        domainFn: (barData, _) => barData.key,
+        id: 'agedPayables',
+        measureFn: (barData, _) => barData.value.convert('INR', widget.currency),
+        displayName: 'Aged Payables',
+      )
     ];
   }
 
@@ -47,19 +48,20 @@ class _AgedAccountsState extends State<AgedAccounts> {
     var list = controller.agedReceivables.keys.map((e) => BarChartData(key: e, value: controller.agedReceivables[e] ?? 0)).toList();
     return [
       charts.Series<BarChartData, String>(
-          data: list,
-          labelAccessorFn: (data, index) => data.value.convert('INR', widget.currency).toStringAsFixed(2),
-          domainFn: (barData, _) => barData.key,
-          id: 'agedReceivables',
-          measureFn: (barData, _) => barData.value.convert('INR', widget.currency),
-          displayName: 'Aged Receivables')
+        data: list,
+        labelAccessorFn: (data, index) => data.value.convert('INR', widget.currency).toStringAsFixed(2),
+        domainFn: (barData, _) => barData.key,
+        id: 'agedReceivables',
+        measureFn: (barData, _) => barData.value.convert('INR', widget.currency),
+        displayName: 'Aged Receivables',
+      )
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    controller.loadAgedPayables(country: widget.country, client: widget.client);
-    controller.loadAgedReceivables(country: widget.country, client: widget.client);
+    controller.loadAgedPayables(country: widget.country, clients: widget.client);
+    controller.loadAgedReceivables(country: widget.country, clients: widget.client);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ConstrainedBox(

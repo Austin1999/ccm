@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:ccm/controllers/dashboard.dart';
-import 'package:ccm/controllers/sessionController.dart';
-import 'package:ccm/widgets/dashboard/pieboard.dart';
+import 'package:ccm/models/client.dart';
+import 'package:ccm/models/dashboard/AccountChart.dart';
+import 'package:ccm/widgets/dashboard/monthly_statement.dart';
 import 'package:ccm/widgets/dashboard/top5.dart';
+import 'package:ccm/widgets/quotation/multiselect.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,11 +15,10 @@ import 'package:screenshot/screenshot.dart';
 import 'package:universal_html/html.dart';
 
 import '../controllers/currency_controller.dart';
-import '../models/dashboard/AccountChart.dart';
+import '../controllers/sessionController.dart';
 import '../widgets/dashboard/agedAccounatables.dart';
-import '../widgets/dashboard/monthly_statement.dart';
-
-import 'dart:convert';
+import '../widgets/dashboard/pieboard.dart';
+import '../widgets/multiSelect.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({Key? key}) : super(key: key);
@@ -36,6 +40,8 @@ class _DashboardState extends State<Dashboard> {
   late String currency;
   late String? country;
   String? client;
+
+  List<Client> selectedClients = [];
 
   final _screenshotController = ScreenshotController();
   List<int> bytes = [];
@@ -92,21 +98,34 @@ class _DashboardState extends State<Dashboard> {
                           onChanged: (val) {
                             setState(() {
                               country = val ?? country;
-                              client = null;
+                              selectedClients = [];
                             });
                           },
                           items: getCountryList(),
                         ),
-                        QuoteDropdown<String>(
-                          title: 'Client',
-                          value: client,
-                          onChanged: (val) {
-                            setState(() {
-                              client = val ?? client;
-                            });
-                          },
-                          items: getClients(),
-                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: ListTile(
+                            title: Text("Clients"),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Card(
+                                elevation: 8,
+                                color: Colors.white,
+                                child: MultiSelect<Client>(
+                                    options: clientController.filteredClients(country).toList(),
+                                    selectedValues: selectedClients,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        selectedClients = val;
+                                      });
+                                    },
+                                    decoration: InputDecoration(border: OutlineInputBorder(), fillColor: Colors.white),
+                                    whenEmpty: 'Select client'),
+                              ),
+                            ),
+                          ),
+                        )
                       ])
                     ],
                   ),
@@ -126,14 +145,14 @@ class _DashboardState extends State<Dashboard> {
                           child: PieBoard(
                             currency: currency,
                             country: country,
-                            client: client,
+                            client: selectedClients.map((e) => e.docid!).toList(),
                           ),
                         ),
                       ),
                       AgedAccounts(
                         currency: currency,
                         country: country,
-                        client: client,
+                        client: selectedClients.map((e) => e.docid!).toList(),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -170,7 +189,7 @@ class _DashboardState extends State<Dashboard> {
                         child: MonthlyStatement(
                           currency: currency,
                           country: country,
-                          client: client,
+                          client: selectedClients.map((e) => e.docid!).toList(),
                         ),
                       ),
                       SizedBox(

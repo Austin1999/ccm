@@ -22,6 +22,11 @@ class Client {
   String? contactPerson;
   String? docid;
 
+  @override
+  String toString() {
+    return name;
+  }
+
   factory Client.fromJson(Map<String, dynamic> json, docId) => Client(
       name: json["name"],
       address: json["address"],

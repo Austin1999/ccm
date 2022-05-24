@@ -42,16 +42,17 @@ class QuoteTextBox extends StatelessWidget {
 }
 
 class QuoteTypeAhead extends StatelessWidget {
-  const QuoteTypeAhead(
-      {Key? key,
-      this.onSelected,
-      required this.optionsBuilder,
-      required this.title,
-      this.text,
-      this.optionsViewBuilder,
-      this.validator,
-      this.onChanged})
-      : super(key: key);
+  const QuoteTypeAhead({
+    Key? key,
+    this.onSelected,
+    required this.optionsBuilder,
+    required this.title,
+    this.text,
+    this.optionsViewBuilder,
+    this.validator,
+    this.onChanged,
+    this.enabled = false,
+  }) : super(key: key);
 
   final void Function(String)? onSelected;
   final FutureOr<Iterable<String>> Function(TextEditingValue) optionsBuilder;
@@ -60,6 +61,7 @@ class QuoteTypeAhead extends StatelessWidget {
   final Widget Function(BuildContext, void Function(String), Iterable<String>)? optionsViewBuilder;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {

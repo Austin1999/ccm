@@ -1,3 +1,4 @@
+import 'package:ccm/models/countries.dart';
 import 'package:ccm/models/usermodel.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -6,7 +7,7 @@ class UserFormController {
   final email = TextEditingController();
   final address = TextEditingController();
   final phone = TextEditingController();
-  List<dynamic> country = [];
+  List<Country> country = [];
   var isAdmin;
   String? docid;
   UserFormController();
@@ -28,7 +29,7 @@ class UserFormController {
     userform.phone.text = user.phone ?? '';
     userform.docid = user.docid;
     userform.isAdmin = user.role;
-    userform.country = user.country;
+    userform.country = user.country.map((e) => Country.countries.firstWhere((element) => element.code == e)).toList();
 
     userform.invoiceClient = user.invoiceClient;
     userform.invoiceContractor = user.invoiceContractor;
@@ -44,7 +45,6 @@ class UserFormController {
 
   UserModel get object => UserModel(
         name: name.text,
-        country: country,
         address: address.text,
         role: isAdmin,
         docid: docid,
@@ -58,5 +58,6 @@ class UserFormController {
         viewClient: viewClient,
         viewContractor: viewContractor,
         viewDashboard: viewDashboard,
+        country: country.map((e) => e.code).toList(),
       );
 }

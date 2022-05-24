@@ -9,9 +9,10 @@ import '../../FormControllers/po_form_controller.dart';
 import 'quote_date_picker.dart';
 
 class ContractorPoForm extends StatefulWidget {
-  const ContractorPoForm({Key? key, required this.controller}) : super(key: key);
+  const ContractorPoForm({Key? key, required this.controller, required this.readOnly}) : super(key: key);
 
   final QuotationFormController controller;
+  final bool readOnly;
 
   @override
   State<ContractorPoForm> createState() => _ContractorPoFormState();
@@ -34,6 +35,8 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
     super.initState();
   }
 
+  bool get readOnly => widget.readOnly;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -54,6 +57,7 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                       child: Text('Contractor Quotation', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 25)),
                     ),
                   ),
+                  Divider(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
                     child: Table(
@@ -84,159 +88,177 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                       ],
                     ),
                   ),
-                  Divider(),
-                  Table(
-                    children: [
-                      TableRow(children: [
-                        QuoteTextBox(
-                          controller: contractorForm.number,
-                          hintText: 'PO Number',
-                          validator: _requiredDuplicateValidator,
+                  readOnly ? Container() : Divider(),
+                  readOnly
+                      ? Container()
+                      : Table(
+                          children: [
+                            TableRow(children: [
+                              QuoteTextBox(
+                                controller: contractorForm.number,
+                                hintText: 'PO Number',
+                                validator: _requiredDuplicateValidator,
+                                readOnly: readOnly,
+                              ),
+                              QuoteTypeAhead(
+                                text: controller.contractorForm.contractor,
+                                enabled: !readOnly,
+                                validator: _requiredValidator,
+                                title: 'Contractor',
+                                optionsBuilder: (TextEditingValue value) {
+                                  var contractorList = contractorController.contractorlist.map((element) => element.name).toList();
+                                  return contractorList.where((element) => element.toLowerCase().startsWith(value.text.toLowerCase()));
+                                },
+                                optionsViewBuilder: (context, onSelected, options) {
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: ConstrainedBox(
+                                          constraints: BoxConstraints(maxHeight: 200, maxWidth: MediaQuery.of(context).size.width / 4.57),
+                                          child: ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: options.length,
+                                              itemBuilder: (context, index) {
+                                                return ListTile(
+                                                  title: Text(options.elementAt(index)),
+                                                  onTap: () {
+                                                    onSelected(options.elementAt(index));
+                                                  },
+                                                );
+                                              }),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onSelected: (option) => setState(() {
+                                  controller.contractorForm.contractor = option;
+                                }),
+                              ),
+                              QuoteTextBox(
+                                readOnly: readOnly,
+                                controller: contractorForm.amount,
+                                hintText: 'PO Amount',
+                                validator: _amountValidator,
+                                onChanged: (p1) {
+                                  contractorForm.quoteAmount.text = contractorForm.amount.text;
+                                },
+                              ),
+                              QuoteDateBox(
+                                // readOnly: readOnly,
+                                hintText: 'PO Issued Date',
+                                controler: issuedDateController,
+                                title: 'PO Issued Date',
+                                validator: _requiredValidator,
+                                onPressed: readOnly
+                                    ? null
+                                    : () async {
+                                        await showDatePicker(
+                                          context: context,
+                                          initialDate: contractorForm.issuedDate ?? DateTime.now(),
+                                          firstDate: DateTime.utc(2000),
+                                          lastDate: DateTime.now(),
+                                        ).then((value) {
+                                          setState(() {
+                                            contractorForm.issuedDate = value;
+                                            issuedDateController.text =
+                                                contractorForm.issuedDate == null ? '' : format.format(contractorForm.issuedDate!);
+                                          });
+                                        });
+                                      },
+                              ),
+                            ]),
+                            TableRow(children: [
+                              QuoteTextBox(
+                                readOnly: readOnly,
+                                controller: contractorForm.quoteNumber,
+                                hintText: 'Quotation Number',
+                              ),
+                              QuoteTextBox(readOnly: readOnly, controller: contractorForm.quoteAmount, hintText: 'Quotation Amount'),
+                              QuoteDateBox(
+                                hintText: 'Work Commence',
+                                title: 'Work Commence',
+                                controler: commenceDateController,
+                                onPressed: readOnly
+                                    ? null
+                                    : () async {
+                                        await showDatePicker(
+                                          context: context,
+                                          initialDate: contractorForm.workCommence ?? DateTime.now(),
+                                          firstDate: contractorForm.issuedDate ?? DateTime.utc(2010),
+                                          lastDate: DateTime.utc(2050),
+                                        ).then((value) {
+                                          setState(() {
+                                            contractorForm.workCommence = value;
+                                            commenceDateController.text =
+                                                contractorForm.workCommence == null ? '' : format.format(contractorForm.workCommence!);
+                                          });
+                                        });
+                                      },
+                              ),
+                              QuoteDateBox(
+                                hintText: 'Work Complete',
+                                title: 'Work Complete',
+                                controler: completeDateController,
+                                onPressed: readOnly
+                                    ? null
+                                    : () async {
+                                        await showDatePicker(
+                                          context: context,
+                                          initialDate: contractorForm.workComplete ?? contractorForm.workCommence ?? DateTime.now(),
+                                          firstDate: contractorForm.workCommence ?? contractorForm.issuedDate ?? DateTime.utc(2010),
+                                          lastDate: DateTime.utc(2050),
+                                        ).then((value) {
+                                          setState(() {
+                                            contractorForm.workComplete = value;
+                                            completeDateController.text =
+                                                contractorForm.workComplete == null ? '' : format.format(contractorForm.workComplete!);
+                                          });
+                                        });
+                                      },
+                              ),
+                            ]),
+                          ],
                         ),
-                        QuoteTypeAhead(
-                          text: controller.contractorForm.contractor,
-                          validator: _requiredValidator,
-                          title: 'Contractor',
-                          optionsBuilder: (TextEditingValue value) {
-                            var contractorList = contractorController.contractorlist.map((element) => element.name).toList();
-                            return contractorList.where((element) => element.toLowerCase().startsWith(value.text.toLowerCase()));
-                          },
-                          optionsViewBuilder: (context, onSelected, options) {
-                            return Align(
-                              alignment: Alignment.topLeft,
-                              child: Material(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(maxHeight: 200, maxWidth: MediaQuery.of(context).size.width / 4.57),
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: options.length,
-                                        itemBuilder: (context, index) {
-                                          return ListTile(
-                                            title: Text(options.elementAt(index)),
-                                            onTap: () {
-                                              onSelected(options.elementAt(index));
-                                            },
-                                          );
-                                        }),
-                                  ),
+                  readOnly
+                      ? Container(height: 16)
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        controller.addPo();
+                                      });
+                                    },
+                                    child: Text("Add PO")),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      controller.updatePo();
+                                    });
+                                  },
+                                  child: Text("Edit PO"),
                                 ),
                               ),
-                            );
-                          },
-                          onSelected: (option) => setState(() {
-                            controller.contractorForm.contractor = option;
-                          }),
-                        ),
-                        QuoteTextBox(
-                          controller: contractorForm.amount,
-                          hintText: 'PO Amount',
-                          validator: _amountValidator,
-                          onChanged: (p1) {
-                            contractorForm.quoteAmount.text = contractorForm.amount.text;
-                          },
-                        ),
-                        QuoteDateBox(
-                          hintText: 'PO Issued Date',
-                          controler: issuedDateController,
-                          title: 'PO Issued Date',
-                          validator: _requiredValidator,
-                          onPressed: () async {
-                            await showDatePicker(
-                              context: context,
-                              initialDate: contractorForm.issuedDate ?? DateTime.now(),
-                              firstDate: DateTime.utc(2000),
-                              lastDate: DateTime.now(),
-                            ).then((value) {
-                              setState(() {
-                                contractorForm.issuedDate = value;
-                                issuedDateController.text = contractorForm.issuedDate == null ? '' : format.format(contractorForm.issuedDate!);
-                              });
-                            });
-                          },
-                        ),
-                      ]),
-                      TableRow(children: [
-                        QuoteTextBox(
-                          controller: contractorForm.quoteNumber,
-                          hintText: 'Quotation Number',
-                        ),
-                        QuoteTextBox(controller: contractorForm.quoteAmount, hintText: 'Quotation Amount'),
-                        QuoteDateBox(
-                          hintText: 'Work Commence',
-                          title: 'Work Commence',
-                          controler: commenceDateController,
-                          onPressed: () async {
-                            await showDatePicker(
-                              context: context,
-                              initialDate: contractorForm.workCommence ?? DateTime.now(),
-                              firstDate: contractorForm.issuedDate ?? DateTime.utc(2010),
-                              lastDate: DateTime.utc(2050),
-                            ).then((value) {
-                              setState(() {
-                                contractorForm.workCommence = value;
-                                commenceDateController.text = contractorForm.workCommence == null ? '' : format.format(contractorForm.workCommence!);
-                              });
-                            });
-                          },
-                        ),
-                        QuoteDateBox(
-                          hintText: 'Work Complete',
-                          title: 'Work Complete',
-                          controler: completeDateController,
-                          onPressed: () async {
-                            await showDatePicker(
-                              context: context,
-                              initialDate: contractorForm.workComplete ?? contractorForm.workCommence ?? DateTime.now(),
-                              firstDate: contractorForm.workCommence ?? contractorForm.issuedDate ?? DateTime.utc(2010),
-                              lastDate: DateTime.utc(2050),
-                            ).then((value) {
-                              setState(() {
-                                contractorForm.workComplete = value;
-                                completeDateController.text = contractorForm.workComplete == null ? '' : format.format(contractorForm.workComplete!);
-                              });
-                            });
-                          },
-                        ),
-                      ]),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  controller.addPo();
-                                });
-                              },
-                              child: Text("Add PO")),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                controller.updatePo();
-                              });
-                            },
-                            child: Text("Edit PO"),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
         ),
-        ContractorInvoiceForm(controller: contractorForm),
+        ContractorInvoiceForm(controller: contractorForm, readOnly: !session.user!.invoiceContractor),
       ],
     );
   }

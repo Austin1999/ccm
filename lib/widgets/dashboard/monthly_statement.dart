@@ -25,11 +25,11 @@ List<String> months = [
 ];
 
 class MonthlyStatement extends StatefulWidget {
-  const MonthlyStatement({Key? key, this.country, required this.currency, this.client}) : super(key: key);
+  const MonthlyStatement({Key? key, this.country, required this.currency, required this.client}) : super(key: key);
 
   final String? country;
   final String currency;
-  final String? client;
+  final List<String> client;
 
   @override
   State<MonthlyStatement> createState() => _MonthlyStatementState();
@@ -52,7 +52,7 @@ class _MonthlyStatementState extends State<MonthlyStatement> {
 
   String? get country => widget.country;
   String get currency => widget.currency;
-  String? get client => widget.client;
+  List<String> get client => widget.client;
 
   clear() {
     total = monthsShifted.map((e) => BarChartData(key: e, value: 0)).toList();
@@ -71,19 +71,20 @@ class _MonthlyStatementState extends State<MonthlyStatement> {
     if (country != null) {
       query = query.where('country', isEqualTo: country);
     }
-    if (client != null) {
-      query = query.where('client', isEqualTo: client);
-    }
+
     await query.get().then((value) {
       clear();
       try {
         value.docs.forEach((element) {
           var data = DashboardData.fromJson(element.data());
-          total[(data.issuedDate.month + DateTime.now().month + 1) % 12].value += data.amount.convert(data.currencyCode, widget.currency);
-          received[(data.issuedDate.month + DateTime.now().month + 1) % 12].value += data.receivedAmount.convert(data.currencyCode, widget.currency);
-          // receivables[(data.issuedDate.month + 6)%12].value += data.receivableAmount.convert(data.currencyCode, widget.currency);
-          receivables[(data.issuedDate.month + DateTime.now().month + 1) % 12].value +=
-              (data.amount - data.receivedAmount).convert(data.currencyCode, widget.currency);
+          if (client.contains(data.client)) {
+            total[(data.issuedDate.month + DateTime.now().month + 1) % 12].value += data.amount.convert(data.currencyCode, widget.currency);
+            received[(data.issuedDate.month + DateTime.now().month + 1) % 12].value +=
+                data.receivedAmount.convert(data.currencyCode, widget.currency);
+            // receivables[(data.issuedDate.month + 6)%12].value += data.receivableAmount.convert(data.currencyCode, widget.currency);
+            receivables[(data.issuedDate.month + DateTime.now().month + 1) % 12].value +=
+                (data.amount - data.receivedAmount).convert(data.currencyCode, widget.currency);
+          }
         });
       } catch (e) {
         printError(info: e.toString());

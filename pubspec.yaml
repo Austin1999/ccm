@@ -59,6 +59,7 @@ dependencies:
   open_file: ^3.2.1
   universal_html: ^2.0.8
   screenshot: ^1.2.3
+  data_table_2: ^2.2.1
 
 dev_dependencies:
   flutter_test:
