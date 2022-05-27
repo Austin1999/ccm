@@ -2,7 +2,6 @@ import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/models/quote.dart';
 import 'package:ccm/services/firebase.dart';
 import 'package:ccm/widgets/quotation/invoice_list.dart';
-import 'package:ccm/widgets/quotation/multiselect.dart';
 import 'package:ccm/widgets/quotation/quote_date_picker.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';

@@ -8,7 +8,7 @@ class UserFormController {
   final address = TextEditingController();
   final phone = TextEditingController();
   List<Country> country = [];
-  var isAdmin;
+  bool isAdmin = false;
   String? docid;
   UserFormController();
 
@@ -21,6 +21,8 @@ class UserFormController {
   bool viewContractor = false;
   bool viewDashboard = false;
 
+  final formKey = GlobalKey<FormState>();
+
   factory UserFormController.fromUser(UserModel user) {
     var userform = UserFormController();
     userform.address.text = user.address ?? '';
@@ -28,7 +30,7 @@ class UserFormController {
     userform.name.text = user.name;
     userform.phone.text = user.phone ?? '';
     userform.docid = user.docid;
-    userform.isAdmin = user.role;
+    userform.isAdmin = user.isAdmin;
     userform.country = user.country.map((e) => Country.countries.firstWhere((element) => element.code == e)).toList();
 
     userform.invoiceClient = user.invoiceClient;
@@ -46,18 +48,18 @@ class UserFormController {
   UserModel get object => UserModel(
         name: name.text,
         address: address.text,
-        role: isAdmin,
+        isAdmin: isAdmin,
         docid: docid,
         email: email.text,
         fullname: name.text,
         phone: phone.text,
-        invoiceClient: invoiceClient,
-        invoiceContractor: invoiceContractor,
-        quoteClient: quoteClient,
-        quoteContractor: quoteContractor,
-        viewClient: viewClient,
-        viewContractor: viewContractor,
-        viewDashboard: viewDashboard,
+        invoiceClient: isAdmin ? isAdmin : invoiceClient,
+        invoiceContractor: isAdmin ? isAdmin : invoiceContractor,
+        quoteClient: isAdmin ? isAdmin : quoteClient,
+        quoteContractor: isAdmin ? isAdmin : quoteContractor,
+        viewClient: isAdmin ? isAdmin : viewClient,
+        viewContractor: isAdmin ? isAdmin : viewContractor,
+        viewDashboard: isAdmin ? isAdmin : viewDashboard,
         country: country.map((e) => e.code).toList(),
       );
 }

@@ -24,7 +24,7 @@ class QuoteDropdown<T> extends StatelessWidget {
         width: double.infinity,
         height: 60,
         child: Card(
-          color: onChanged == null ? Colors.grey.shade200 : Colors.white,
+          color: onChanged == null ? Colors.grey.shade100 : Colors.white,
           elevation: 5,
           shadowColor: Colors.grey,
           child: DropdownButtonFormField(

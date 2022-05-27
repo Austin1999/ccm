@@ -132,6 +132,13 @@ class Quotation {
       });
       strings.addAll(makeSearchString(po.number));
     });
+
+    var textArray = description.split(' ');
+    strings.addAll(textArray.map((e) => e.toLowerCase()));
+    for (int i = 0; i < textArray.length; i++) {
+      for (int j = i + 1; j < textArray.length; j++) {}
+    }
+
     return strings;
   }
 

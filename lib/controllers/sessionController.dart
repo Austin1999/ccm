@@ -55,7 +55,7 @@ class SessionController extends GetxController {
 
   setmyCountries() {
     myCountries =
-        (user?.role ?? false) ? sessionCountries : sessionCountries.where((element) => (user?.country ?? []).contains(element.code)).toList();
+        (user?.isAdmin ?? false) ? sessionCountries : sessionCountries.where((element) => (user?.country ?? []).contains(element.code)).toList();
     print(myCountries);
   }
 

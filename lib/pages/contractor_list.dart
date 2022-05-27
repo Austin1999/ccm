@@ -35,7 +35,7 @@ class _ContractorListState extends State<ContractorList> {
   addContractor({required isEdit, nameval, addressval, required cwrval, emailval, phoneval, countrynameval, contact, docId}) {
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
-    TextEditingController countrycode = TextEditingController(text: cwrval);
+    String? countrycode;
     TextEditingController countryname = TextEditingController(text: countrynameval);
     TextEditingController email = TextEditingController(text: emailval);
     TextEditingController phone = TextEditingController(text: phoneval);
@@ -151,7 +151,7 @@ class _ContractorListState extends State<ContractorList> {
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                           child: DropdownButton(
-                                              value: countrycode.text,
+                                              value: countrycode,
                                               items: session.sessionCountries
                                                   .map((e) => DropdownMenuItem(
                                                         child: Text(e.name),
@@ -160,7 +160,7 @@ class _ContractorListState extends State<ContractorList> {
                                                   .toList(),
                                               onChanged: (String? value) {
                                                 setState(() {
-                                                  countrycode.text = value!;
+                                                  countrycode = value;
                                                   session.sessionCountries.forEach((element) {
                                                     if (element.code == value) {
                                                       countryname.text = element.name;
@@ -337,7 +337,7 @@ class _ContractorListState extends State<ContractorList> {
                                               children: [
                                                 CircularProgressIndicator(),
                                                 SizedBox(width: 10.0),
-                                                Text(isEdit ? 'Updating User...' : 'Adding User...')
+                                                Text(isEdit ? 'Updating Contractor...' : 'Adding Contractor...')
                                               ],
                                             ),
                                           );
@@ -349,7 +349,7 @@ class _ContractorListState extends State<ContractorList> {
                                         address: address.text,
                                         contactPerson: contactPerson.text,
                                         email: email.text,
-                                        country: countrycode.text,
+                                        country: countrycode,
                                         countryName: countryname.text,
                                         phone: phone.text);
 
@@ -357,7 +357,7 @@ class _ContractorListState extends State<ContractorList> {
                                         ? contractor.update().then((value) {
                                             name.clear();
                                             address.clear();
-                                            countrycode.clear();
+                                            countrycode = null;
                                             email.clear();
                                             phone.clear();
                                             contactPerson.clear();
@@ -367,7 +367,7 @@ class _ContractorListState extends State<ContractorList> {
                                         : await contractor.add().then((value) {
                                             name.clear();
                                             address.clear();
-                                            countrycode.clear();
+                                            countrycode = null;
                                             email.clear();
                                             phone.clear();
                                             contactPerson.clear();

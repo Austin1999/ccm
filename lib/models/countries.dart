@@ -17,6 +17,7 @@ class Country {
     required this.code,
   });
 
+  @override
   bool operator ==(other) {
     if (other is Country) {
       return this.code == other.code;
@@ -307,4 +308,9 @@ class Country {
   ];
 
   static List<Country> get countries => _countryList.map((e) => Country.fromJson(e)).toList();
+
+  @override
+  // ignore: todo
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
 }

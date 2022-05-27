@@ -22,7 +22,7 @@ class QuoteTextBox extends StatelessWidget {
       ),
       trailing: trailing,
       subtitle: Card(
-        color: readOnly ? Colors.grey.shade200 : Colors.white,
+        color: readOnly ? Colors.grey.shade100 : Colors.white,
         elevation: 5,
         shadowColor: Colors.grey,
         child: TextFormField(
@@ -71,7 +71,7 @@ class QuoteTypeAhead extends StatelessWidget {
         child: Text(title),
       ),
       subtitle: Card(
-        color: Colors.white,
+        color: enabled ? Colors.white : Colors.grey.shade100,
         elevation: 5,
         shadowColor: Colors.grey,
         child: Autocomplete<String>(
@@ -85,6 +85,7 @@ class QuoteTypeAhead extends StatelessWidget {
               onChanged: onChanged,
               validator: validator,
               focusNode: focusNode,
+              enabled: enabled,
               decoration: InputDecoration(
                   hintText: title,
                   contentPadding: EdgeInsets.only(left: 8),

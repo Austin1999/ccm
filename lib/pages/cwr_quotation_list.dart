@@ -64,7 +64,16 @@ class _CwrSummaryState extends State<CwrSummary> {
     }
 
     if (searchController.text.isNotEmpty) {
-      query = query.where('search', arrayContains: searchController.text.toLowerCase());
+      var splits = searchController.text.toLowerCase().split(' ');
+      int end = splits.length - 1;
+      print(end);
+      end = end < 5 ? end : 5;
+
+      query = query.where('search', arrayContainsAny: end != 0 ? splits.sublist(0, end) : splits);
+      print(searchController.text.toLowerCase().split('').sublist(0, 5));
+      query.get().then((value) => null).onError((error, stackTrace) {
+        print(error.toString());
+      });
     }
 
     // query = query.orderBy('id');
@@ -291,29 +300,27 @@ class _CwrSummaryState extends State<CwrSummary> {
                         cardTheme: CardTheme(color: Colors.white),
                         cardColor: Colors.white,
                       ),
-                      child: Expanded(
-                        child: PaginatedDataTable(
-                          showCheckboxColumn: true,
-                          showFirstLastButtons: true,
-                          rowsPerPage: 10,
-                          columns: [
-                            DataColumn(label: Text('Edit')),
-                            DataColumn(label: Text('Invoice')),
-                            DataColumn(label: Text('Child Quotes')),
-                            DataColumn(label: Text('Quote')),
-                            DataColumn(label: Text('Issued on')),
-                            DataColumn(label: Text('Client')),
-                            DataColumn(label: Text('Description')),
-                            DataColumn(label: Text('Amount')),
-                            DataColumn(label: Text('status')),
-                            DataColumn(label: Text('Client PO')),
-                            DataColumn(label: Text('Margin')),
-                            DataColumn(label: Text('CCM Ticket')),
-                            DataColumn(label: Text('Completion Date')),
-                            DataColumn(label: Text('Delete')),
-                          ],
-                          source: source,
-                        ),
+                      child: PaginatedDataTable(
+                        showCheckboxColumn: true,
+                        showFirstLastButtons: true,
+                        rowsPerPage: 10,
+                        columns: [
+                          DataColumn(label: Text('Edit')),
+                          DataColumn(label: Text('Invoice')),
+                          DataColumn(label: Text('Child Quotes')),
+                          DataColumn(label: Text('Quote')),
+                          DataColumn(label: Text('Issued on')),
+                          DataColumn(label: Text('Client')),
+                          DataColumn(label: Text('Description')),
+                          DataColumn(label: Text('Amount')),
+                          DataColumn(label: Text('status')),
+                          DataColumn(label: Text('Client PO')),
+                          DataColumn(label: Text('Margin')),
+                          DataColumn(label: Text('CCM Ticket')),
+                          DataColumn(label: Text('Completion Date')),
+                          DataColumn(label: Text('Delete')),
+                        ],
+                        source: source,
                       ),
                     );
                   }

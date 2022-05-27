@@ -29,11 +29,14 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+
   Get.put(SessionController());
   Get.put(ContractorController());
   Get.put(CurrencyController());
   currencyController.syncResponse();
   Get.put(ClientController());
+
   runApp(MyApp());
 }
 

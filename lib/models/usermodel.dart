@@ -13,7 +13,7 @@ class UserModel {
     this.phone,
     this.fullname,
     this.docid,
-    this.role,
+    required this.isAdmin,
     required this.country,
     this.invoiceClient = false,
     this.invoiceContractor = false,
@@ -28,7 +28,7 @@ class UserModel {
   String? address;
   String? email;
   String? phone;
-  bool? role;
+  bool isAdmin;
   String? fullname;
   String? docid;
   List<dynamic> country;
@@ -45,7 +45,7 @@ class UserModel {
         address: json["address"],
         email: json["email"],
         phone: json["phone"],
-        role: json["role"] ?? false,
+        isAdmin: json["role"],
         docid: docId,
         fullname: json["fullname"] ?? '',
         invoiceContractor: json["invoiceContractor"] ?? true,
@@ -63,7 +63,7 @@ class UserModel {
         "address": address,
         "email": email,
         "phone": phone,
-        "role": role,
+        "role": isAdmin,
         "fullname": fullname,
         "country": country,
         "invoiceContractor": invoiceContractor,

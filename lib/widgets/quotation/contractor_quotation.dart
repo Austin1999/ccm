@@ -9,10 +9,9 @@ import '../../FormControllers/po_form_controller.dart';
 import 'quote_date_picker.dart';
 
 class ContractorPoForm extends StatefulWidget {
-  const ContractorPoForm({Key? key, required this.controller, required this.readOnly}) : super(key: key);
+  const ContractorPoForm({Key? key, required this.controller}) : super(key: key);
 
   final QuotationFormController controller;
-  final bool readOnly;
 
   @override
   State<ContractorPoForm> createState() => _ContractorPoFormState();
@@ -34,8 +33,6 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
 
     super.initState();
   }
-
-  bool get readOnly => widget.readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -88,21 +85,17 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                       ],
                     ),
                   ),
-                  readOnly ? Container() : Divider(),
-                  readOnly
-                      ? Container()
-                      : Table(
+                  (session.user?.quoteContractor ?? false)
+                      ? Table(
                           children: [
                             TableRow(children: [
                               QuoteTextBox(
                                 controller: contractorForm.number,
                                 hintText: 'PO Number',
                                 validator: _requiredDuplicateValidator,
-                                readOnly: readOnly,
                               ),
                               QuoteTypeAhead(
                                 text: controller.contractorForm.contractor,
-                                enabled: !readOnly,
                                 validator: _requiredValidator,
                                 title: 'Contractor',
                                 optionsBuilder: (TextEditingValue value) {
@@ -138,7 +131,6 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                                 }),
                               ),
                               QuoteTextBox(
-                                readOnly: readOnly,
                                 controller: contractorForm.amount,
                                 hintText: 'PO Amount',
                                 validator: _amountValidator,
@@ -152,79 +144,73 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                                 controler: issuedDateController,
                                 title: 'PO Issued Date',
                                 validator: _requiredValidator,
-                                onPressed: readOnly
-                                    ? null
-                                    : () async {
-                                        await showDatePicker(
-                                          context: context,
-                                          initialDate: contractorForm.issuedDate ?? DateTime.now(),
-                                          firstDate: DateTime.utc(2000),
-                                          lastDate: DateTime.now(),
-                                        ).then((value) {
-                                          setState(() {
-                                            contractorForm.issuedDate = value;
-                                            issuedDateController.text =
-                                                contractorForm.issuedDate == null ? '' : format.format(contractorForm.issuedDate!);
-                                          });
-                                        });
-                                      },
+                                onPressed: () async {
+                                  await showDatePicker(
+                                    context: context,
+                                    initialDate: contractorForm.issuedDate ?? DateTime.now(),
+                                    firstDate: DateTime.utc(2000),
+                                    lastDate: DateTime.now(),
+                                  ).then((value) {
+                                    setState(() {
+                                      contractorForm.issuedDate = value;
+                                      issuedDateController.text = contractorForm.issuedDate == null ? '' : format.format(contractorForm.issuedDate!);
+                                    });
+                                  });
+                                },
                               ),
                             ]),
                             TableRow(children: [
                               QuoteTextBox(
-                                readOnly: readOnly,
                                 controller: contractorForm.quoteNumber,
                                 hintText: 'Quotation Number',
                               ),
-                              QuoteTextBox(readOnly: readOnly, controller: contractorForm.quoteAmount, hintText: 'Quotation Amount'),
+                              QuoteTextBox(controller: contractorForm.quoteAmount, hintText: 'Quotation Amount'),
                               QuoteDateBox(
                                 hintText: 'Work Commence',
                                 title: 'Work Commence',
                                 controler: commenceDateController,
-                                onPressed: readOnly
-                                    ? null
-                                    : () async {
-                                        await showDatePicker(
-                                          context: context,
-                                          initialDate: contractorForm.workCommence ?? DateTime.now(),
-                                          firstDate: contractorForm.issuedDate ?? DateTime.utc(2010),
-                                          lastDate: DateTime.utc(2050),
-                                        ).then((value) {
-                                          setState(() {
-                                            contractorForm.workCommence = value;
-                                            commenceDateController.text =
-                                                contractorForm.workCommence == null ? '' : format.format(contractorForm.workCommence!);
-                                          });
-                                        });
-                                      },
+                                onPressed: () async {
+                                  await showDatePicker(
+                                    context: context,
+                                    initialDate: contractorForm.workCommence ?? DateTime.now(),
+                                    firstDate: contractorForm.issuedDate ?? DateTime.utc(2010),
+                                    lastDate: DateTime.utc(2050),
+                                  ).then((value) {
+                                    setState(() {
+                                      contractorForm.workCommence = value;
+                                      commenceDateController.text =
+                                          contractorForm.workCommence == null ? '' : format.format(contractorForm.workCommence!);
+                                    });
+                                  });
+                                },
                               ),
                               QuoteDateBox(
                                 hintText: 'Work Complete',
                                 title: 'Work Complete',
                                 controler: completeDateController,
-                                onPressed: readOnly
-                                    ? null
-                                    : () async {
-                                        await showDatePicker(
-                                          context: context,
-                                          initialDate: contractorForm.workComplete ?? contractorForm.workCommence ?? DateTime.now(),
-                                          firstDate: contractorForm.workCommence ?? contractorForm.issuedDate ?? DateTime.utc(2010),
-                                          lastDate: DateTime.utc(2050),
-                                        ).then((value) {
-                                          setState(() {
-                                            contractorForm.workComplete = value;
-                                            completeDateController.text =
-                                                contractorForm.workComplete == null ? '' : format.format(contractorForm.workComplete!);
-                                          });
-                                        });
-                                      },
+                                onPressed: () async {
+                                  await showDatePicker(
+                                    context: context,
+                                    initialDate: contractorForm.workComplete ?? contractorForm.workCommence ?? DateTime.now(),
+                                    firstDate: contractorForm.workCommence ?? contractorForm.issuedDate ?? DateTime.utc(2010),
+                                    lastDate: DateTime.utc(2050),
+                                  ).then((value) {
+                                    setState(() {
+                                      contractorForm.workComplete = value;
+                                      completeDateController.text =
+                                          contractorForm.workComplete == null ? '' : format.format(contractorForm.workComplete!);
+                                    });
+                                  });
+                                },
                               ),
                             ]),
                           ],
+                        )
+                      : Container(
+                          height: 8,
                         ),
-                  readOnly
-                      ? Container(height: 16)
-                      : Padding(
+                  (session.user?.quoteContractor ?? false)
+                      ? Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -252,13 +238,18 @@ class _ContractorPoFormState extends State<ContractorPoForm> {
                               ),
                             ],
                           ),
+                        )
+                      : Container(
+                          height: 8,
                         ),
                 ],
               ),
             ),
           ),
         ),
-        ContractorInvoiceForm(controller: contractorForm, readOnly: !session.user!.invoiceContractor),
+        ContractorInvoiceForm(
+          controller: contractorForm,
+        ),
       ],
     );
   }

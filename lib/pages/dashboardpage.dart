@@ -5,7 +5,6 @@ import 'package:ccm/models/client.dart';
 import 'package:ccm/models/dashboard/AccountChart.dart';
 import 'package:ccm/widgets/dashboard/monthly_statement.dart';
 import 'package:ccm/widgets/dashboard/top5.dart';
-import 'package:ccm/widgets/quotation/multiselect.dart';
 import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 
 import 'package:flutter/foundation.dart';
@@ -33,6 +32,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     country = 'IN';
     currency = session.country?.currencyCode ?? 'SGD';
+    selectedClients = clientController.filteredClients(country).toList();
 
     // dashboard.loadData();
   }

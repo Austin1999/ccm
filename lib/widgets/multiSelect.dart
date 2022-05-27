@@ -96,10 +96,11 @@ class _MultiSelectState<T> extends State<MultiSelect<T>> {
             alignment: Alignment.centerLeft,
             child: DropdownButtonFormField<T>(
               isExpanded: true,
+              alignment: Alignment.bottomCenter,
               decoration: widget.decoration != null
                   ? widget.decoration
                   : InputDecoration(
-                      fillColor: Colors.white,
+                      fillColor: widget.enabled ? Colors.white : Colors.grey.shade200,
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(

@@ -44,6 +44,7 @@ class Contractor {
 
   Future<dynamic> add() async {
     docid = await getNextContractorID();
+    print("I am here $docid");
     return await contractors
         .doc(docid)
         .set(toJson())

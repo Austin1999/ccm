@@ -50,11 +50,16 @@ class Client {
 
   Future<Result> add() async {
     docid = await getNextClientId();
-    return clients(country)
-        .doc(docid)
-        .set(toJson())
-        .then((value) => Result.success("Client Added successfully"))
-        .onError((error, stackTrace) => Result.error(error));
+    print(country);
+    if (country != null) {
+      return clients(country)
+          .doc(docid)
+          .set(toJson())
+          .then((value) => Result.success("Client Added successfully"))
+          .onError((error, stackTrace) => Result.error(error));
+    } else {
+      return Result.error("Country not poplateed");
+    }
   }
 
   Future<dynamic> update() async {

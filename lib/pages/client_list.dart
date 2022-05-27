@@ -4,6 +4,7 @@ import 'package:ccm/services/firebase.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 class ClientList extends StatefulWidget {
@@ -29,10 +30,10 @@ class _ClientListState extends State<ClientList> {
 
   String searchclient = '';
   String? searchcountry;
-  addClient({required isEdit, nameval, addressval, required cwrval, emailval, phoneval, contact, docId}) {
+  addClient({required isEdit, nameval, addressval, required String cwrval, emailval, phoneval, contact, docId}) {
     TextEditingController name = TextEditingController(text: nameval);
     TextEditingController address = TextEditingController(text: addressval);
-    TextEditingController cwr = TextEditingController(text: cwrval);
+    String? cwr = cwrval;
     TextEditingController email = TextEditingController(text: emailval);
     TextEditingController phone = TextEditingController(text: phoneval);
     TextEditingController contactPerson = TextEditingController(text: contact);
@@ -137,33 +138,37 @@ class _ClientListState extends State<ClientList> {
                                   SizedBox(
                                     height: 10,
                                   ),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: Colors.grey,
-                                      child: DropdownButtonHideUnderline(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                          child: DropdownButton(
-                                              value: cwr.text,
-                                              items: session.sessionCountries
-                                                  .map((e) => DropdownMenuItem(
-                                                        child: Text(e.name),
-                                                        value: e.code,
-                                                      ))
-                                                  .toList(),
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  cwr.text = value!;
-                                                });
-                                              },
-                                              hint: Text("Select item")),
+                                  Builder(builder: (context) {
+                                    session.sessionCountries.forEach((element) => print(element.toJson()));
+
+                                    return SizedBox(
+                                      width: double.infinity,
+                                      child: Card(
+                                        color: Colors.white,
+                                        elevation: 5,
+                                        shadowColor: Colors.grey,
+                                        child: DropdownButtonHideUnderline(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            child: DropdownButton<String?>(
+                                                value: cwr,
+                                                items: session.myCountries
+                                                    .map((e) => DropdownMenuItem(
+                                                          child: Text(e.name),
+                                                          value: e.code,
+                                                        ))
+                                                    .toList(),
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    cwr = value!;
+                                                  });
+                                                },
+                                                hint: Text("Select item")),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  }),
                                 ],
                               ),
                             ),
@@ -328,7 +333,7 @@ class _ClientListState extends State<ClientList> {
                                               children: [
                                                 CircularProgressIndicator(),
                                                 SizedBox(width: 10.0),
-                                                Text(isEdit ? 'Updating User...' : 'Adding User...')
+                                                Text(isEdit ? 'Updating Client...' : 'Adding Client...')
                                               ],
                                             ),
                                           );
@@ -338,10 +343,10 @@ class _ClientListState extends State<ClientList> {
                                       name: name.text,
                                       address: address.text,
                                       contactPerson: contactPerson.text,
-                                      country: searchcountry,
+                                      country: cwr,
                                       email: email.text,
                                       phone: phone.text,
-                                      cwr: cwr.text,
+                                      cwr: cwr,
                                       docid: docId,
                                     );
 
@@ -349,7 +354,7 @@ class _ClientListState extends State<ClientList> {
                                         ? client.update().then((value) {
                                             name.clear();
                                             address.clear();
-                                            cwr.clear();
+                                            cwr = null;
                                             email.clear();
                                             phone.clear();
                                             contactPerson.clear();
@@ -359,7 +364,7 @@ class _ClientListState extends State<ClientList> {
                                         : client.add().then((value) {
                                             name.clear();
                                             address.clear();
-                                            cwr.clear();
+                                            cwr = null;
                                             email.clear();
                                             phone.clear();
                                             contactPerson.clear();
@@ -391,7 +396,7 @@ class _ClientListState extends State<ClientList> {
     return Scaffold(
         floatingActionButton: ElevatedButton(
           onPressed: () {
-            addClient(isEdit: false, cwrval: searchcountry);
+            addClient(isEdit: false, cwrval: searchcountry ?? session.myCountries.first.code);
           },
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -412,211 +417,204 @@ class _ClientListState extends State<ClientList> {
                   'Client List',
                   style: Theme.of(context).textTheme.headline6,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Card(
-                    shadowColor: Colors.grey[600],
-                    elevation: 5,
-                    color: Colors.lightBlue[50],
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.30,
-                                  child: Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      child: TextFormField(
-                                        onChanged: (value) {
-                                          setState(() {
-                                            searchclient = value;
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: 'Enter Email',
-                                            suffixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(borderSide: BorderSide.none)),
-                                      )),
-                                ),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.30,
-                                  child: Card(
-                                    color: Colors.white,
-                                    elevation: 5,
-                                    child: DropdownButtonHideUnderline(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                        child: DropdownButton(
-                                            value: searchcountry,
-                                            items: getCountryDropdown(),
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                searchcountry = value;
-                                              });
-                                            },
-                                            hint: Text("Select item")),
+                GetBuilder(
+                    init: clientController,
+                    builder: (_) {
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Card(
+                          shadowColor: Colors.grey[600],
+                          elevation: 5,
+                          color: Colors.lightBlue[50],
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: MediaQuery.of(context).size.width * 0.30,
+                                        child: Card(
+                                            color: Colors.white,
+                                            elevation: 5,
+                                            child: TextFormField(
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  searchclient = value;
+                                                });
+                                              },
+                                              decoration: InputDecoration(
+                                                  hintText: 'Enter Email',
+                                                  suffixIcon: Icon(Icons.search),
+                                                  border: OutlineInputBorder(borderSide: BorderSide.none)),
+                                            )),
                                       ),
-                                    ),
-                                    //  TextFormField(
-                                    //   decoration: InputDecoration(
-                                    //       hintText: 'Enter Country',
-                                    //       suffixIcon: Icon(Icons.search),
-                                    //       border: OutlineInputBorder(
-                                    //           borderSide: BorderSide.none)),
-                                    // )
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Table(
-                                  children: [
-                                    TableRow(
-                                      children: [
-                                        DataTable(
-                                          columns: [
-                                            DataColumn(
-                                              label: Text(
-                                                'Client Name',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
+                                      SizedBox(
+                                        width: MediaQuery.of(context).size.width * 0.30,
+                                        child: Card(
+                                          color: Colors.white,
+                                          elevation: 5,
+                                          child: DropdownButtonHideUnderline(
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                              child: DropdownButton(
+                                                  value: searchcountry,
+                                                  items: getCountryDropdown(),
+                                                  onChanged: (String? value) {
+                                                    setState(() {
+                                                      searchcountry = value;
+                                                    });
+                                                  },
+                                                  hint: Text("Select item")),
                                             ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Address',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Email ID',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Phone No',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Country',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'CWR Country',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Contact Person',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Delete',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Edit',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                          ],
-                                          rows: clientList
-                                              .map<DataRow>(
-                                                (e) => DataRow(
-                                                  cells: [
-                                                    DataCell(
-                                                      Text(e.name),
-                                                    ),
-                                                    DataCell(
-                                                      Text(e.address!),
-                                                    ),
-                                                    DataCell(
-                                                      Text(e.email!),
-                                                    ),
-                                                    DataCell(
-                                                      Text(e.phone!),
-                                                    ),
-                                                    DataCell(
-                                                      Text(e.country!),
-                                                    ),
-                                                    DataCell(
-                                                      Text(e.cwr!),
-                                                    ),
-                                                    DataCell(
-                                                      Text(e.contactPerson!),
-                                                    ),
-                                                    DataCell(
-                                                      Icon(
-                                                        Icons.delete,
-                                                        color: Colors.red,
-                                                      ),
-                                                      onTap: () {
-                                                        CoolAlert.show(
-                                                            context: context,
-                                                            type: CoolAlertType.confirm,
-                                                            width: MediaQuery.of(context).size.width > 500
-                                                                ? MediaQuery.of(context).size.width / 2
-                                                                : MediaQuery.of(context).size.width * 0.85,
-                                                            showCancelBtn: true,
-                                                            onCancelBtnTap: () => Navigator.pop(context),
-                                                            onConfirmBtnTap: () async {
-                                                              await countries.doc(session.country!.code).collection('clients').doc(e.docid).delete();
-                                                              // .whenComplete(() =>
-                                                              Navigator.pop(context);
-                                                              // );
-                                                            });
-                                                      },
-                                                    ),
-                                                    DataCell(
-                                                        Icon(
-                                                          Icons.edit,
-                                                          // color: Colors.,
-                                                        ), onTap: () {
-                                                      addClient(
-                                                          isEdit: true,
-                                                          nameval: e.name,
-                                                          addressval: e.address,
-                                                          emailval: e.email,
-                                                          phoneval: e.phone,
-                                                          cwrval: e.country,
-                                                          contact: e.contactPerson,
-                                                          docId: e.docid);
-                                                    }),
-                                                  ],
-                                                ),
-                                              )
-                                              .toList(),
+                                          ),
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ))
-                          ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: Table(
+                                        children: [
+                                          TableRow(
+                                            children: [
+                                              DataTable(
+                                                columns: [
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Client Name',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Address',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Email ID',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Phone No',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'CWR Country',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Contact Person',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Delete',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Edit',
+                                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ],
+                                                rows: clientList
+                                                    .map<DataRow>(
+                                                      (e) => DataRow(
+                                                        cells: [
+                                                          DataCell(
+                                                            Text(e.name),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.address ?? ''),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.email ?? ''),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.phone ?? ''),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.cwr ?? ''),
+                                                          ),
+                                                          DataCell(
+                                                            Text(e.contactPerson ?? ''),
+                                                          ),
+                                                          DataCell(
+                                                            Icon(
+                                                              Icons.delete,
+                                                              color: Colors.red,
+                                                            ),
+                                                            onTap: () {
+                                                              CoolAlert.show(
+                                                                  context: context,
+                                                                  type: CoolAlertType.confirm,
+                                                                  width: MediaQuery.of(context).size.width > 500
+                                                                      ? MediaQuery.of(context).size.width / 2
+                                                                      : MediaQuery.of(context).size.width * 0.85,
+                                                                  showCancelBtn: true,
+                                                                  onCancelBtnTap: () => Navigator.pop(context),
+                                                                  onConfirmBtnTap: () async {
+                                                                    await countries
+                                                                        .doc(session.country!.code)
+                                                                        .collection('clients')
+                                                                        .doc(e.docid)
+                                                                        .delete();
+                                                                    // .whenComplete(() =>
+                                                                    Navigator.pop(context);
+                                                                    // );
+                                                                  });
+                                                            },
+                                                          ),
+                                                          DataCell(
+                                                              Icon(
+                                                                Icons.edit,
+                                                                // color: Colors.,
+                                                              ), onTap: () {
+                                                            addClient(
+                                                              isEdit: true,
+                                                              nameval: e.name,
+                                                              addressval: e.address,
+                                                              emailval: e.email,
+                                                              phoneval: e.phone,
+                                                              cwrval: e.cwr ?? session.myCountries.first.code,
+                                                              contact: e.contactPerson,
+                                                              docId: e.docid,
+                                                            );
+                                                          }),
+                                                        ],
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ))
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
+                      );
+                    }),
               ],
             ),
           ),
@@ -634,204 +632,3 @@ class _ClientListState extends State<ClientList> {
     return list;
   }
 }
-
-// class ClientView extends StatefulWidget {
-//   ClientView({Key? key, this.client}) : super(key: key);
-
-//   final Client? client;
-
-//   @override
-//   _ClientViewState createState() => _ClientViewState();
-// }
-
-// class _ClientViewState extends State<ClientView> {
-//   @override
-//   @override
-//   void initState() {
-//     super.initState();
-//     if (widget.client != null) {
-//       name.text = widget.client!.name;
-//       address.text = widget.client!.address ?? '';
-
-//       email.text = widget.client!.email ?? '';
-//       phone.text = widget.client!.phone ?? '';
-//       countryCode = widget.client!.country!;
-//     }
-//     countryCode = session.country != null
-//         ? session.country!.code
-//         : session.countries.first.code;
-//   }
-
-//   late String countryCode;
-
-//   final name = TextEditingController();
-//   final address = TextEditingController();
-
-//   final email = TextEditingController();
-//   final phone = TextEditingController();
-
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Color(0xFFFAFAFA),
-//       body: Padding(
-//         padding: const EdgeInsets.all(12.0),
-//         child: Card(
-//           elevation: 5,
-//           color: Color(0xFFE8F3FA),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Padding(
-//                 padding: const EdgeInsets.all(8.0),
-//                 child: Table(children: [
-//                   TableRow(
-//                     children: [
-//                       Expanded(
-//                           child: Padding(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 16.0, vertical: 8.0),
-//                         child: Card(
-//                           color: Colors.white,
-//                           elevation: 5,
-//                           shadowColor: Colors.grey,
-//                           child: TextFormField(
-//                             decoration: InputDecoration(
-//                               suffixIcon: Icon(Icons.search),
-//                               hintText: 'Enter Email',
-//                               border: OutlineInputBorder(
-//                                   borderSide: BorderSide.none),
-//                             ),
-//                           ),
-//                         ),
-//                       )),
-//                       Expanded(
-//                           child: Padding(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 16.0, vertical: 8.0),
-//                         child: Card(
-//                           color: Colors.white,
-//                           elevation: 5,
-//                           shadowColor: Colors.grey,
-//                           child: TextFormField(
-//                             decoration: InputDecoration(
-//                               hintText: 'Enter Country',
-//                               suffixIcon: Icon(Icons.search),
-//                               border: OutlineInputBorder(
-//                                   borderSide: BorderSide.none),
-//                             ),
-//                           ),
-//                         ),
-//                       )),
-//                       Align(
-//                         alignment: Alignment.centerRight,
-//                         child: Padding(
-//                           padding: const EdgeInsets.symmetric(
-//                               vertical: 16, horizontal: 64),
-//                           child: SizedBox(
-//                             height: 40,
-//                             child: ElevatedButton(
-//                                 onPressed: () {
-//                                   var client = Client(
-//                                       name: name.text,
-//                                       address: address.text,
-//                                       email: email.text,
-//                                       country: countryCode,
-//                                       phone: phone.text);
-//                                   // client.add().then((value){
-//                                   showFutureDialog(
-//                                       context: context, future: client.add());
-//                                   // });
-//                                 },
-//                                 child: Text("Add Client")),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ]),
-//               ),
-
-//               // Form(
-//               //     child: Card(
-//               //   color: Color(0xFFE8F3FA),
-//               //   child: SizedBox(
-//               //     height: double.maxFinite,
-//               //     child: Column(
-//               //       crossAxisAlignment: CrossAxisAlignment.start,
-//               //       children: [
-//               //         Padding(
-//               //           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 64),
-//               //           child: Text("Add Client", style: Theme.of(context).textTheme.headline6),
-//               //         ),
-//               //         Table(
-//               //           children: [
-//               //             TableRow(children: [
-//               //               Container(),
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: DropdownButtonFormField(
-//               //                   value: countryCode,
-//               //                   items: session.countries.map((e) => DropdownMenuItem(value: e.code, child: Text(e.name))).toList(),
-//               //                   onChanged: (String? code) {
-//               //                     setState(() {
-//               //                       countryCode = code ?? countryCode;
-//               //                     });
-//               //                   },
-//               //                 ),
-//               //               )
-//               //             ]),
-//               //             TableRow(children: [
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(controller: name, labelText: "Name", suffixIcon: Icon(Icons.person)),
-//               //               ),
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(controller: email, labelText: "Email", suffixIcon: Icon(Icons.email)),
-//               //               ),
-//               //             ]),
-//               //             TableRow(children: [
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(controller: address, labelText: "Address", suffixIcon: Icon(Icons.location_on)),
-//               //               ),
-//               //               Padding(
-//               //                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
-//               //                 child: CustomTextFormField(
-//               //                   suffixIcon: Icon(Icons.phone),
-//               //                   controller: phone,
-//               //                   labelText: "Phone",
-//               //                 ),
-//               //               ),
-//               //             ]),
-//               //           ],
-//               //         ),
-//               SizedBox(
-//                 height: 20.0,
-//               ),
-//               SingleChildScrollView(
-//                 scrollDirection: Axis.horizontal,
-//                 child: DataTable(
-//                     headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
-//                     columns: [
-//                       "Client Name",
-//                       "Address",
-//                       "Email ID",
-//                       "Phone No",
-//                       "Country",
-//                       "Contact Person",
-//                       "Delete",
-//                       "Edit",
-//                     ].map((e) => DataColumn(label: Text(e))).toList(),
-//                     rows: []),
-//               ),
-//             ],
-//           ),
-//           // ),
-//           // )),
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -116,78 +116,86 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
                 ],
               ),
             ),
-            Form(
-              key: controller.invoiceForm.invoiceFormKey,
-              child: Table(
-                children: [
-                  TableRow(children: [
-                    QuoteTextBox(controller: controller.invoiceForm.number, hintText: 'Invoice Number', validator: _requiredDuplicateValidator),
-                    QuoteTextBox(controller: controller.invoiceForm.amount, hintText: 'Invoice Amount', validator: _amountValidator),
-                    QuoteDateBox(
-                      hintText: 'Issued Date',
-                      controler: issuedDateController,
-                      title: 'Issued Date',
-                      validator: _requiredValidator,
-                      onPressed: () async {
-                        await showDatePicker(
-                          context: context,
-                          initialDate: controller.invoiceForm.issuedDate ?? DateTime.now(),
-                          firstDate: DateTime.utc(2000),
-                          lastDate: DateTime.utc(2100),
-                        ).then((value) {
-                          setState(() {
-                            controller.invoiceForm.issuedDate = value ?? controller.invoiceForm.issuedDate;
-                            issuedDateController.text =
-                                controller.invoiceForm.issuedDate == null ? '' : format.format(controller.invoiceForm.issuedDate!);
-                          });
-                        });
-                      },
+            (session.user?.invoiceClient ?? false)
+                ? Form(
+                    key: controller.invoiceForm.invoiceFormKey,
+                    child: Table(
+                      children: [
+                        TableRow(children: [
+                          QuoteTextBox(controller: controller.invoiceForm.number, hintText: 'Invoice Number', validator: _requiredDuplicateValidator),
+                          QuoteTextBox(controller: controller.invoiceForm.amount, hintText: 'Invoice Amount', validator: _amountValidator),
+                          QuoteDateBox(
+                            hintText: 'Issued Date',
+                            controler: issuedDateController,
+                            title: 'Issued Date',
+                            validator: _requiredValidator,
+                            onPressed: () async {
+                              await showDatePicker(
+                                context: context,
+                                initialDate: controller.invoiceForm.issuedDate ?? DateTime.now(),
+                                firstDate: DateTime.utc(2000),
+                                lastDate: DateTime.utc(2100),
+                              ).then((value) {
+                                setState(() {
+                                  controller.invoiceForm.issuedDate = value ?? controller.invoiceForm.issuedDate;
+                                  issuedDateController.text =
+                                      controller.invoiceForm.issuedDate == null ? '' : format.format(controller.invoiceForm.issuedDate!);
+                                });
+                              });
+                            },
+                          ),
+                          QuoteDate(
+                            title: 'Last Received Date',
+                            date: controller.invoiceForm.lastReceivedDate,
+                          ),
+                        ]),
+                        TableRow(children: [
+                          QuoteTextBox(
+                              readOnly: true,
+                              controller: TextEditingController(text: controller.invoiceForm.receivedAmount.toString()),
+                              hintText: 'Received Amount'),
+                          Container(),
+                          Container(),
+                          Container(),
+                        ]),
+                      ],
                     ),
-                    QuoteDate(
-                      title: 'Last Received Date',
-                      date: controller.invoiceForm.lastReceivedDate,
+                  )
+                : Container(
+                    height: 8,
+                  ),
+            (session.user?.invoiceClient ?? false)
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  controller.addInvoice();
+                                });
+                              },
+                              child: Text("Add Invoice")),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  controller.updateInvoice();
+                                });
+                              },
+                              child: Text("Update Invoice")),
+                        ),
+                      ],
                     ),
-                  ]),
-                  TableRow(children: [
-                    QuoteTextBox(
-                        readOnly: true,
-                        controller: TextEditingController(text: controller.invoiceForm.receivedAmount.toString()),
-                        hintText: 'Received Amount'),
-                    Container(),
-                    Container(),
-                    Container(),
-                  ]),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            controller.addInvoice();
-                          });
-                        },
-                        child: Text("Add Invoice")),
+                  )
+                : Container(
+                    height: 8,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            controller.updateInvoice();
-                          });
-                        },
-                        child: Text("Update Invoice")),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -215,7 +223,11 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        return PaymentForm(invoice: e, callback: refresh);
+                        return PaymentForm(
+                          invoice: e,
+                          callback: refresh,
+                          canEdit: (session.user?.invoiceClient ?? false),
+                        );
                       });
                 },
                 child: Text('Payments'))),
@@ -224,7 +236,7 @@ class _ClientInvoiceFormState extends State<ClientInvoiceForm> {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        return CreditForm(invoice: e, callback: refresh);
+                        return CreditForm(invoice: e, callback: refresh, readOnly: !(session.user!.invoiceClient));
                       });
                 },
                 child: Text('Credits'))),

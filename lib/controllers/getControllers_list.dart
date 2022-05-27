@@ -38,6 +38,7 @@ class ClientController extends GetxController {
   listenAllClients() {
     firestore.collectionGroup('clients').snapshots().listen((event) {
       overAllClientList = event.docs.map((e) => Client.fromJson(e.data(), e.id)).toList();
+      update();
     });
   }
 
@@ -65,7 +66,6 @@ class ContractorController extends GetxController {
 
   Contractor getIdByName(String name) {
     var contractor = contractorlist.firstWhere((element) => element.name == name);
-
     return contractor;
   }
 

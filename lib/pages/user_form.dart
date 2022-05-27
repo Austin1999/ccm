@@ -12,6 +12,7 @@ import 'package:ccm/widgets/quotation/quote_drop_down.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:ccm/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class UserForm extends StatefulWidget {
   UserForm({Key? key, this.user}) : super(key: key);
@@ -34,6 +35,23 @@ class _UserFormState extends State<UserForm> {
       _controller = UserFormController();
       _controller.isAdmin = false;
     }
+  }
+
+  String? _requiredValidator(String? number) {
+    if ((number ?? '').isEmpty) {
+      return 'Field should not be empty';
+    }
+    return null;
+  }
+
+  String? _requiredEmailValidator(String? number) {
+    if ((number ?? '').isEmpty) {
+      return 'Field should not be empty';
+    }
+    if (GetUtils.isEmail(number ?? '')) {
+      return 'Number should be a alid email';
+    }
+    return null;
   }
 
   late UserFormController _controller;
@@ -59,140 +77,166 @@ class _UserFormState extends State<UserForm> {
                 )),
             Expanded(
               flex: 5,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Table(
-                    children: [
-                      TableRow(children: [
-                        QuoteTextBox(controller: _controller.name, hintText: 'Name'),
-                        QuoteTextBox(controller: _controller.email, hintText: 'Email'),
-                        QuoteTextBox(controller: _controller.address, hintText: 'Address'),
-                      ]),
-                      TableRow(children: [
-                        QuoteTextBox(controller: _controller.phone, hintText: 'Phone'),
-                        QuoteDropdown(
-                          title: 'Role',
-                          items: ["User", "Admin"].map((e) => DropdownMenuItem(value: e == "Admin", child: Text(e))).toList(),
-                          value: _controller.isAdmin,
-                          onChanged: (session.user?.role ?? false || widget.user == null)
-                              ? (value) {
-                                  setState(() {
-                                    _controller.isAdmin = value;
-                                  });
-                                }
-                              : null,
-                        ),
-                        (!(_controller.isAdmin ?? false))
-                            ? Container()
-                            : Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: ListTile(
-                                  title: Text("Country"),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 4),
-                                    child: Card(
-                                      elevation: 8,
-                                      color: Colors.white,
-                                      child: MultiSelect<Country>(
-                                          options: session.sessionCountries.toList(),
-                                          selectedValues: _controller.country,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _controller.country = value;
-                                            });
-                                          },
-                                          whenEmpty: 'None selected'),
+              child: Form(
+                key: _controller.formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Table(
+                      children: [
+                        TableRow(children: [
+                          QuoteTextBox(controller: _controller.name, hintText: 'Name', validator: _requiredValidator),
+                          QuoteTextBox(
+                            controller: _controller.email,
+                            hintText: 'Email',
+                            validator: _requiredEmailValidator,
+                          ),
+                          QuoteTextBox(controller: _controller.address, hintText: 'Address', validator: _requiredValidator),
+                        ]),
+                        TableRow(children: [
+                          QuoteTextBox(controller: _controller.phone, hintText: 'Phone'),
+                          QuoteDropdown(
+                            title: 'Role',
+                            items: <DropdownMenuItem<bool>>[
+                              DropdownMenuItem(child: Text("Admin"), value: true),
+                              DropdownMenuItem(child: Text("User"), value: false),
+                            ],
+                            value: _controller.isAdmin,
+                            onChanged: (session.user!.isAdmin)
+                                ? (bool? value) {
+                                    setState(() {
+                                      _controller.isAdmin = value ?? _controller.isAdmin;
+                                    });
+                                  }
+                                : null,
+                          ),
+                          _controller.isAdmin
+                              ? Container()
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: ListTile(
+                                    title: Text("Country"),
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4),
+                                      child: Card(
+                                        elevation: 8,
+                                        color: Colors.white,
+                                        child: MultiSelect<Country>(
+                                            options: session.sessionCountries.toList(),
+                                            selectedValues: _controller.country,
+                                            enabled: (session.user?.isAdmin ?? false),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _controller.country = value;
+                                              });
+                                            },
+                                            whenEmpty: 'None selected'),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                      ]),
-                    ],
-                  ),
-                  Divider(),
-                  (!(_controller.isAdmin ?? false))
-                      ? Container()
-                      : Table(
-                          children: [
-                            TableRow(children: [
-                              ListTile(
-                                title: Text("Client Quotation"),
-                                trailing: Checkbox(
-                                    value: _controller.quoteClient,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _controller.quoteClient = !_controller.quoteClient;
-                                      });
-                                    }),
-                              ),
-                              ListTile(
-                                title: Text("Contractor Quotation"),
-                                trailing: Checkbox(
-                                    value: _controller.quoteContractor,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _controller.quoteContractor = !_controller.quoteContractor;
-                                      });
-                                    }),
-                              ),
-                              ListTile(
-                                title: Text("View Clients / Contractors"),
-                                trailing: Checkbox(
-                                    value: _controller.viewClient && _controller.viewContractor,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _controller.viewClient = _controller.viewContractor = val ?? _controller.viewContractor;
-                                      });
-                                    }),
-                              ),
-                            ]),
-                            TableRow(children: [
-                              ListTile(
-                                title: Text("Client Invoices"),
-                                trailing: Checkbox(
-                                    value: _controller.invoiceClient,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _controller.invoiceClient = !_controller.invoiceClient;
-                                      });
-                                    }),
-                              ),
-                              ListTile(
-                                title: Text("Contractor Invoices"),
-                                trailing: Checkbox(
-                                    value: _controller.invoiceContractor,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _controller.invoiceContractor = !_controller.invoiceContractor;
-                                      });
-                                    }),
-                              ),
-                              ListTile(
-                                title: Text("View Dashboard"),
-                                trailing: Checkbox(
-                                    value: _controller.viewDashboard,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _controller.viewDashboard = !_controller.viewDashboard;
-                                      });
-                                    }),
-                              ),
-                            ]),
-                          ],
-                        ),
-                  Divider(),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Wrap(
-                      runAlignment: WrapAlignment.spaceEvenly,
-                      children: _controller.country
-                          .map((e) => SizedBox(width: 230, height: 83.33, child: CountryCard(text: e.name, code: e.code)))
-                          .toList(),
+                        ]),
+                      ],
                     ),
-                  )
-                ],
+                    Divider(),
+                    (_controller.isAdmin)
+                        ? Container()
+                        : Table(
+                            children: [
+                              TableRow(children: [
+                                ListTile(
+                                  title: Text("Client Quotation"),
+                                  trailing: Checkbox(
+                                    value: _controller.quoteClient,
+                                    onChanged: (session.user?.isAdmin ?? false)
+                                        ? (val) {
+                                            setState(() {
+                                              _controller.quoteClient = !_controller.quoteClient;
+                                            });
+                                          }
+                                        : null,
+                                  ),
+                                ),
+                                ListTile(
+                                  title: Text("Contractor Quotation"),
+                                  trailing: Checkbox(
+                                      value: _controller.quoteContractor,
+                                      onChanged: (session.user?.isAdmin ?? false)
+                                          ? (val) {
+                                              setState(() {
+                                                _controller.quoteContractor = !_controller.quoteContractor;
+                                              });
+                                            }
+                                          : null),
+                                ),
+                                ListTile(
+                                  title: Text("View Clients / Contractors"),
+                                  trailing: Checkbox(
+                                      value: _controller.viewClient && _controller.viewContractor,
+                                      onChanged: (session.user?.isAdmin ?? false)
+                                          ? (val) {
+                                              setState(() {
+                                                _controller.viewClient = _controller.viewContractor = val ?? _controller.viewContractor;
+                                              });
+                                            }
+                                          : null),
+                                ),
+                              ]),
+                              TableRow(children: [
+                                ListTile(
+                                  title: Text("Client Invoices"),
+                                  trailing: Checkbox(
+                                      value: _controller.invoiceClient,
+                                      onChanged: (session.user?.isAdmin ?? false)
+                                          ? (val) {
+                                              setState(() {
+                                                _controller.invoiceClient = !_controller.invoiceClient;
+                                              });
+                                            }
+                                          : null),
+                                ),
+                                ListTile(
+                                  title: Text("Contractor Invoices"),
+                                  trailing: Checkbox(
+                                      value: _controller.invoiceContractor,
+                                      onChanged: (session.user?.isAdmin ?? false)
+                                          ? (val) {
+                                              setState(() {
+                                                _controller.invoiceContractor = !_controller.invoiceContractor;
+                                              });
+                                            }
+                                          : null),
+                                ),
+                                ListTile(
+                                  title: Text("View Dashboard"),
+                                  trailing: Checkbox(
+                                      value: _controller.viewDashboard,
+                                      onChanged: (session.user?.isAdmin ?? false)
+                                          ? (val) {
+                                              setState(() {
+                                                _controller.viewDashboard = !_controller.viewDashboard;
+                                              });
+                                            }
+                                          : null),
+                                ),
+                              ]),
+                            ],
+                          ),
+                    Divider(),
+                    _controller.isAdmin
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Wrap(
+                              runAlignment: WrapAlignment.spaceEvenly,
+                              children: _controller.country
+                                  .map((e) => SizedBox(width: 230, height: 83.33, child: CountryCard(text: e.name, code: e.code)))
+                                  .toList(),
+                            ),
+                          )
+                  ],
+                ),
               ),
             ),
           ],
@@ -202,7 +246,6 @@ class _UserFormState extends State<UserForm> {
             padding: const EdgeInsets.all(8.0),
             child: ButtonBar(
               children: [
-                Align(alignment: Alignment.centerLeft, child: ElevatedButton(onPressed: () {}, child: Text("Select Countries"))),
                 ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -211,22 +254,24 @@ class _UserFormState extends State<UserForm> {
                 ElevatedButton(
                   onPressed: () {
                     var future;
-                    if (user == null) {
-                      future = userscollection.add(_controller.object.toJson()).then((value) => Result.success("Profile created successfully"));
-                      try {
-                        Timer(Duration(seconds: 5), () {
-                          session.auth.resetPassword(email: _controller.object.email!);
+                    if (_controller.formKey.currentState!.validate()) {
+                      if (user == null) {
+                        future = userscollection.add(_controller.object.toJson()).then((value) => Result.success("Profile created successfully"));
+                        try {
+                          Timer(Duration(seconds: 5), () {
+                            session.auth.resetPassword(email: _controller.object.email!);
+                          });
+                        } catch (e) {}
+                      } else {
+                        print(_controller.object.toJson());
+                        future = userscollection.doc(_controller.docid).update(_controller.object.toJson()).then((value) {
+                          session.user = _controller.object;
+                          session.update();
+                          return Result.success("Profile updated successfully");
                         });
-                      } catch (e) {}
-                    } else {
-                      print(_controller.object.toJson());
-                      future = userscollection.doc(_controller.docid).update(_controller.object.toJson()).then((value) {
-                        session.user = _controller.object;
-                        session.update();
-                        return Result.success("Profile updated successfully");
-                      });
+                      }
+                      showFutureDialog(context: context, future: future);
                     }
-                    showFutureDialog(context: context, future: future);
                   },
                   child: Text("Submit"),
                 ),

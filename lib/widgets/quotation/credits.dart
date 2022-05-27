@@ -4,9 +4,10 @@ import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
 
 class CreditForm extends StatefulWidget {
-  CreditForm({Key? key, required this.invoice, this.callback}) : super(key: key);
+  CreditForm({Key? key, required this.invoice, this.callback, required this.readOnly}) : super(key: key);
   final Invoice invoice;
   final void Function()? callback;
+  final bool readOnly;
 
   @override
   State<CreditForm> createState() => _CreditFormState();
@@ -20,7 +21,7 @@ class _CreditFormState extends State<CreditForm> {
 
   String amountError = '';
   String dateError = '';
-
+  bool get readOnly => widget.readOnly;
   validate() {
     bool result = true;
     try {
@@ -132,21 +133,23 @@ class _CreditFormState extends State<CreditForm> {
               TableRow(children: [
                 Container(),
                 Container(),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          if (validate()) {
-                            setState(() {
-                              widget.invoice.credits.add(Credit(amount: double.parse(amount.text), note: note.text, date: date!));
-                            });
-                          }
-                        },
-                        child: Text("Add")),
-                  ),
-                )
+                readOnly
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                if (validate()) {
+                                  setState(() {
+                                    widget.invoice.credits.add(Credit(amount: double.parse(amount.text), note: note.text, date: date!));
+                                  });
+                                }
+                              },
+                              child: Text("Add")),
+                        ),
+                      )
               ])
             ],
           ),
@@ -182,12 +185,14 @@ class _CreditFormState extends State<CreditForm> {
         DataCell(Text(credit.note.toString())),
         DataCell(Text(format.format(credit.date))),
         DataCell(IconButton(
-            onPressed: () {
-              setState(() {
-                widget.invoice.credits.removeAt(i);
-              });
-            },
-            icon: Icon(Icons.delete, color: Colors.red)))
+            onPressed: readOnly
+                ? null
+                : () {
+                    setState(() {
+                      widget.invoice.credits.removeAt(i);
+                    });
+                  },
+            icon: Icon(Icons.delete, color: readOnly ? Colors.grey : Colors.red)))
       ]));
     }
     return rows;

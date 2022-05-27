@@ -224,7 +224,7 @@ class _QuotationFormState extends State<QuotationForm> {
                   ),
                   ClientQuotation(controller: controller),
                   ClientInvoiceForm(controller: controller),
-                  ContractorPoForm(controller: controller, readOnly: session.user!.quoteContractor),
+                  ContractorPoForm(controller: controller),
                   SizedBox(
                     height: 40.0,
                   ),

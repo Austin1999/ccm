@@ -96,37 +96,46 @@ class _ClientQuotationState extends State<ClientQuotation> {
                       title: 'Currency',
                       items: currencyController.items,
                       value: controller.currencyCode,
-                      onChanged: (val) {
-                        setState(() {
-                          controller.currencyCode = val ?? controller.currencyCode;
-                        });
-                      },
+                      onChanged: readOnly
+                          ? null
+                          : (val) {
+                              setState(() {
+                                controller.currencyCode = val ?? controller.currencyCode;
+                              });
+                            },
                     ),
                     QuoteDropdown<String>(
                       value: controller.category,
                       title: 'Category',
                       items: categoryItems,
-                      onChanged: (val) {
-                        controller.category = val;
-                      },
+                      onChanged: readOnly
+                          ? null
+                          : (val) {
+                              controller.category = val;
+                            },
                     ),
                     QuoteTypeAhead(
+                        enabled: (readOnly == true) ? false : true,
                         validator: (p0) {
                           if (controller.number.text == p0) {
                             return 'This is current quote number';
                           }
                           return null;
                         },
-                        onSelected: (val) {
-                          setState(() {
-                            controller.parentQuote = val;
-                          });
-                        },
-                        onChanged: (val) {
-                          if ((val).isEmpty) {
-                            controller.parentQuote = null;
-                          }
-                        },
+                        onSelected: readOnly
+                            ? null
+                            : (val) {
+                                setState(() {
+                                  controller.parentQuote = val;
+                                });
+                              },
+                        onChanged: readOnly
+                            ? null
+                            : (val) {
+                                if ((val).isEmpty) {
+                                  controller.parentQuote = null;
+                                }
+                              },
                         text: (controller.parentQuote ?? ''),
                         optionsBuilder: (textValue) async {
                           var values = await quotations.get().then((value) => value.docs

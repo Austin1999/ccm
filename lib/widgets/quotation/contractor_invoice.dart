@@ -1,3 +1,4 @@
+import 'package:ccm/controllers/sessionController.dart';
 import 'package:ccm/widgets/quotation/payments.dart';
 import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +9,12 @@ import 'credits.dart';
 import 'quote_date_picker.dart';
 
 class ContractorInvoiceForm extends StatefulWidget {
-  const ContractorInvoiceForm({Key? key, required this.controller, required this.readOnly}) : super(key: key);
+  const ContractorInvoiceForm({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
   final ContractorPoFormController controller;
-  final bool readOnly;
 
   @override
   State<ContractorInvoiceForm> createState() => _ContractorInvoiceFormState();
@@ -26,8 +29,6 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
     issuedDateController.text = invoiceForm.issuedDate == null ? '' : format.format(invoiceForm.issuedDate!);
     super.initState();
   }
-
-  bool get readOnly => widget.readOnly;
 
   final issuedDateController = TextEditingController();
 
@@ -114,34 +115,30 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                   ],
                 ),
               ),
-              readOnly
-                  ? Container()
-                  : Table(
+              (session.user?.invoiceContractor ?? false)
+                  ? Table(
                       children: [
                         TableRow(children: [
-                          QuoteTextBox(
-                              readOnly: readOnly, controller: invoiceForm.number, hintText: 'Invoice Number', validator: _requiredDuplicateValidator),
-                          QuoteTextBox(readOnly: readOnly, controller: invoiceForm.amount, hintText: 'Invoice Amount', validator: _amountValidator),
+                          QuoteTextBox(controller: invoiceForm.number, hintText: 'Invoice Number', validator: _requiredDuplicateValidator),
+                          QuoteTextBox(controller: invoiceForm.amount, hintText: 'Invoice Amount', validator: _amountValidator),
                           QuoteDateBox(
                             hintText: 'Invoice Received Date',
                             validator: _requiredValidator,
                             title: 'Received Date',
                             controler: issuedDateController,
-                            onPressed: readOnly
-                                ? null
-                                : () async {
-                                    invoiceForm.issuedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: invoiceForm.issuedDate ?? DateTime.now(),
-                                      firstDate: DateTime.utc(2000),
-                                      lastDate: DateTime.utc(2100),
-                                    );
-                                    setState(() {
-                                      issuedDateController.text = invoiceForm.issuedDate == null ? '' : format.format(invoiceForm.issuedDate!);
-                                    });
-                                  },
+                            onPressed: () async {
+                              invoiceForm.issuedDate = await showDatePicker(
+                                context: context,
+                                initialDate: invoiceForm.issuedDate ?? DateTime.now(),
+                                firstDate: DateTime.utc(2000),
+                                lastDate: DateTime.utc(2100),
+                              );
+                              setState(() {
+                                issuedDateController.text = invoiceForm.issuedDate == null ? '' : format.format(invoiceForm.issuedDate!);
+                              });
+                            },
                           ),
-                          QuoteTextBox(readOnly: readOnly, controller: invoiceForm.taxNumber, hintText: 'Tax Number'),
+                          QuoteTextBox(controller: invoiceForm.taxNumber, hintText: 'Tax Number'),
                         ]),
                         TableRow(
                           children: [
@@ -159,10 +156,12 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                           ],
                         ),
                       ],
+                    )
+                  : Container(
+                      height: 8,
                     ),
-              readOnly
-                  ? Container(height: 8)
-                  : Padding(
+              (session.user?.invoiceContractor ?? false)
+                  ? Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -189,6 +188,9 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                           ),
                         ],
                       ),
+                    )
+                  : Container(
+                      height: 8,
                     ),
             ],
           ),
@@ -216,7 +218,11 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        return PaymentForm(invoice: e, callback: refresh);
+                        return PaymentForm(
+                          invoice: e,
+                          callback: refresh,
+                          canEdit: (session.user?.invoiceContractor ?? false),
+                        );
                       });
                 },
                 child: Text('Payments'))),
@@ -225,7 +231,11 @@ class _ContractorInvoiceFormState extends State<ContractorInvoiceForm> {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        return CreditForm(invoice: e, callback: refresh);
+                        return CreditForm(
+                          invoice: e,
+                          callback: refresh,
+                          readOnly: !(session.user!.invoiceContractor),
+                        );
                       });
                 },
                 child: Text('Credits'))),

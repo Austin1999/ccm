@@ -174,7 +174,7 @@ class _UsersListState extends State<UsersList> {
                                                             Text(e.phone!),
                                                           ),
                                                           DataCell(
-                                                            Text(e.role ?? false ? "User" : "Admin"),
+                                                            Text(e.isAdmin ? "Admin" : "User"),
                                                           ),
                                                           DataCell(
                                                             Text(e.fullname!),

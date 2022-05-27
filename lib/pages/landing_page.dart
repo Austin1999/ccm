@@ -273,19 +273,25 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           });
                         },
                       ),
-                      SideTile(
-                        isCollapsed: isCollapsed,
-                        selected: selectedIndex == 1,
-                        title: Text('Dashboard'),
-                        onTap: () {
-                          // page.jumpToPage(1);
-                          Get.offAll(() => Dashboard());
-                          setState(() {
-                            selectedIndex = 1;
-                          });
-                        },
-                        leading: Icon(Icons.dashboard_rounded),
-                      ),
+                      GetBuilder(
+                          init: session,
+                          builder: (_) {
+                            return (session.user?.viewDashboard ?? false)
+                                ? SideTile(
+                                    isCollapsed: isCollapsed,
+                                    selected: selectedIndex == 1,
+                                    title: Text('Dashboard'),
+                                    onTap: () {
+                                      // page.jumpToPage(1);
+                                      Get.offAll(() => Dashboard());
+                                      setState(() {
+                                        selectedIndex = 1;
+                                      });
+                                    },
+                                    leading: Icon(Icons.dashboard_rounded),
+                                  )
+                                : Container();
+                          }),
                       SideTile(
                         isCollapsed: isCollapsed,
                         selected: selectedIndex == 2,
@@ -302,7 +308,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       GetBuilder(
                           init: session,
                           builder: (context) {
-                            return !(session.user?.role ?? false)
+                            return !(session.user?.isAdmin ?? false)
                                 ? Container()
                                 : SideTile(
                                     isCollapsed: isCollapsed,
@@ -318,32 +324,44 @@ class _CustomDrawerState extends State<CustomDrawer> {
                                     leading: Icon(Icons.people),
                                   );
                           }),
-                      SideTile(
-                        isCollapsed: isCollapsed,
-                        selected: selectedIndex == 4,
-                        title: Text('Client'),
-                        onTap: () {
-                          // page.jumpToPage(4);
-                          Get.offAll(() => ClientList());
-                          setState(() {
-                            selectedIndex = 4;
-                          });
-                        },
-                        leading: Icon(Icons.person),
-                      ),
-                      SideTile(
-                        isCollapsed: isCollapsed,
-                        selected: selectedIndex == 5,
-                        title: Text('Contractor'),
-                        onTap: () {
-                          // page.jumpToPage(5);
-                          Get.offAll(() => ContractorList());
-                          setState(() {
-                            selectedIndex = 5;
-                          });
-                        },
-                        leading: Icon(Icons.workspaces_rounded),
-                      ),
+                      GetBuilder(
+                          init: session,
+                          builder: (_) {
+                            return (session.user?.viewClient ?? false)
+                                ? SideTile(
+                                    isCollapsed: isCollapsed,
+                                    selected: selectedIndex == 4,
+                                    title: Text('Client'),
+                                    onTap: () {
+                                      // page.jumpToPage(4);
+                                      Get.offAll(() => ClientList());
+                                      setState(() {
+                                        selectedIndex = 4;
+                                      });
+                                    },
+                                    leading: Icon(Icons.person),
+                                  )
+                                : Container();
+                          }),
+                      GetBuilder(
+                          init: session,
+                          builder: (_) {
+                            return (session.user?.viewContractor ?? false)
+                                ? SideTile(
+                                    isCollapsed: isCollapsed,
+                                    selected: selectedIndex == 5,
+                                    title: Text('Contractor'),
+                                    onTap: () {
+                                      // page.jumpToPage(5);
+                                      Get.offAll(() => ContractorList());
+                                      setState(() {
+                                        selectedIndex = 5;
+                                      });
+                                    },
+                                    leading: Icon(Icons.workspaces_rounded),
+                                  )
+                                : Container();
+                          }),
                       SideTile(
                         isCollapsed: isCollapsed,
                         title: Text('Log out'),
@@ -369,7 +387,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           isCollapsed = !isCollapsed;
                         });
                       },
-                      leading: Icon(Icons.arrow_back_ios_new_rounded),
+                      leading: isCollapsed ? Icon(Icons.arrow_forward_ios_rounded) : Icon(Icons.arrow_back_ios_new_rounded),
                     ),
                   ),
                 )

@@ -14,19 +14,28 @@ class InvoiceList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        child: DataTable(
-          headingRowColor: MaterialStateProperty.all(Colors.blue.shade100),
-          headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
-          columns: [
-            DataColumn(label: Text('PO Number')),
-            DataColumn(label: Text('Invoice Number')),
-            DataColumn(label: Text('Amount')),
-            DataColumn(label: Text('Issued Date')),
-            DataColumn(label: Text('Paid/Received Amount')),
-            DataColumn(label: Text('Last Received Date')),
-            DataColumn(label: Text('Credit Amount')),
+        child: Stack(
+          children: [
+            invoices.length != 0
+                ? Container()
+                : Center(
+                    child: Text("No invoices for this quote"),
+                  ),
+            DataTable(
+              headingRowColor: MaterialStateProperty.all(Colors.blue.shade100),
+              headingTextStyle: TextStyle(fontWeight: FontWeight.bold),
+              columns: [
+                DataColumn(label: Text('PO Number')),
+                DataColumn(label: Text('Invoice Number')),
+                DataColumn(label: Text('Amount')),
+                DataColumn(label: Text('Issued Date')),
+                DataColumn(label: Text('Paid/Received Amount')),
+                DataColumn(label: Text('Last Received Date')),
+                DataColumn(label: Text('Credit Amount')),
+              ],
+              rows: getSource(),
+            ),
           ],
-          rows: getSource(),
         ),
       ),
     );

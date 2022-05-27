@@ -4,9 +4,10 @@ import 'package:ccm/widgets/quotation/quote_text_box.dart';
 import 'package:flutter/material.dart';
 
 class PaymentForm extends StatefulWidget {
-  PaymentForm({Key? key, required this.invoice, this.callback}) : super(key: key);
+  PaymentForm({Key? key, required this.invoice, this.callback, required this.canEdit}) : super(key: key);
   final Invoice invoice;
   final void Function()? callback;
+  final bool canEdit;
 
   @override
   State<PaymentForm> createState() => _PaymentFormState();
@@ -16,7 +17,7 @@ class _PaymentFormState extends State<PaymentForm> {
   final amount = TextEditingController();
 
   DateTime? date;
-
+  bool get canEdit => widget.canEdit;
   String amountError = '';
   String dateError = '';
 
@@ -124,25 +125,27 @@ class _PaymentFormState extends State<PaymentForm> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 48, left: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              if (validate()) {
-                                setState(() {
-                                  widget.invoice.payments.add(Payment(amount: double.parse(amount.text), date: date!));
-                                });
-                              }
-                            },
-                            child: Text("Add Payment")),
-                      ],
-                    ),
-                  ),
-                ),
+                canEdit
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 48, left: 20),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    if (validate()) {
+                                      setState(() {
+                                        widget.invoice.payments.add(Payment(amount: double.parse(amount.text), date: date!));
+                                      });
+                                    }
+                                  },
+                                  child: Text("Add Payment")),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Container(),
               ])
             ],
           ),
@@ -176,12 +179,14 @@ class _PaymentFormState extends State<PaymentForm> {
         DataCell(Text(payment.amount.toString())),
         DataCell(Text(format.format(payment.date))),
         DataCell(IconButton(
-            onPressed: () {
-              setState(() {
-                widget.invoice.payments.removeAt(i);
-              });
-            },
-            icon: Icon(Icons.delete, color: Colors.red)))
+            onPressed: canEdit
+                ? () {
+                    setState(() {
+                      widget.invoice.payments.removeAt(i);
+                    });
+                  }
+                : null,
+            icon: Icon(Icons.delete, color: canEdit ? Colors.red : Colors.grey)))
       ]));
     }
     return rows;
