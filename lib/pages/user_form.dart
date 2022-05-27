@@ -44,11 +44,11 @@ class _UserFormState extends State<UserForm> {
     return null;
   }
 
-  String? _requiredEmailValidator(String? number) {
-    if ((number ?? '').isEmpty) {
+  String? _requiredEmailValidator(String? email) {
+    if ((email ?? '').isEmpty) {
       return 'Field should not be empty';
     }
-    if (GetUtils.isEmail(number ?? '')) {
+    if (!GetUtils.isEmail(email ?? '')) {
       return 'Number should be a alid email';
     }
     return null;
